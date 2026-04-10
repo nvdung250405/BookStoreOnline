@@ -1,77 +1,104 @@
 ==============================================================================
-LỘ TRÌNH THỰC THI API THEO THÀNH VIÊN (TEAM TO-DO LIST)
+DANH SÁCH API VÀ PHÂN CHIA CONTROLLER (BẢN CẬP NHẬT CUỐI)
 Dự án: Hệ thống Quản trị Nhà sách Online
 ==============================================================================
 
-1. TRƯỞNG NHÓM (MEMBER A) - [11 API]
+1. THÀNH VIÊN A - [Xác thực & Hệ thống]
 ------------------------------------------------------------------------------
-Chuyên trách: Xác thực, Bảo mật Hệ thống và Báo cáo Dashboard.
-1.   POST   /api/auth/login                : Xác thực và cấp JWT.
+[AuthController]
+1.   POST   /api/auth/login                : Xác thực đăng nhập.
 2.   POST   /api/auth/register             : Đăng ký khách hàng mới.
+
+[UserController]
 3.   GET    /api/users/profile             : Lấy hồ sơ cá nhân.
 4.   PUT    /api/users/profile             : Cập nhật thông tin cá nhân.
 5.   PUT    /api/users/password            : Đổi mật khẩu.
-6.   GET    /api/admin/users               : [ADMIN] Tìm kiếm, lọc người dùng.
-7.   PUT    /api/admin/users/{id}/status   : [ADMIN] Khóa/Mở khóa tài khoản.
-8.   PUT    /api/admin/users/{id}/role     : [ADMIN] Thay đổi quyền (RBAC).
-47.  GET    /api/admin/dashboard/revenue   : [ADMIN] Báo cáo doanh thu đa biến.
-48.  GET    /api/admin/dashboard/ranking   : [ADMIN] Thống kê Top bán chạy.
-49.  GET    /api/admin/audit-logs          : [ADMIN] Truy xuất nhật ký hệ thống.
 
-2. THÀNH VIÊN B - [12 API]
+[AdminUserController]
+6.   GET    /api/admin/users               : [ADMIN] Quản lý người dùng.
+7.   PUT    /api/admin/users/{id}/status   : [ADMIN] Khóa/Mở tài khoản.
+8.   PUT    /api/admin/users/{id}/role     : [ADMIN] Thay đổi quyền.
+
+[AdminDashboardController]
+47.  GET    /api/admin/dashboard/revenue   : [ADMIN] Báo cáo doanh thu.
+48.  GET    /api/admin/dashboard/ranking   : [ADMIN] Thống kê Top bán chạy.
+49.  GET    /api/admin/audit-logs          : [ADMIN] Nhật ký hệ thống.
+
 ------------------------------------------------------------------------------
-Chuyên trách: Quản lý Danh mục, Sách và Công nghệ AI Search.
+2. THÀNH VIÊN B - [Sách & Danh mục]
+------------------------------------------------------------------------------
+[SachController]
 9.   GET    /api/books                     : Tìm kiếm & Lọc sách public.
 10.  GET    /api/books/{isbn}              : Xem chi tiết sách.
-11.  POST   /api/books/ai-search           : Tìm kiếm ngữ nghĩa bằng AI (NLP).
-12.  GET    /api/categories                : Lấy cây danh mục đa cấp.
-13.  GET    /api/authors                   : Lấy danh sách tác giả.
-14.  GET    /api/publishers                : Lấy danh sách nhà xuất bản.
+11.  POST   /api/books/ai-search           : Tìm kiếm bằng AI (NLP).
 15.  POST   /api/admin/books               : [ADMIN] Thêm sách mới.
 16.  PUT    /api/admin/books/{isbn}        : [ADMIN] Sửa thông tin sách.
 17.  DELETE /api/admin/books/{isbn}        : [ADMIN] Xóa mềm sách.
+
+[DanhMucController] - (ĐÃ CÓ MẪU SẴN)
+12.  GET    /api/categories                : Lấy cây danh mục đa cấp.
 18.  POST   /api/admin/categories          : [ADMIN] Thêm danh mục.
 19.  PUT    /api/admin/categories/{id}     : [ADMIN] Sửa danh mục.
-20.  DELETE /api/admin/categories/{id}     : [ADMIN] Xóa mềm danh mục.
+20.  DELETE /api/admin/categories/{id}     : [ADMIN] Xóa danh mục.
 
-3. THÀNH VIÊN C - [6 API]
+[TacGiaController] & [NxbController]
+13.  GET    /api/authors                   : Lấy danh sách tác giả.
+14.  GET    /api/publishers                : Lấy danh sách nhà xuất bản.
+
 ------------------------------------------------------------------------------
-Chuyên trách: Quản trị Kho hàng, Barcode và Logistics.
-37.  GET    /api/inventory/scan/{isbn}     : Tra cứu vị trí kệ & tồn kho qua Barcode.
-38.  GET    /api/inventory/low-stock       : Cảnh báo hàng dưới ngưỡng báo động.
+3. THÀNH VIÊN C - [Kho hàng & Vận chuyển]
+------------------------------------------------------------------------------
+[InventoryController]
+37.  GET    /api/inventory/scan/{isbn}     : Tra cứu tồn kho.
+38.  GET    /api/inventory/low-stock       : Cảnh báo hàng sắp hết.
 39.  POST   /api/inventory/import          : [STAFF] Lập phiếu nhập hàng.
 40.  POST   /api/inventory/export          : [STAFF] Lập phiếu xuất hàng cho đơn.
+
+[NhaCungCapController]
 41.  GET    /api/admin/suppliers           : Quản lý danh sách Nhà cung cấp.
-42.  GET    /api/shipping/track/{id}       : Live Tracking đơn hàng (Tích hợp API vận chuyển).
 
-4. THÀNH VIÊN D - [8 API]
+[VanChuyenController]
+42.  GET    /api/shipping/track/{id}       : Live Tracking đơn hàng.
+
 ------------------------------------------------------------------------------
-Chuyên trách: Quản lý Nghiệp vụ Đơn hàng và Thanh toán trực tuyến.
-29.  POST   /api/orders/checkout           : Xử lý giao dịch đặt hàng (Transaction).
-30.  GET    /api/orders/history            : Xem lịch sử đơn của khách hàng.
+4. THÀNH VIÊN D - [Đơn hàng & Thanh toán]
+------------------------------------------------------------------------------
+[DonHangController]
+29.  POST   /api/orders/checkout           : Xử lý giao dịch đặt hàng.
+30.  GET    /api/orders/history            : Xem lịch sử đơn của khách.
 31.  GET    /api/orders/{id}               : Xem chi tiết hóa đơn.
-32.  PUT    /api/orders/{id}/cancel        : Khách hàng tự hủy đơn hàng.
-33.  POST   /api/payments/vnpay-create     : Khởi tạo liên kết thanh toán VNPay.
-34.  GET    /api/payments/vnpay-callback   : Xử lý kết quả trả về từ VNPay.
-35.  GET    /api/admin/orders              : [STAFF] Lọc và quản lý đơn hàng.
-36.  PUT    /api/admin/orders/{id}/status  : [STAFF] Cập nhật trạng thái đơn hàng.
+32.  PUT    /api/orders/{id}/cancel        : Khách hàng tự hủy đơn.
+35.  GET    /api/admin/orders              : [STAFF] Quản lý đơn hàng.
+36.  PUT    /api/admin/orders/{id}/status  : [STAFF] Cập nhật trạng thái đơn.
 
-5. THÀNH VIÊN E - [12 API]
+[ThanhToanController]
+33.  POST   /api/payments/vnpay-create     : Khởi tạo thanh toán VNPay.
+34.  GET    /api/payments/vnpay-callback   : Xử lý kết quả VNPay.
+
 ------------------------------------------------------------------------------
-Chuyên trách: Giỏ hàng, Khuyến mãi và Tương tác Khách hàng.
-21.  GET    /api/cart                      : Lấy giỏ hàng đồng bộ.
+5. THÀNH VIÊN E - [Giỏ hàng & Voucher & Review]
+------------------------------------------------------------------------------
+[GioHangController]
+21.  GET    /api/cart                      : Lấy giỏ hàng.
 22.  POST   /api/cart/add                  : Thêm sản phẩm vào giỏ.
-23.  PUT    /api/cart/update               : Cập nhật số lượng mặt hàng.
+23.  PUT    /api/cart/update               : Cập nhật số lượng.
 24.  DELETE /api/cart/{isbn}               : Xóa sản phẩm khỏi giỏ hàng.
+
+[VoucherController]
 25.  POST   /api/vouchers/validate         : Kiểm tra và áp dụng mã Voucher.
-26.  POST   /api/admin/vouchers            : [ADMIN] Tạo mã giảm giá mới.
+26.  POST   /api/admin/vouchers            : [ADMIN] Tạo mã mới.
 27.  PUT    /api/admin/vouchers/{code}     : [ADMIN] Sửa thông tin Voucher.
-28.  DELETE /api/admin/vouchers/{code}     : [ADMIN] Xóa mềm Voucher.
+28.  DELETE /api/admin/vouchers/{code}     : [ADMIN] Xóa Voucher.
+
+[ReviewController]
 43.  GET    /api/books/{isbn}/reviews      : Xem đánh giá/bình luận sản phẩm.
 44.  POST   /api/books/{isbn}/reviews      : Gửi đánh giá và số sao.
 45.  GET    /api/admin/reviews             : [ADMIN] Duyệt/Ẩn các đánh giá.
-46.  POST   /api/support/chat              : Tiếp nhận chat hỗ trợ trực tuyến.
+
+[SupportController]
+46.  POST   /api/support/chat              : Chat hỗ trợ trực tuyến.
 
 ==============================================================================
-GHI CHÚ: Mọi thành viên phải tuân thủ chuẩn ApiResponse<T> đã thống nhất.
+GHI CHÚ: Mỗi [Controller] tương ứng với 1 File đuôi .java trong package controller.
+Mọi API phải bọc kết quả trong ApiResponse<T>.
 ==============================================================================

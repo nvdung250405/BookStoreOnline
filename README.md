@@ -41,4 +41,17 @@ Dự án quản lý nhà sách toàn diện bao gồm Backend API, Tài liệu t
 - Phân chia công việc chi tiết được quy định tại tệp: `tailieu/api.txt`.
 
 ---
-**Dự án đang trong giai đoạn Sprint hoàn thiện.**
+
+## 🛠 Quy trình phát triển API chuẩn (4 Bước)
+
+Mọi API mới trong dự án nên tuân thủ đúng 4 bước sau để đảm bảo tính đồng nhất:
+
+1. **Bước 1 - Repository**: Tạo Interface trong package `repository`, kế thừa `JpaRepository<Entity, IdType>`.
+2. **Bước 2 - DTO**: Tạo lớp chứa dữ liệu trả về trong package `dto` (Sử dụng Getter/Setter thủ công, không dùng Lombok).
+3. **Bước 3 - Service**: Viết logic xử lý trong package `service`. Chuyển đổi dữ liệu từ Entity ➔ DTO. Dùng Constructor để tiêm Repository.
+4. **Bước 4 - Controller**: Định nghĩa Endpoint trong package `controller`. Kết quả trả về bắt buộc bọc trong `ApiResponse.success(data)`.
+
+*Ví dụ: Xem mẫu tại `DanhMucController.java` và `DanhMucService.java`.*
+
+---
+**Chúc nhóm hoàn thành xuất sắc Bài Tập Lớn!**
