@@ -1,41 +1,32 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.io.Serializable;
 import java.math.BigDecimal;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class ChiTietPhieuNhapId implements Serializable {
-    private String phieuNhap;
-    private String sach;
-}
 
 @Entity
 @Table(name = "chi_tiet_phieu_nhap")
-@IdClass(ChiTietPhieuNhapId.class)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@IdClass(com.bookstore.entity.ChiTietPhieuNhapId.class)
 public class ChiTietPhieuNhap {
+    @Id
+    private Long maPhieuNhap;
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ma_phieunhap")
-    private PhieuNhap phieuNhap;
-
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "isbn")
-    private Sach sach;
+    private String isbn;
 
     @Column(nullable = false)
     private Integer soLuong;
 
-    @Column(name = "don_gia_nhap", nullable = false, precision = 12, scale = 2)
-    private BigDecimal donGiaNhap;
+    @Column(name = "gia_nhap", precision = 18, scale = 2)
+    private BigDecimal giaNhap;
+
+    public ChiTietPhieuNhap() {}
+
+    public Long getMaPhieuNhap() { return maPhieuNhap; }
+    public void setMaPhieuNhap(Long maPhieuNhap) { this.maPhieuNhap = maPhieuNhap; }
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public Integer getSoLuong() { return soLuong; }
+    public void setSoLuong(Integer soLuong) { this.soLuong = soLuong; }
+    public BigDecimal getGiaNhap() { return giaNhap; }
+    public void setGiaNhap(BigDecimal giaNhap) { this.giaNhap = giaNhap; }
 }

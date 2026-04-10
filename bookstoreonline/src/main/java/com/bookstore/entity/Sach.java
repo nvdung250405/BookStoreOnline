@@ -1,52 +1,61 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
-import java.util.Set;
 
 @Entity
 @Table(name = "sach")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Sach {
-
     @Id
-    @Column(length = 13)
+    @Column(length = 20)
     private String isbn;
 
-    @Column(name = "ten_sach", nullable = false, length = 255)
-    private String tenSach;
-
-    @Column(name = "gia_niem_yet", nullable = false, precision = 10, scale = 2)
-    private BigDecimal giaNiemYet;
-
-    @Column(name = "so_trang")
-    private Integer soTrang;
+    @Column(nullable = false, length = 200)
+    private String tieuDe;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_danhmuc")
     private DanhMuc danhMuc;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ma_tacgia")
+    private TacGia tacGia;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_nxb")
     private Nxb nxb;
 
-    @Column(name = "mo_ta_ngu_nghia", columnDefinition = "NVARCHAR(MAX)")
-    private String moTaNguNghia; // Metadata cho AI Search
+    @Column(name = "gia_ban", precision = 18, scale = 2)
+    private BigDecimal giaBan;
 
-    @Column(name = "anh_bia")
-    private String anhBia;
+    @Column(name = "nam_xuat_ban")
+    private Integer namXuatBan;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "sach_tac_gia",
-        joinColumns = @JoinColumn(name = "isbn"),
-        inverseJoinColumns = @JoinColumn(name = "ma_tacgia")
-    )
-    private Set<TacGia> danhSachTacGia;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String moTa;
+
+    @Column(name = "hinh_anh")
+    private String hinhAnh;
+
+    public Sach() {}
+
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public String getTieuDe() { return tieuDe; }
+    public void setTieuDe(String tieuDe) { this.tieuDe = tieuDe; }
+    public DanhMuc getDanhMuc() { return danhMuc; }
+    public void setDanhMuc(DanhMuc danhMuc) { this.danhMuc = danhMuc; }
+    public TacGia getTacGia() { return tacGia; }
+    public void setTacGia(TacGia tacGia) { this.tacGia = tacGia; }
+    public Nxb getNxb() { return nxb; }
+    public void setNxb(Nxb nxb) { this.nxb = nxb; }
+    public BigDecimal getGiaBan() { return giaBan; }
+    public void setGiaBan(BigDecimal giaBan) { this.giaBan = giaBan; }
+    public Integer getNamXuatBan() { return namXuatBan; }
+    public void setNamXuatBan(Integer namXuatBan) { this.namXuatBan = namXuatBan; }
+    public String getMoTa() { return moTa; }
+    public void setMoTa(String moTa) { this.moTa = moTa; }
+    public String getHinhAnh() { return hinhAnh; }
+    public void setHinhAnh(String hinhAnh) { this.hinhAnh = hinhAnh; }
 }

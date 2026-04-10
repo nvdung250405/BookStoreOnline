@@ -1,29 +1,34 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "gio_hang")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class GioHang {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "ma_giohang")
+    private Long maGioHang;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ma_khachhang", nullable = false)
-    private KhachHang khachHang; 
+    private KhachHang khachHang;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "isbn", nullable = false)
     private Sach sach;
 
-    @Column(name = "so_luong")
-    private Integer soLuong = 1;
+    @Column(nullable = false)
+    private Integer soLuong;
+
+    public GioHang() {}
+
+    public Long getMaGioHang() { return maGioHang; }
+    public void setMaGioHang(Long maGioHang) { this.maGioHang = maGioHang; }
+    public KhachHang getKhachHang() { return khachHang; }
+    public void setKhachHang(KhachHang khachHang) { this.khachHang = khachHang; }
+    public Sach getSach() { return sach; }
+    public void setSach(Sach sach) { this.sach = sach; }
+    public Integer getSoLuong() { return soLuong; }
+    public void setSoLuong(Integer soLuong) { this.soLuong = soLuong; }
 }

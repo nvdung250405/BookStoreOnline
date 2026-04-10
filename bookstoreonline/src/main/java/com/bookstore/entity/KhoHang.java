@@ -1,32 +1,27 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "kho_hang")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class KhoHang {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ma_kho")
     private Integer maKho;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "isbn", unique = true, nullable = false)
-    private Sach sach;
+    @Column(name = "ten_kho", nullable = false, length = 100)
+    private String tenKho;
 
-    @Column(name = "so_luong_ton")
-    private Integer soLuongTon = 0;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String viTri;
 
-    @Column(name = "vi_tri_ke", length = 50)
-    private String viTriKe;
+    public KhoHang() {}
 
-    @Column(name = "nguong_bao_dong")
-    private Integer nguongBaoDong = 5;
+    public Integer getMaKho() { return maKho; }
+    public void setMaKho(Integer maKho) { this.maKho = maKho; }
+    public String getTenKho() { return tenKho; }
+    public void setTenKho(String tenKho) { this.tenKho = tenKho; }
+    public String getViTri() { return viTri; }
+    public void setViTri(String viTri) { this.viTri = viTri; }
 }

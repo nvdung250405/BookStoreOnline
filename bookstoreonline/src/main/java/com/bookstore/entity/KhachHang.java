@@ -1,15 +1,9 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "khach_hang")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class KhachHang {
 
     @Id
@@ -32,4 +26,19 @@ public class KhachHang {
 
     @Column(name = "diem_tich_luy")
     private Integer diemTichLuy = 0;
+
+    public KhachHang() {}
+
+    public Long getMaKhachHang() { return maKhachHang; }
+    public void setMaKhachHang(Long maKhachHang) { this.maKhachHang = maKhachHang; }
+    public TaiKhoan getTaiKhoan() { return taiKhoan; }
+    public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
+    public String getHoTen() { return hoTen; }
+    public void setHoTen(String hoTen) { this.hoTen = hoTen; }
+    public String getSdt() { return sdt; }
+    public void setSdt(String sdt) { this.sdt = sdt; }
+    public String getDiaChiGiaoHang() { return diaChiGiaoHang; }
+    public void setDiaChiGiaoHang(String diaChiGiaoHang) { this.diaChiGiaoHang = diaChiGiaoHang; }
+    public Integer getDiemTichLuy() { return diemTichLuy; }
+    public void setDiemTichLuy(Integer diemTichLuy) { this.diemTichLuy = diemTichLuy; }
 }

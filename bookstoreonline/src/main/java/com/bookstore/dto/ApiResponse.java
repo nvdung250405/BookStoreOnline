@@ -1,25 +1,25 @@
 package com.bookstore.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-/**
- * Cấu trúc Response chung cho toàn bộ API.
- * Mọi Endpoint đều phải trả về kiểu này để Frontend dễ xử lý.
- *
- * @param <T> Kiểu dữ liệu trả về trong trường data
- */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ApiResponse<T> {
 
-    private int status;       // HTTP Status Code (200, 201, 400, 401, 403, 404, 500)
-    private String message;   // Thông điệp mô tả kết quả
-    private T data;           // Dữ liệu thực tế
+    private int status;
+    private String message;
+    private T data;
 
-    // ─── Factory Methods (tiện lợi cho Controller) ─────────────────────────
+    public ApiResponse() {}
+
+    public ApiResponse(int status, String message, T data) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
+
+    public int getStatus() { return status; }
+    public void setStatus(int status) { this.status = status; }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+    public T getData() { return data; }
+    public void setData(T data) { this.data = data; }
 
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(200, "Thành công", data);

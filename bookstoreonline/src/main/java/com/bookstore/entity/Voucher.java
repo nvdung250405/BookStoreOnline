@@ -1,29 +1,38 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "voucher")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Voucher {
-
     @Id
-    @Column(name = "ma_voucher", length = 20)
-    private String maVoucher;
+    @Column(length = 50)
+    private String code;
 
-    @Column(name = "gia_tri_giam", nullable = false, precision = 10, scale = 2)
-    private BigDecimal giaTriGiam;
+    @Column(name = "giam_gia", precision = 18, scale = 2)
+    private BigDecimal giamGia;
 
-    @Column(name = "dieu_kien_toi_thieu", precision = 12, scale = 2)
-    private BigDecimal dieu_kien_toi_thieu = BigDecimal.ZERO;
+    @Column(name = "giatri_toithieu", precision = 18, scale = 2)
+    private BigDecimal giaTriToiThieu;
 
-    @Column(name = "thoi_han", nullable = false)
-    private LocalDateTime thoiHan;
+    @Column(name = "ngay_het_han")
+    private LocalDateTime ngayHetHan;
+
+    @Column(name = "so_luong")
+    private Integer soLuong;
+
+    public Voucher() {}
+
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+    public BigDecimal getGiamGia() { return giamGia; }
+    public void setGiamGia(BigDecimal giamGia) { this.giamGia = giamGia; }
+    public BigDecimal getGiaTriToiThieu() { return giaTriToiThieu; }
+    public void setGiaTriToiThieu(BigDecimal giaTriToiThieu) { this.giaTriToiThieu = giaTriToiThieu; }
+    public LocalDateTime getNgayHetHan() { return ngayHetHan; }
+    public void setNgayHetHan(LocalDateTime ngayHetHan) { this.ngayHetHan = ngayHetHan; }
+    public Integer getSoLuong() { return soLuong; }
+    public void setSoLuong(Integer soLuong) { this.soLuong = soLuong; }
 }

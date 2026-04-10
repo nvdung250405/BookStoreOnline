@@ -1,15 +1,9 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "nhan_vien")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class NhanVien {
 
     @Id
@@ -28,5 +22,18 @@ public class NhanVien {
     private String sdt;
 
     @Column(name = "bo_phan", nullable = false)
-    private String boPhan; // QUAN_LY, BAN_HANG, KHO
+    private String boPhan;
+
+    public NhanVien() {}
+
+    public Integer getMaNhanVien() { return maNhanVien; }
+    public void setMaNhanVien(Integer maNhanVien) { this.maNhanVien = maNhanVien; }
+    public TaiKhoan getTaiKhoan() { return taiKhoan; }
+    public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
+    public String getHoTen() { return hoTen; }
+    public void setHoTen(String hoTen) { this.hoTen = hoTen; }
+    public String getSdt() { return sdt; }
+    public void setSdt(String sdt) { this.sdt = sdt; }
+    public String getBoPhan() { return boPhan; }
+    public void setBoPhan(String boPhan) { this.boPhan = boPhan; }
 }

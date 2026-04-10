@@ -1,16 +1,10 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
 @Table(name = "danh_muc")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class DanhMuc {
 
     @Id
@@ -27,4 +21,15 @@ public class DanhMuc {
 
     @OneToMany(mappedBy = "danhMucCha", cascade = CascadeType.ALL)
     private List<DanhMuc> danhMucCon;
+
+    public DanhMuc() {}
+
+    public Integer getMaDanhMuc() { return maDanhMuc; }
+    public void setMaDanhMuc(Integer maDanhMuc) { this.maDanhMuc = maDanhMuc; }
+    public String getTenDanhMuc() { return tenDanhMuc; }
+    public void setTenDanhMuc(String tenDanhMuc) { this.tenDanhMuc = tenDanhMuc; }
+    public DanhMuc getDanhMucCha() { return danhMucCha; }
+    public void setDanhMucCha(DanhMuc danhMucCha) { this.danhMucCha = danhMucCha; }
+    public List<DanhMuc> getDanhMucCon() { return danhMucCon; }
+    public void setDanhMucCon(List<DanhMuc> danhMucCon) { this.danhMucCon = danhMucCon; }
 }
