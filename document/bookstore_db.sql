@@ -1,5 +1,5 @@
 -- ==============================================================================
--- CHUYỂN ĐỔI SANG CHUẨN SQL SERVER (T-SQL)
+-- CHUYỂN ĐỔI SANG CHUẨN SQL SERVER (T-SQL) - ĐÃ ĐỒNG BỘ VỚI ENTITY JAVA
 -- ==============================================================================
 
 -- 1. NHÓM ĐỊNH DANH & NHÂN SỰ
@@ -7,7 +7,7 @@ CREATE TABLE tai_khoan (
     username NVARCHAR(50) PRIMARY KEY,
     password NVARCHAR(255) NOT NULL, 
     role NVARCHAR(50) NOT NULL CONSTRAINT CHK_Role CHECK (role IN ('ADMIN', 'STAFF', 'STOREKEEPER', 'CUSTOMER')),
-    trang_thai BIT DEFAULT 1, -- 1 = TRUE, 0 = FALSE
+    trang_thai BIT DEFAULT 1,
     ngay_tao DATETIME DEFAULT GETDATE()
 );
 
@@ -38,7 +38,6 @@ CREATE TABLE audit_log (
     FOREIGN KEY (username) REFERENCES tai_khoan(username)
 );
 
--- ==============================================================================
 -- 2. NHÓM SẢN PHẨM & DANH MỤC
 CREATE TABLE danh_muc (
     ma_danhmuc INT IDENTITY(1,1) PRIMARY KEY,
@@ -60,7 +59,7 @@ CREATE TABLE tac_gia (
 
 CREATE TABLE sach (
     isbn NVARCHAR(13) PRIMARY KEY,
-    ten_sach NVARCHAR(255) NOT NULL,
+    ten_sach NVARCHAR(255) NOT NULL, -- Đồng bộ với tenSach trong Java
     gia_niem_yet DECIMAL(10,2) NOT NULL,
     so_trang INT,
     ma_danhmuc INT,
@@ -92,7 +91,6 @@ CREATE TABLE sach_tac_gia (
     FOREIGN KEY (ma_tacgia) REFERENCES tac_gia(ma_tacgia)
 );
 
--- ==============================================================================
 -- 3. NHÓM KHO VÀ NHÀ CUNG CẤP
 CREATE TABLE nha_cung_cap (
     ma_ncc INT IDENTITY(1,1) PRIMARY KEY,
@@ -129,7 +127,6 @@ CREATE TABLE chi_tiet_phieu_nhap (
     FOREIGN KEY (isbn) REFERENCES sach(isbn)
 );
 
--- ==============================================================================
 -- 4. NHÓM GIAO DỊCH & GIỎ HÀNG
 CREATE TABLE gio_hang (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -141,7 +138,7 @@ CREATE TABLE gio_hang (
 );
 
 CREATE TABLE voucher (
-    ma_voucher NVARCHAR(20) PRIMARY KEY,
+    ma_voucher NVARCHAR(20) PRIMARY KEY, -- Đồng bộ với maVoucher trong Java
     gia_tri_giam DECIMAL(10,2) NOT NULL,
     dieu_kien_toi_thieu DECIMAL(12,2) DEFAULT 0,
     thoi_han DATETIME NOT NULL
@@ -181,7 +178,6 @@ CREATE TABLE thanh_toan (
     FOREIGN KEY (ma_donhang) REFERENCES don_hang(ma_donhang)
 );
 
--- ==============================================================================
 -- 5. NHÓM LOGISTICS & XUẤT KHO
 CREATE TABLE phieu_xuat (
     ma_phieuxuat NVARCHAR(20) PRIMARY KEY,
@@ -198,4 +194,26 @@ CREATE TABLE van_chuyen (
     trang_thai_tracking NVARCHAR(100),
     thoi_gian_cap_nhat DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (ma_donhang) REFERENCES don_hang(ma_donhang)
+);
+
+-- 6. NHÓM ĐÁNH GIÁ & HỖ TRỢ
+CREATE TABLE danh_gia (
+    ma_dg BIGINT IDENTITY(1,1) PRIMARY KEY,
+    ma_khachhang BIGINT NOT NULL,
+    isbn NVARCHAR(13) NOT NULL,
+    diem_dg INT CONSTRAINT CHK_Diem CHECK (diem_dg BETWEEN 1 AND 5),
+    nhan_xet NVARCHAR(MAX),
+    ngay_dg DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (ma_khachhang) REFERENCES khach_hang(ma_khachhang),
+    FOREIGN KEY (isbn) REFERENCES sach(isbn)
+);
+
+CREATE TABLE ho_tro (
+    ma_hotro BIGINT IDENTITY(1,1) PRIMARY KEY,
+    ma_khachhang BIGINT NOT NULL,
+    tieu_de NVARCHAR(200) NOT NULL,
+    noi_dung NVARCHAR(MAX),
+    trang_thai NVARCHAR(50) DEFAULT 'OPEN' CONSTRAINT CHK_HT_TrangThai CHECK (trang_thai IN ('OPEN', 'PROCESSING', 'CLOSED')),
+    thoi_gian DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (ma_khachhang) REFERENCES khach_hang(ma_khachhang)
 );
