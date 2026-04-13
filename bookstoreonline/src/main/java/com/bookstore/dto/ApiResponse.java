@@ -1,9 +1,15 @@
 package com.bookstore.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class ApiResponse<T> {
 
+    @Schema(example = "200")
     private int status;
+
+    @Schema(example = "Thành công")
     private String message;
+
     private T data;
 
     public ApiResponse() {}

@@ -34,6 +34,26 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(400, ex.getMessage()));
     }
 
+    // Xử lý lỗi phân quyền (AccessDeniedException từ Spring Security)
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(403, "Bạn không có quyền thực hiện thao tác này"));
+    }
+
+    // Xử lý lỗi xác thực (Sai mật khẩu, Tài khoản bị khóa)
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ApiResponse<String>> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+        String message = "Đăng nhập thất bại: " + ex.getMessage();
+        if (ex instanceof org.springframework.security.authentication.DisabledException) {
+            message = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Quản trị viên.";
+        } else if (ex instanceof org.springframework.security.authentication.BadCredentialsException) {
+            message = "Username hoặc mật khẩu không chính xác.";
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(401, message));
+    }
+
     // Xử lý tất cả các lỗi ngoại lệ khác
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGeneralException(Exception ex) {

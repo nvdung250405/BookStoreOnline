@@ -10,14 +10,17 @@ Dự án: Hệ thống Quản trị Nhà sách Online
 2.   POST   /api/auth/register             : Đăng ký khách hàng mới.
 
 [UserController]
-3.   GET    /api/users/profile             : Lấy hồ sơ cá nhân.
-4.   PUT    /api/users/profile             : Cập nhật thông tin cá nhân.
-5.   PUT    /api/users/password            : Đổi mật khẩu.
+3.   GET    /api/users/get-profile             : Lấy hồ sơ cá nhân.
+4.   PUT    /api/users/update-customer-profile : Cập nhật hồ sơ Khách hàng.
+50.  PUT    /api/users/update-staff-profile    : Cập nhật hồ sơ Nhân viên.
+51.  POST   /api/users/create-customer-profile : Khởi tạo hồ sơ Khách hàng.
+5.   PUT    /api/users/update-password         : Đổi mật khẩu.
 
 [AdminUserController]
-6.   GET    /api/admin/users               : [ADMIN] Quản lý người dùng.
-7.   PUT    /api/admin/users/{id}/status   : [ADMIN] Khóa/Mở tài khoản.
-8.   PUT    /api/admin/users/{id}/role     : [ADMIN] Thay đổi quyền.
+52.  POST   /api/admin/users/create                    : [ADMIN] Tạo tài khoản mới cho nhân viên / admin.
+6.   GET    /api/admin/users/get-users                 : [ADMIN] Quản lý người dùng.
+7.   PUT    /api/admin/users/{id}/status               : [ADMIN] Khóa/Mở tài khoản.
+8.   PUT    /api/admin/users/{id}/role                 : [ADMIN] Thay đổi quyền.
 
 [AdminDashboardController]
 47.  GET    /api/admin/dashboard/revenue   : [ADMIN] Báo cáo doanh thu.
