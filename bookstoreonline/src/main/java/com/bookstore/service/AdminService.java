@@ -88,7 +88,7 @@ public class AdminService {
         dto.setRole(taiKhoan.getRole());
 
         if ("CUSTOMER".equalsIgnoreCase(taiKhoan.getRole())) {
-            khachHangRepository.findByTaiKhoanUsername(taiKhoan.getUsername()).ifPresent(kh -> {
+            khachHangRepository.findByTaiKhoan_Username(taiKhoan.getUsername()).ifPresent(kh -> {
                 dto.setHoTen(kh.getHoTen());
                 dto.setSdt(kh.getSdt());
                 dto.setDiaChiGiaoHang(kh.getDiaChiGiaoHang());
@@ -96,7 +96,7 @@ public class AdminService {
             });
         } else {
             // Bao gồm cả ADMIN, STAFF, STOREKEEPER
-            nhanVienRepository.findByTaiKhoanUsername(taiKhoan.getUsername()).ifPresent(nv -> {
+            nhanVienRepository.findByTaiKhoan_Username(taiKhoan.getUsername()).ifPresent(nv -> {
                 dto.setHoTen(nv.getHoTen());
                 dto.setSdt(nv.getSdt());
                 dto.setBoPhan(nv.getBoPhan());
@@ -152,7 +152,7 @@ public class AdminService {
         else if ("STOREKEEPER".equals(role)) boPhan = "KHO";
         else boPhan = "BAN_HANG";
 
-        nhanVienRepository.findByTaiKhoanUsername(username).ifPresent(nv -> {
+        nhanVienRepository.findByTaiKhoan_Username(username).ifPresent(nv -> {
             nv.setBoPhan(boPhan);
             nhanVienRepository.save(nv);
         });

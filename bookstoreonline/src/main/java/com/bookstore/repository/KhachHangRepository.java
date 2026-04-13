@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface KhachHangRepository extends JpaRepository<KhachHang, Long> {
-    Optional<KhachHang> findByTaiKhoanUsername(String username);
+    
+    // Phương thức này bị mất sau khi bạn Pull code từ Member A, tôi thêm lại để các Service hoạt động
+    Optional<KhachHang> findByTaiKhoan_Username(String username);
 }

@@ -45,12 +45,15 @@ public class AdminDashboardService {
         List<Object[]> results = chiTietDonHangRepository.findTopSellingProjected();
         
         return results.stream().map(row -> {
-            String isbn = (String) row[0];
-            long totalSold = (long) row[1];
+            String isbn = (row[0] != null) ? (String) row[0] : "";
+            long totalSold = (row[1] != null) ? (long) row[1] : 0L;
             
-            String bookName = sachRepository.findById(isbn)
-                    .map(Sach::getTieuDe)
+            String bookName = "";
+            if (!isbn.isEmpty()) {
+                bookName = sachRepository.findById(isbn)
+                    .map(Sach::getTenSach)
                     .orElse("Sách bí ẩn (Không tìm thấy thông tin)");
+            }
             
             return new BookRankingDTO(isbn, bookName, totalSold);
         }).collect(Collectors.toList());

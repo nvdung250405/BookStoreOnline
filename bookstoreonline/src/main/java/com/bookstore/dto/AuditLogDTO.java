@@ -21,11 +21,15 @@ public class AuditLogDTO {
     private String thoiDiem;
 
     public AuditLogDTO(AuditLog log) {
-        this.id = log.getId();
-        this.username = log.getUsername();
+        this.id = log.getLogId();
+        if (log.getTaiKhoan() != null) {
+            this.username = log.getTaiKhoan().getUsername();
+        }
         this.hanhDong = log.getHanhDong();
         this.chiTiet = log.getChiTiet();
-        this.thoiDiem = log.getThoiDiem().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        if (log.getThoiDiem() != null) {
+            this.thoiDiem = log.getThoiDiem().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        }
     }
 
     public Long getId() { return id; }

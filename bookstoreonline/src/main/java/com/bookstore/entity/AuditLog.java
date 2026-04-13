@@ -11,8 +11,6 @@ public class AuditLog {
     @Column(name = "log_id")
     private Long logId;
 
-    @Column(name = "username", nullable = false)
-    private String username;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "username", nullable = false)
     private TaiKhoan taiKhoan;
@@ -28,20 +26,14 @@ public class AuditLog {
 
     public AuditLog() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getHanhDong() { return hanhDong; }
-    public void setHanhDong(String hanhDong) { this.hanhDong = hanhDong; }
-    public String getChiTiet() { return chiTiet; }
-    public void setChiTiet(String chiTiet) { this.chiTiet = chiTiet; }
     public Long getLogId() { return logId; }
     public void setLogId(Long logId) { this.logId = logId; }
     public TaiKhoan getTaiKhoan() { return taiKhoan; }
     public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
     public String getHanhDong() { return hanhDong; }
     public void setHanhDong(String hanhDong) { this.hanhDong = hanhDong; }
+    public String getChiTiet() { return chiTiet; }
+    public void setChiTiet(String chiTiet) { this.chiTiet = chiTiet; }
     public LocalDateTime getThoiDiem() { return thoiDiem; }
     public void setThoiDiem(LocalDateTime thoiDiem) { this.thoiDiem = thoiDiem; }
 }

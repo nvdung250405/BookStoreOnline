@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface NhanVienRepository extends JpaRepository<NhanVien, Integer> {
-    Optional<NhanVien> findByTaiKhoanUsername(String username);
+    // Đã chuyển sang findByTaiKhoan_Username để thống nhất chuẩn JPA với KhachHangRepository
+    Optional<NhanVien> findByTaiKhoan_Username(String username);
 }

@@ -44,10 +44,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserProfileDTO getCurrentUserProfile() {
-        // 1. Lấy username từ SecurityContext
         String username = getCurrentUsername();
 
-        // 2. Tìm tài khoản
         TaiKhoan taiKhoan = taiKhoanRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin tài khoản"));
 
@@ -55,17 +53,15 @@ public class UserService {
         profileDTO.setUsername(taiKhoan.getUsername());
         profileDTO.setRole(taiKhoan.getRole());
 
-        // 3. Tìm thông tin chi tiết dựa trên Role
         if ("CUSTOMER".equalsIgnoreCase(taiKhoan.getRole())) {
-            KhachHang khachHang = khachHangRepository.findByTaiKhoanUsername(username)
+            KhachHang khachHang = khachHangRepository.findByTaiKhoan_Username(username)
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin hồ sơ khách hàng"));
             profileDTO.setHoTen(khachHang.getHoTen());
             profileDTO.setSdt(khachHang.getSdt());
             profileDTO.setDiaChiGiaoHang(khachHang.getDiaChiGiaoHang());
             profileDTO.setDiemTichLuy(khachHang.getDiemTichLuy());
         } else {
-            // ADMIN hoặc STAFF
-            NhanVien nhanVien = nhanVienRepository.findByTaiKhoanUsername(username)
+            NhanVien nhanVien = nhanVienRepository.findByTaiKhoan_Username(username)
                     .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông tin hồ sơ nhân viên"));
             profileDTO.setHoTen(nhanVien.getHoTen());
             profileDTO.setSdt(nhanVien.getSdt());
@@ -78,7 +74,7 @@ public class UserService {
     @Transactional
     public UserProfileDTO updateCustomerProfile(CustomerProfileRequest request) {
         String username = getCurrentUsername();
-        KhachHang khachHang = khachHangRepository.findByTaiKhoanUsername(username)
+        KhachHang khachHang = khachHangRepository.findByTaiKhoan_Username(username)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hồ sơ khách hàng"));
 
         khachHang.setHoTen(request.getHoTen());
@@ -92,12 +88,11 @@ public class UserService {
     @Transactional
     public UserProfileDTO updateStaffProfile(StaffProfileRequest request) {
         String username = getCurrentUsername();
-        NhanVien nhanVien = nhanVienRepository.findByTaiKhoanUsername(username)
+        NhanVien nhanVien = nhanVienRepository.findByTaiKhoan_Username(username)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hồ sơ nhân viên"));
 
         nhanVien.setHoTen(request.getHoTen());
         nhanVien.setSdt(request.getSdt());
-        // Khóa: Tuyệt đối không cập nhật bộ phận tại đây.
         nhanVienRepository.save(nhanVien);
 
         return getCurrentUserProfile();
@@ -109,17 +104,14 @@ public class UserService {
         TaiKhoan taiKhoan = taiKhoanRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
 
-        // 1. Kiểm tra mật khẩu cũ
         if (!passwordEncoder.matches(request.getOldPassword(), taiKhoan.getPassword())) {
             throw new IllegalArgumentException("Mật khẩu cũ không chính xác");
         }
 
-        // 2. Kiểm tra mật khẩu mới và xác nhận mật khẩu
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new IllegalArgumentException("Xác nhận mật khẩu mới không khớp");
         }
 
-        // 3. Mã hóa và lưu mật khẩu mới
         taiKhoan.setPassword(passwordEncoder.encode(request.getNewPassword()));
         taiKhoanRepository.save(taiKhoan);
     }
@@ -134,7 +126,7 @@ public class UserService {
             throw new IllegalArgumentException("Tài khoản không phải là khách hàng");
         }
 
-        if (khachHangRepository.findByTaiKhoanUsername(username).isPresent()) {
+        if (khachHangRepository.findByTaiKhoan_Username(username).isPresent()) {
             throw new IllegalArgumentException("Hồ sơ khách hàng đã tồn tại");
         }
 
@@ -147,5 +139,4 @@ public class UserService {
 
         return getCurrentUserProfile();
     }
-
 }
