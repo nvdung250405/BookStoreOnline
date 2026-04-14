@@ -43,6 +43,9 @@ public class Sach {
     )
     private Set<TacGia> danhSachTacGia;
 
+    @Column(name = "da_xoa")
+    private Boolean daXoa = false;
+
     public Sach() {}
 
     public String getIsbn() { return isbn; }
@@ -63,4 +66,6 @@ public class Sach {
     public void setAnhBia(String anhBia) { this.anhBia = anhBia; }
     public Set<TacGia> getDanhSachTacGia() { return danhSachTacGia; }
     public void setDanhSachTacGia(Set<TacGia> danhSachTacGia) { this.danhSachTacGia = danhSachTacGia; }
+    public Boolean getDaXoa() { return daXoa; }
+    public void setDaXoa(Boolean daXoa) { this.daXoa = daXoa; }
 }
