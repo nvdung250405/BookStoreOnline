@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class KhoHangService {
 
     private final KhoHangRepository khoHangRepository;
@@ -67,9 +68,11 @@ public class KhoHangService {
     public ImportResponseDto nhapKhoHieuQua(ImportRequestDto request) {
 
         // 1. Kiểm tra đầu vào: Nhà cung cấp và Nhân viên
+        if (request.maNcc() == null) throw new IllegalArgumentException("Mã nhà cung cấp không được để trống");
         NhaCungCap ncc = nhaCungCapRepository.findById(request.maNcc())
                 .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy Nhà Cung Cấp với ID: " + request.maNcc()));
 
+        if (request.maNhanVien() == null) throw new IllegalArgumentException("Mã nhân viên không được để trống");
         NhanVien nv = nhanVienRepository.findById(request.maNhanVien())
                 .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy Nhân Viên với ID: " + request.maNhanVien()));
 
@@ -95,6 +98,7 @@ public class KhoHangService {
         for (ChiTietImportRequest item : request.chiTietList()) {
 
             // 4.1. Lấy thông tin sách & Chặn sách điện tử
+            if (item.isbn() == null) continue;
             Sach sach = sachRepository.findById(item.isbn())
                     .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy sách với mã ISBN: " + item.isbn()));
 
@@ -129,6 +133,7 @@ public class KhoHangService {
     public String xuatKhoTuDong(ExportRequestDto request) {
         // 1. Lấy mã đơn hàng từ DTO (DTO của bạn đã là String nên không cần convert nữa)
         String maDHStr = request.maDonHang();
+        if (maDHStr == null) throw new IllegalArgumentException("Mã đơn hàng không được để trống");
 
         // 2. Tìm đơn hàng
         DonHang donHang = donHangRepository.findById(maDHStr)

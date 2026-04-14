@@ -11,9 +11,11 @@ import java.math.BigDecimal;
 public interface DonHangRepository extends JpaRepository<DonHang, String> {
 
     // Đã đổi kiểu ID từ Long thành String và sửa d.tongTien thành d.tongThanhToan
-    @Query("SELECT SUM(d.tongThanhToan) FROM DonHang d WHERE d.trangThai = :trangThai")
+    @Query("SELECT COALESCE(SUM(d.tongThanhToan), 0) FROM DonHang d WHERE d.trangThai = :trangThai")
     BigDecimal sumTongTienByTrangThai(@Param("trangThai") String trangThai);
 
     @Query("SELECT COUNT(d) FROM DonHang d WHERE d.trangThai = :trangThai")
     long countByTrangThai(@Param("trangThai") String trangThai);
+
+    java.util.List<DonHang> findAllByKhachHang_TaiKhoan_UsernameOrderByNgayTaoDesc(String username);
 }

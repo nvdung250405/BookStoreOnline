@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@SuppressWarnings("null")
 public class GioHangServiceImpl implements GioHangService {
 
     private final GioHangRepository gioHangRepository;
@@ -63,6 +64,7 @@ public class GioHangServiceImpl implements GioHangService {
 
     @Override
     public void capNhatSoLuong(Long id, Integer soLuong) {
+        if (id == null) throw new IllegalArgumentException("ID không được để trống");
         GioHang item = gioHangRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sản phẩm không có trong giỏ hàng"));
         item.setSoLuong(soLuong);
@@ -71,11 +73,13 @@ public class GioHangServiceImpl implements GioHangService {
 
     @Override
     public void xoaKhoiGioHang(Long id) {
+        if (id == null) return;
         gioHangRepository.deleteById(id);
     }
 
     @Override
     public void lamTrongGioHang(String username) {
+        if (username == null) throw new IllegalArgumentException("Username không được để trống");
         gioHangRepository.deleteByKhachHang_TaiKhoan_Username(username);
     }
 

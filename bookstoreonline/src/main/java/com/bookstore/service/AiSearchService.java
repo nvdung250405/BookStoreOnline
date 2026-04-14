@@ -12,9 +12,15 @@ import java.util.regex.Pattern;
 public class AiSearchService {
 
     private final SachService sachService;
+    private final com.bookstore.repository.DanhMucRepository danhMucRepository;
+    private final com.bookstore.repository.NxbRepository nxbRepository;
 
-    public AiSearchService(SachService sachService) {
+    public AiSearchService(SachService sachService, 
+                          com.bookstore.repository.DanhMucRepository danhMucRepository,
+                          com.bookstore.repository.NxbRepository nxbRepository) {
         this.sachService = sachService;
+        this.danhMucRepository = danhMucRepository;
+        this.nxbRepository = nxbRepository;
     }
 
     public List<SachDTO> searchByNaturalLanguage(String query) {
@@ -29,14 +35,14 @@ public class AiSearchService {
         String categoryName = null;
         String keyword = null;
 
-        // 1. RULE: Trích xuất Thể loại danh mục cứng
-        String[] possibleCategories = { "thiếu nhi", "tâm lý", "tiểu thuyết", "giáo khoa",
-                "kinh doanh", "công nghệ", "kinh tế", "kỹ năng",
-                "văn học", "truyện tranh", "giáo trình" };
+        // 1. RULE: Trích xuất Thể loại động từ DB
+        List<String> possibleCategories = danhMucRepository.findAll().stream()
+                .map(cat -> cat.getTenDanhMuc().toLowerCase())
+                .toList();
         for (String cat : possibleCategories) {
             if (lowerQuery.contains(cat)) {
                 categoryName = cat;
-                lowerQuery = lowerQuery.replace(cat, ""); // Loại bỏ category khỏi query để không bị dính vào keyword
+                lowerQuery = lowerQuery.replace(cat, "");
                 break;
             }
         }
@@ -73,9 +79,10 @@ public class AiSearchService {
             lowerQuery = lowerQuery.replace(minMatcher.group(0), "");
         }
 
-        // 4. RULE: Trích xuất Nhà Xuất Bản
-        String[] possibleNxbs = { "kim đồng", "trẻ", "nhã nam", "thế giới", "phụ nữ", "hội nhà văn", "thanh niên",
-                "giáo dục", "tổng hợp" };
+        // 4. RULE: Trích xuất Nhà Xuất Bản động từ DB
+        List<String> possibleNxbs = nxbRepository.findAll().stream()
+                .map(nxb -> nxb.getTenNxb().toLowerCase())
+                .toList();
         String nxbName = null;
         for (String nxb : possibleNxbs) {
             if (lowerQuery.contains(nxb)) {

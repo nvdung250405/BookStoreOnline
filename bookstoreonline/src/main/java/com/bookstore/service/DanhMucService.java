@@ -60,6 +60,7 @@ public class DanhMucService {
 
     @Transactional
     public DanhMucDTO updateCategory(Integer id, DanhMucRequest request) {
+        if (id == null) throw new IllegalArgumentException("ID danh mục không được để trống");
         DanhMuc entity = danhMucRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh mục với ID: " + id));
         
@@ -86,10 +87,13 @@ public class DanhMucService {
 
     @Transactional
     public void deleteCategory(Integer id) {
+        if (id == null) return;
         DanhMuc entity = danhMucRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh mục với ID: " + id));
         try {
-            danhMucRepository.delete(entity);
+            if (entity != null) {
+                danhMucRepository.delete(entity);
+            }
             danhMucRepository.flush(); // Đẩy lệnh xuống DB ngay lập tức để bắt lỗi Foreign Key nếu có
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Không thể xóa danh mục này vì vẫn đang được tham chiếu bởi các sách hoặc gặp lỗi ràng buộc dữ liệu.");

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@SuppressWarnings("null")
 public class VoucherServiceImpl implements VoucherService {
 
     private final VoucherRepository voucherRepository;

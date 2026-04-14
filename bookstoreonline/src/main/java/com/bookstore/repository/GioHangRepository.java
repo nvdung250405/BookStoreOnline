@@ -19,4 +19,6 @@ public interface GioHangRepository extends JpaRepository<GioHang, Long> {
     
     // Tìm một sản phẩm cụ thể trong giỏ hàng để cập nhật số lượng
     Optional<GioHang> findByKhachHang_TaiKhoan_UsernameAndSach_Isbn(String username, String isbn);
+
+    List<GioHang> findByKhachHang(com.bookstore.entity.KhachHang khachHang);
 }
