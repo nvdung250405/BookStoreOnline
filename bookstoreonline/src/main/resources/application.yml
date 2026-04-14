@@ -35,3 +35,9 @@ logging:
   level:
     com.bookstore: DEBUG
     org.hibernate.SQL: DEBUG
+
+vnpay:
+  tmn_code: 'XXXXXXXX'
+  hash_secret: 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY'
+  url: 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
+  return_url: 'http://localhost:8080/api/payments/vnpay-callback'

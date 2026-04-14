@@ -2,7 +2,6 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.*;
 import com.bookstore.service.KhoHangService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +9,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")
-@RequiredArgsConstructor
 public class KhoHangController {
 
     private final KhoHangService khoHangService;
+
+    public KhoHangController(KhoHangService khoHangService) {
+        this.khoHangService = khoHangService;
+    }
 
     // API 37: Tra cứu vị trí kệ và số lượng bằng Barcode
     // Method: GET
@@ -41,6 +43,7 @@ public class KhoHangController {
         ImportResponseDto response = khoHangService.nhapKhoHieuQua(request);
         return ResponseEntity.ok(response);
     }
+
     // API 40: Xuất hàng cho đơn (Tự động đồng bộ và trừ kho)
     // Method: POST
     // URL: http://localhost:8080/api/inventory/export

@@ -3,17 +3,19 @@ package com.bookstore.service;
 import com.bookstore.dto.NhaCungCapDto;
 import com.bookstore.entity.NhaCungCap;
 import com.bookstore.repository.NhaCungCapRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class NhaCungCapService {
 
     private final NhaCungCapRepository nhaCungCapRepository;
+
+    public NhaCungCapService(NhaCungCapRepository nhaCungCapRepository) {
+        this.nhaCungCapRepository = nhaCungCapRepository;
+    }
 
     public List<NhaCungCapDto> layTatCaNhaCungCap() {
         return nhaCungCapRepository.findAll().stream()

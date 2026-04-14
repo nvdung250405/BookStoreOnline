@@ -3,7 +3,6 @@ package com.bookstore.service;
 import com.bookstore.dto.*;
 import com.bookstore.entity.*;
 import com.bookstore.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class KhoHangService {
 
     private final KhoHangRepository khoHangRepository;
@@ -26,6 +24,22 @@ public class KhoHangService {
     private final PhieuXuatRepository phieuXuatRepository;
     private final DonHangRepository donHangRepository;
     private final ChiTietDonHangRepository chiTietDonHangRepository;
+
+    public KhoHangService(KhoHangRepository khoHangRepository, PhieuNhapRepository phieuNhapRepository,
+                         ChiTietPhieuNhapRepository chiTietPhieuNhapRepository, NhaCungCapRepository nhaCungCapRepository,
+                         NhanVienRepository nhanVienRepository, SachRepository sachRepository,
+                         PhieuXuatRepository phieuXuatRepository, DonHangRepository donHangRepository,
+                         ChiTietDonHangRepository chiTietDonHangRepository) {
+        this.khoHangRepository = khoHangRepository;
+        this.phieuNhapRepository = phieuNhapRepository;
+        this.chiTietPhieuNhapRepository = chiTietPhieuNhapRepository;
+        this.nhaCungCapRepository = nhaCungCapRepository;
+        this.nhanVienRepository = nhanVienRepository;
+        this.sachRepository = sachRepository;
+        this.phieuXuatRepository = phieuXuatRepository;
+        this.donHangRepository = donHangRepository;
+        this.chiTietDonHangRepository = chiTietDonHangRepository;
+    }
 
     @Transactional(readOnly = true)
     public InventoryDetailDTO scanBarcode(String isbn) {

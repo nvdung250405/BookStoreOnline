@@ -2,7 +2,6 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.NhaCungCapDto;
 import com.bookstore.service.NhaCungCapService; // Đã đổi
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +9,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/suppliers")
-@RequiredArgsConstructor
 public class SupplierController {
 
-    private final NhaCungCapService nhaCungCapService; // Đã đổi
+    private final NhaCungCapService nhaCungCapService;
+
+    public SupplierController(NhaCungCapService nhaCungCapService) {
+        this.nhaCungCapService = nhaCungCapService;
+    }
 
     @GetMapping
     public ResponseEntity<List<NhaCungCapDto>> getAll() {

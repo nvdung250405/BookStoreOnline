@@ -16,4 +16,6 @@ public interface DonHangRepository extends JpaRepository<DonHang, String> {
 
     @Query("SELECT COUNT(d) FROM DonHang d WHERE d.trangThai = :trangThai")
     long countByTrangThai(@Param("trangThai") String trangThai);
+
+    java.util.List<DonHang> findByKhachHang_TaiKhoan_UsernameOrderByNgayTaoDesc(String username);
 }
