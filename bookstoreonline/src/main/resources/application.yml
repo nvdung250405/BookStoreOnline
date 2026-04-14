@@ -6,9 +6,9 @@ spring:
     name: bookstoreonline
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=nha_sach_online;encrypt=true;trustServerCertificate=true;
-    username: sa
-    password: 123
+    url: jdbc:sqlserver://127.0.0.1:1433;databaseName=bookstore_db;encrypt=false;trustServerCertificate=true;
+    username: SA
+    password: '123456aA@$'
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:

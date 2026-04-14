@@ -1,7 +1,8 @@
 -- ==============================================================================
 -- CHUYỂN ĐỔI SANG CHUẨN SQL SERVER (T-SQL) - ĐÃ ĐỒNG BỘ VỚI ENTITY JAVA
 -- ==============================================================================
-
+create database bookstore_db;
+use bookstore_db;
 -- 1. NHÓM ĐỊNH DANH & NHÂN SỰ
 CREATE TABLE tai_khoan (
     username NVARCHAR(50) PRIMARY KEY,
