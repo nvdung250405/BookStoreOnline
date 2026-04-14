@@ -1,0 +1,51 @@
+<!-- Categories Area - Index View -->
+<section class="bg-sand py-5">
+    <div class="container-xl py-5 text-center">
+        <div class="section-header mb-5">
+            <span class="text-uppercase tracking-widest text-accent fw-bold small">Duyệt theo chủ đề</span>
+            <h1 class="display-4 fw-bold font-serif mt-2">Danh mục Sách</h1>
+        </div>
+
+        <div class="row g-4 mt-5">
+            <!-- Category Item 1 -->
+            <div class="col-lg-4 col-md-6" data-aos="fade-up">
+                <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none">
+                    <div class="category-card bg-white p-5 rounded-5 shadow-sm hvr-float transition-all border card-hover-accent">
+                        <i class="icon icon-notes fs-1 text-accent mb-4 d-block"></i>
+                        <h3 class="fw-bold font-serif mb-3">Văn học</h3>
+                        <p class="text-muted small">Khám phá những tác phẩm kinh điển và hiện đại từ các tác giả lừng danh thế giới.</p>
+                        <span class="badge bg-light text-muted rounded-pill px-3 py-2 mt-3 border">245 cuốn sách</span>
+                    </div>
+                </a>
+            </div>
+            <!-- Category Item 2 -->
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none">
+                    <div class="category-card bg-white p-5 rounded-5 shadow-sm hvr-float transition-all border card-hover-accent">
+                        <i class="icon icon-clipboard fs-1 text-accent mb-4 d-block"></i>
+                        <h3 class="fw-bold font-serif mb-3">Kinh tế</h3>
+                        <p class="text-muted small">Kiến thức quản trị, đầu tư và phát triển bản thân cho sự nghiệp vững bước.</p>
+                        <span class="badge bg-light text-muted rounded-pill px-3 py-2 mt-3 border">182 cuốn sách</span>
+                    </div>
+                </a>
+            </div>
+            <!-- Category Item 3 -->
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none">
+                    <div class="category-card bg-white p-5 rounded-5 shadow-sm hvr-float transition-all border card-hover-accent">
+                        <i class="icon icon-search fs-1 text-accent mb-4 d-block"></i>
+                        <h3 class="fw-bold font-serif mb-3">Công nghệ</h3>
+                        <p class="text-muted small">Cập nhật những xu hướng mới nhất về lập trình, AI và thế giới số.</p>
+                        <span class="badge bg-light text-muted rounded-pill px-3 py-2 mt-3 border">95 cuốn sách</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .category-card { border-color: transparent; }
+    .card-hover-accent:hover { border-color: var(--accent-color) !important; background-color: #fdfcf9 !important; }
+    .hvr-float:hover { transform: translateY(-10px); }
+</style>

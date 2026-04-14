@@ -1,0 +1,51 @@
+<!-- Inventory Export View -->
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold font-serif mb-0"><i class="icon icon-close me-2 text-danger"></i> Lập phiếu xuất đơn hàng</h3>
+                    <a href="javascript:void(0)" onclick="layout.render('Inventory/Admin', 'Index')" class="btn btn-outline-dark rounded-pill px-4">Quay lại</a>
+                </div>
+
+                <div class="alert alert-info border-0 rounded-4">
+                    <i class="icon icon-clipboard me-2"></i> Nhập mã đơn hàng để tự động lấy danh sách sản phẩm cần xuất.
+                </div>
+
+                <form id="inventory-export-form" class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">Mã đơn hàng (Order ID)</label>
+                        <div class="input-group">
+                            <input type="text" id="order-id" class="form-control border-light bg-light rounded-start-pill" placeholder="VD: #BS-99120" required>
+                            <button class="btn btn-dark rounded-end-pill px-4" type="button" onclick="inventory.fetchOrderItems()">Kiểm tra</button>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <div id="export-details-container" style="display: none;">
+                            <h5 class="fw-bold border-bottom pb-2">Chi tiết sản phẩm cần xuất</h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle" id="export-items-table">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th>Sản phẩm</th>
+                                            <th>Số lượng yêu cầu</th>
+                                            <th>Số lượng thực xuất</th>
+                                            <th>Trạng thái kho</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Rows filled after Order check -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-danger btn-lg px-5 rounded-pill shadow-sm">Xác nhận xuất kho</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

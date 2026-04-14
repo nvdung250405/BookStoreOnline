@@ -1,0 +1,90 @@
+<!-- Admin Orders Area - Details View -->
+<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
+    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
+        <div class="mb-5 px-3"><h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4></div>
+        <nav class="nav flex-column gap-2 mb-auto">
+            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
+            <a href="javascript:void(0)" onclick="layout.render('Orders/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-clipboard me-2"></i> Đơn hàng</a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="mb-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Orders/Admin', 'Index')" class="text-decoration-none text-muted">Đơn hàng</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">#BS-99120</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0">Chi tiết đơn hàng</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white mb-4">
+                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Sản phẩm trong đơn</h5>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <tbody>
+                                <tr class="align-middle border-bottom">
+                                    <td class="py-3" style="width: 60px;"><img src="assets/images/product-item1.jpg" width="50" class="rounded"></td>
+                                    <td>
+                                        <h6 class="mb-0 fw-bold">Cách sống đơn giản</h6>
+                                        <small class="text-muted">SKU: BK-0012</small>
+                                    </td>
+                                    <td class="text-center">Số lượng: 1</td>
+                                    <td class="text-end fw-bold text-accent">400,000đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white">
+                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Nhật ký trạng thái</h5>
+                    <div class="timeline ps-3">
+                        <div class="border-start border-2 border-accent ps-4 pb-4 position-relative">
+                            <div class="position-absolute start-0 top-0 translate-middle-x bg-accent rounded-circle" style="width: 12px; height: 12px; left: -1px;"></div>
+                            <span class="small fw-bold d-block text-accent">14/04/2024 10:30</span>
+                            <span class="small text-muted">Đã giao hàng thành công</span>
+                        </div>
+                        <div class="border-start border-2 border-light ps-4 pb-4 position-relative">
+                            <div class="position-absolute start-0 top-0 translate-middle-x bg-light rounded-circle" style="width: 12px; height: 12px; left: -1px;"></div>
+                            <span class="small fw-bold d-block text-muted">14/04/2024 08:00</span>
+                            <span class="small text-muted">Đang trên đường giao hàng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white mb-4">
+                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Khách hàng</h5>
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="avatar-sm rounded-circle bg-light text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px;">K</div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Nguyễn Minh Khôi</h6>
+                            <small class="text-muted text-break">khoi.nm@gmail.com</small>
+                        </div>
+                    </div>
+                    <div class="small">
+                        <p class="mb-1 fw-bold text-muted text-uppercase tracking-widest" style="font-size: 0.65rem;">Địa chỉ nhận hàng</p>
+                        <p class="text-dark">123 Đường Láng, Q. Đống Đa, Hà Nội</p>
+                        <p class="mb-1 fw-bold text-muted text-uppercase tracking-widest mt-3" style="font-size: 0.65rem;">Số điện thoại</p>
+                        <p class="text-dark">0912 345 678</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-5 p-4 bg-accent text-white">
+                    <h6 class="fw-bold mb-3 border-bottom border-white border-opacity-25 pb-2">Thanh toán (COD)</h6>
+                    <div class="d-flex justify-content-between mb-2"><span>Tạm tính</span><span>400,000đ</span></div>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3 border-white border-opacity-10"><span>Phí vận chuyển</span><span>30,000đ</span></div>
+                    <div class="d-flex justify-content-between h5 fw-bold"><span>Tổng cộng</span><span>430,000đ</span></div>
+                </div>
+
+                <button class="btn btn-outline-dark w-100 mt-4 rounded-pill py-3 fw-bold">Hoàn tiền đơn hàng</button>
+            </div>
+        </div>
+    </main>
+</div>
+<script>$("#header-area, #footer-area").hide();</script>

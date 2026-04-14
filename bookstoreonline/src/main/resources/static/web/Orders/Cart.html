@@ -1,0 +1,95 @@
+<!-- Orders Area - Cart View -->
+<section class="bg-sand py-5">
+    <div class="container-xl py-5">
+        <div class="section-header mb-5">
+            <h1 class="display-5 fw-bold font-serif">Giỏ hàng của bạn</h1>
+            <p class="text-muted">Bạn đang có <span class="fw-bold text-accent" id="cart-item-count">0</span> sản phẩm trong giỏ</p>
+        </div>
+
+        <div class="row g-5">
+            <!-- Left: Cart Items -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-borderless align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 text-uppercase small fw-bold tracking-widest">Sản phẩm</th>
+                                    <th class="py-3 text-uppercase small fw-bold tracking-widest text-center">Số lượng</th>
+                                    <th class="py-3 text-uppercase small fw-bold tracking-widest text-end pe-4">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-items-body">
+                                <!-- Sample Template Row -->
+                                <tr class="border-bottom">
+                                    <td class="ps-4 py-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="assets/images/product-item1.jpg" class="rounded-3 shadow-sm" width="80" alt="product">
+                                            <div>
+                                                <h6 class="fw-bold mb-1">Cách sống đơn giản</h6>
+                                                <p class="small text-muted mb-0">Armor Ramsey</p>
+                                                <button class="btn btn-link link-danger p-0 small text-decoration-none mt-2"><i class="icon icon-close me-1"></i> Xóa</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="quantity-input d-inline-flex align-items-center border rounded-pill bg-light mx-auto">
+                                            <button class="btn btn-sm link-dark border-0 p-2 shadow-none"><i class="icon icon-minus"></i></button>
+                                            <input type="number" class="form-control border-0 bg-transparent text-center fw-bold shadow-none p-0" value="1" style="width: 40px">
+                                            <button class="btn btn-sm link-dark border-0 p-2 shadow-none"><i class="icon icon-plus"></i></button>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4 fw-bold text-accent fs-5">400,000đ</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-between align-items-center">
+                    <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="btn btn-link text-dark text-decoration-none p-0 fw-bold">
+                        <i class="icon icon-arrow-left me-2"></i> Tiếp tục mua sắm
+                    </a>
+                    <button class="btn btn-outline-danger btn-sm rounded-pill px-4">Xóa toàn bộ giỏ hàng</button>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-lg rounded-5 p-4 bg-white sticky-top" style="top: 100px">
+                    <h5 class="fw-bold font-serif mb-4 pb-2 border-bottom">Tóm tắt đơn hàng</h5>
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>Tạm tính</span>
+                        <span class="fw-bold text-dark">400,000đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>Phí vận chuyển</span>
+                        <span class="fw-bold text-dark">30,000đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4 pb-4 border-bottom text-muted">
+                        <span>Giảm giá</span>
+                        <span class="fw-bold text-success">-0đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-5 align-items-center">
+                        <span class="h5 mb-0 fw-bold">Tổng cộng</span>
+                        <span class="h3 mb-0 fw-bold text-accent">430,000đ</span>
+                    </div>
+
+                    <button onclick="layout.render('Orders', 'Checkout')" class="btn btn-accent btn-lg w-100 py-3 rounded-pill fw-bold shadow-sm transition-all">
+                        Thanh toán ngay <i class="icon icon-ns-arrow-right ms-2"></i>
+                    </button>
+                    
+                    <div class="mt-4 text-center">
+                        <img src="assets/images/client-image1.png" class="opacity-25" height="20" alt="payment icons">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .bg-sand { background-color: #FDFCF9; }
+    .btn-accent { background-color: #C5A992; color: white; border: none; }
+    .btn-accent:hover { background-color: #2F2F2F; transform: translateY(-3px); }
+</style>

@@ -1,0 +1,120 @@
+<!-- Orders Area - Checkout View -->
+<section class="bg-light py-5">
+    <div class="container-xl py-5">
+        <div class="row g-5">
+            <!-- Left: Checkout Form -->
+            <div class="col-lg-7" data-aos="fade-right">
+                <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5">
+                    <h2 class="display-6 fw-bold font-serif mb-5">Thanh toán & Giao hàng</h2>
+                    
+                    <form id="checkout-form">
+                        <div class="row g-4">
+                            <h5 class="fw-bold mb-3 border-start border-accent border-4 ps-3">Thông tin người nhận</h5>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Họ và tên</label>
+                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="Nguyễn Văn A" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Số điện thoại</label>
+                                <input type="tel" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="0123 456 789" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Địa chỉ nhận hàng</label>
+                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="Số nhà, tên đường, phường/xã..." required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Tỉnh/Thành phố</label>
+                                <select class="form-select form-select-lg border-light bg-light rounded-3">
+                                    <option selected disabled>Chọn tỉnh thành</option>
+                                    <option>Hà Nội</option>
+                                    <option>TP. Hồ Chí Minh</option>
+                                    <option>Đà Nẵng</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Mã bưu điện (tùy chọn)</label>
+                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3" placeholder="100000">
+                            </div>
+
+                            <h5 class="fw-bold mt-5 mb-3 border-start border-accent border-4 ps-3">Phương thức thanh toán</h5>
+                            <div class="col-12">
+                                <div class="payment-options d-grid gap-3">
+                                    <div class="payment-item border rounded-4 p-3 d-flex align-items-center gap-3 bg-white cursor-pointer active-border">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" checked>
+                                        <label class="form-check-label w-100 fw-bold" for="cod">
+                                            Thanh toán khi nhận hàng (COD)
+                                            <small class="d-block text-muted fw-normal mt-1">Giao hàng tận nơi mới phải trả tiền</small>
+                                        </label>
+                                    </div>
+                                    <div class="payment-item border rounded-4 p-3 d-flex align-items-center gap-3 bg-white cursor-pointer">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="banking">
+                                        <label class="form-check-label w-100 fw-bold" for="banking">
+                                            Chuyển khoản ngân hàng
+                                            <small class="d-block text-muted fw-normal mt-1">Nhận mã QR thanh toán sau khi đặt hàng</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <button type="submit" class="btn btn-dark btn-lg w-100 py-3 rounded-pill fw-bold shadow">
+                                    Hoàn tất đặt hàng
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Order Summary Preview -->
+            <div class="col-lg-5" data-aos="fade-left">
+                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white sticky-top" style="top: 100px">
+                    <h5 class="fw-bold font-serif mb-4">Chi tiết đơn hàng</h5>
+                    <div class="order-items-scroll mb-4 overflow-auto" style="max-height: 400px">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <div class="position-relative">
+                                <img src="assets/images/product-item1.jpg" class="rounded-3 shadow-sm" width="60" alt="product">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-accent shadow-sm">1</span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="small fw-bold mb-0">Cách sống đơn giản</h6>
+                                <span class="small text-muted">Armor Ramsey</span>
+                            </div>
+                            <div class="fw-bold small">400,000đ</div>
+                        </div>
+                    </div>
+
+                    <div class="promo-code mb-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control border-light bg-light rounded-start-pill px-4" placeholder="Mã giảm giá (nếu có)">
+                            <button class="btn btn-accent rounded-end-pill px-4">Áp dụng</button>
+                        </div>
+                    </div>
+
+                    <div class="summary-details pt-3 border-top">
+                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                            <span>Tạm tính</span>
+                            <span>400,000đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small text-muted">
+                            <span>Phí vận chuyển</span>
+                            <span>30,000đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-3 align-items-center">
+                            <span class="h5 fw-bold mb-0">Tổng tiền</span>
+                            <span class="h4 fw-bold mb-0 text-accent">430,000đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .active-border { border-color: var(--accent-color) !important; background-color: #fdfcf9 !important; }
+    .cursor-pointer { cursor: pointer; }
+    .form-control-lg { font-size: 1rem; }
+    .order-items-scroll::-webkit-scrollbar { width: 5px; }
+    .order-items-scroll::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+</style>

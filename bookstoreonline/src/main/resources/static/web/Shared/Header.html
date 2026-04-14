@@ -1,0 +1,102 @@
+<!-- Booksaw Header Converted to Bootstrap 5 -->
+<div id="header-wrap" class="bg-white border-bottom shadow-sm sticky-top">
+    <div class="top-content py-2 border-bottom bg-light">
+        <div class="container-xl">
+            <div class="row align-items-center">
+                <div class="col-md-6 d-none d-md-block">
+                    <div class="social-links d-flex gap-3">
+                        <a href="#" class="text-secondary"><i class="icon icon-facebook"></i></a>
+                        <a href="#" class="text-secondary"><i class="icon icon-twitter"></i></a>
+                        <a href="#" class="text-secondary"><i class="icon icon-youtube-play"></i></a>
+                        <a href="#" class="text-secondary"><i class="icon icon-behance-square"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="right-element d-flex justify-content-end align-items-center gap-4">
+                        <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-dark-50 text-decoration-none small d-none d-md-inline pe-3 border-end">Admin Panel</a>
+                        <a href="javascript:void(0)" onclick="layout.render('Auth', 'Login')" class="user-account text-dark text-decoration-none d-flex align-items-center gap-2">
+                            <i class="icon icon-user"></i>
+                            <span class="d-none d-sm-inline">Tài khoản</span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="layout.render('Orders', 'Cart')" class="cart text-dark text-decoration-none d-flex align-items-center gap-2">
+                            <i class="icon icon-clipboard"></i>
+                            <span class="d-none d-sm-inline">Giỏ hàng:</span>
+                            <span class="badge bg-accent rounded-pill" id="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header id="header" class="py-3">
+        <div class="container-xl">
+            <nav class="navbar navbar-expand-lg navbar-light p-0">
+                <div class="container-fluid p-0">
+                    <a class="navbar-brand py-0 me-5" href="index.html">
+                        <img src="assets/images/main-logo.png" alt="logo" height="40">
+                    </a>
+
+                    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNavbar">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-4">
+                            <li class="nav-item">
+                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)" onclick="layout.render('', 'Home/Index')">Trang chủ</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)" onclick="layout.render('', 'Home/About')">Giới thiệu</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-uppercase fw-bold" href="#" id="navbarPages" role="button" data-bs-toggle="dropdown">
+                                    Danh mục
+                                </a>
+                                <ul class="dropdown-menu border-0 shadow">
+                                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="layout.render('Books', 'Index')">Tất cả sách</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">Thể loại</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">Tác giả</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)">Tin tức</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-uppercase fw-bold" href="javascript:void(0)">Liên hệ</a>
+                            </li>
+                        </ul>
+
+                        <div class="action-menu d-flex align-items-center">
+                            <div class="search-bar">
+                                <button class="btn btn-link text-dark p-0 search-toggle shadow-none" data-bs-toggle="collapse" data-bs-target="#searchBox">
+                                    <i class="icon icon-search fs-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Dynamic Search Box -->
+            <div class="collapse mt-3" id="searchBox">
+                <div class="card card-body border-0 bg-light">
+                    <form class="d-flex gap-2">
+                        <input class="form-control border-0 bg-white" type="search" placeholder="Bạn đang tìm cuốn sách nào?">
+                        <button class="btn btn-accent px-4" type="submit">Tìm</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>
+
+<style>
+    .bg-accent { background-color: var(--accent-color); color: white; }
+    .btn-accent { background-color: var(--accent-color); color: white; border: none; }
+    .btn-accent:hover { background-color: var(--dark-color); color: white; }
+    .nav-link { color: var(--dark-text-color) !important; font-size: 0.9rem; letter-spacing: 1px; }
+    .nav-link:hover, .nav-link.active { color: var(--accent-color) !important; }
+    .dropdown-item:hover { background-color: var(--light-color); color: var(--accent-color); }
+</style>

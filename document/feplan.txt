@@ -1,0 +1,146 @@
+==============================================================================
+HƯỚNG DẪN CHI TIẾT HOÀN THIỆN 100% GIAO DIỆN & TÍCH HỢP API
+Dự án: Hệ thống Quản trị Nhà sách Online (Sử dụng Kiến trúc SPA)
+==============================================================================
+
+I. QUY CHUẨN KỸ THUẬT BẮT BUỘC
+------------------------------------------------------------------------------
+1. Cấu trúc Component: 
+   - Không tạo file HTML độc lập. Toàn bộ nạp qua layout.render('Area', 'View', 'ID').
+   - Script logic phải viết vào file .js tương ứng trong assets/js/modules/.
+2. Quy chuẩn UI:
+   - Màu chủ đạo (Accent): #c5a992 (Sử dụng class .text-accent, .bg-accent).
+   - Bo góc tiêu chuẩn: rounded-4 (Trang Admin dùng rounded-5).
+   - Font: 'Outfit' hoặc 'Inter' (Cấu hình trong style.css).
+3. Logic API:
+   - Luôn sử dụng biến toàn cục 'api' (đã có sẵn trong common.js).
+   - Cú pháp: api.get('/books'), api.post('/auth/login', data),...
+   - Toàn bộ Token JWT đã được tự động xử lý bởi đối tượng 'api'.
+
+II. CHI TIẾT KẾ HOẠCH PHÂN VIỆC (5 THÀNH VIÊN)
+
+------------------------------------------------------------------------------
+NGƯỜI 1: QUẢN TRỊ HỆ THỐNG & XÁC THỰC (SYSTEM & SECURITY)
+------------------------------------------------------------------------------
+1. Module Xác thực (Auth):
+   - Hoàn thiện logic Đăng ký/Đăng nhập. Lưu thông tin User vào localStorage.
+   - Xử lý Đăng xuất và dọn dẹp Token.
+   - Bảo mật: Chặn truy cập trang Admin nếu Role không phải là ADMIN.
+2. Quản lý Thành viên (Admin Users):
+   - View: Users/Admin/Index.html - Bảng danh sách người dùng.
+   - Tính năng: Phân trang, Tìm kiếm User, Khóa/Mở tài khoản (PUT /api/admin/users/{id}/status).
+   - View: Users/Admin/Edit.html - Thay đổi quyền (Role) cho thành viên.
+3. Dashboard Thống kê (High-level Admin):
+   - View: Dashboard/Admin/Index.html - Tích hợp Biểu đồ (Sử dụng Chart.js).
+   - Thống kê doanh thu ngày/tháng và Top sách bán chạy.
+   - Xem nhật ký hệ thống (Audit Logs) để biết ai đã tác động vào dữ liệu.
+
+------------------------------------------------------------------------------
+NGƯỜI 2: QUẢN LÝ SẢN PHẨM & TÌM KIẾM THÔNG MINH (PRODUCTS & AI SEARCH)
+------------------------------------------------------------------------------
+1. Cửa hàng (Client Store):
+   - View: Books/Index.html - Thiết kế bộ lọc (Filter) bên trái (Theo loại, giá, tác giả).
+   - View: Books/Details.html - Trang chi tiết sách, kết nối nút "Thêm vào giỏ".
+   - Tính năng: Hiển thị sách liên quan (cùng danh mục).
+2. Tìm kiếm AI (NLP Search):
+   - Tích hợp vào ô Search trên Header. Gọi API /api/books/ai-search cho phép tìm bằng ngôn ngữ tự nhiên (VD: "Tìm cho tôi sách về kinh tế học").
+3. Admin Sản phẩm (Admin Goods):
+   - View: Books/Admin/Index.html - Bảng quản lý sách với chức năng Xóa mềm (Delete).
+   - View: Books/Admin/Create.html & Edit.html - Form nhập liệu gồm 20+ trường dữ liệu, xử lý ảnh mẫu sản phẩm.
+   - View: Categories/Admin/ - Quản lý cây danh mục đa cấp.
+
+------------------------------------------------------------------------------
+NGƯỜI 3: VẬN HÀNH KHO & LIVE TRACKING (LOGISTICS & INVENTORY)
+------------------------------------------------------------------------------
+1. Quản lý Kho (Inventory):
+   - View: Inventory/Admin/Index.html - Theo dõi số lượng tồn kho theo ISBN. Highlight màu đỏ cho các đầu sách sắp hết hàng (Low-stock).
+   - Tính năng: Tra cứu nhanh tồn kho bằng cách nhập mã ISBN.
+2. Nhập/Xuất kho (In-Out Flow):
+   - View: Inventory/Admin/Import.html - Tạo phiếu nhập hàng từ NCC, tính toán tổng giá vốn.
+   - View: Inventory/Admin/Export.html - Tạo phiếu xuất hàng cho Đơn hàng, kiểm tra tính khả dụng của kho trước khi xuất.
+3. Vận chuyển & Đối tác:
+   - View: Suppliers/Admin/ - Quản lý thông tin Nhà cung cấp phục vụ việc nhập kho.
+   - View: Shipping/Tracking.html - Tra cứu mã vận đơn, hiển thị Timeline trạng thái đơn hàng (Đã lấy hàng -> Đang giao -> Thành công).
+
+------------------------------------------------------------------------------
+NGƯỜI 4: KHOẢN KẾ TOÁN & THANH TOÁN ONLINE (COMMERCE & VNPAY)
+------------------------------------------------------------------------------
+1. Thanh toán (Payment Gateway):
+   - View: Orders/Checkout.html - Trang điền thông tin giao hàng. 
+   - Tính năng: Tích hợp chọn phương thức "Thanh toán VNPay". Khi chọn, gọi API tạo URL thanh toán và redirect sang VNPay.
+   - View: Orders/PaymentResult.html - Nhận dữ liệu từ VNPay Callback để hiển thị thông báo Thành công/Thất bại cho khách.
+2. Lịch sử Đơn hàng (Order Management):
+   - View: Orders/History.html (Client) - Khách hàng tự theo dõi đơn và tự Hủy đơn nếu cần.
+   - View: Orders/Admin/Index.html - Dashboard quản lý đơn hàng toàn hệ thống. Cập nhật trạng thái (Chờ xác nhận -> Đã thanh toán -> Đang giao -> Đã giao).
+3. Hóa đơn điện tử:
+   - View: Orders/Details.html - Thiết kế mẫu hóa đơn sạch đẹp để in hoặc xem lại.
+
+------------------------------------------------------------------------------
+NGƯỜI 5: MARKETING & TRỢ LÝ AI (ENGAGEMENT & UX ENHANCEMENT)
+------------------------------------------------------------------------------
+1. Giỏ hàng thông minh (Smart Cart):
+   - View: Orders/Cart.html - Toàn bộ logic cộng/trừ số lượng, tính tổng tiền, xóa sản phẩm.
+   - Tính năng: Đồng bộ giỏ hàng với Database thông qua API khi người dùng đăng nhập.
+2. Marketing & Promo:
+   - View: Vouchers/Admin/ - Quản lý mã giảm giá. 
+   - Tính năng: Ô áp dụng Voucher tại trang Checkout, kiểm tra tính hợp lệ bằng API.
+3. Đánh giá & Phản hồi (Reviews):
+   - View: Reviews/Admin/ - Duyệt hoặc ẩn bình luận của khách. 
+   - Tích hợp Section đánh giá 5 sao vào trang Chi tiết sách.
+4. Trợ lý AI (Support Chat):
+   - View: Support/Chat.html - Widget chat nổi. Tích hợp API Chatbot để trả lời khách hàng các câu hỏi thường gặp về đơn hàng và giá cả.
+
+III. QUY TRÌNH PHỐI HỢP
+------------------------------------------------------------------------------
+- Bước 1 (Giao diện): Xây dựng khung HTML tĩnh trước, dùng các class Bootstrap 5 để trang web đẹp ngay lập tức.
+- Bước 2 (Dữ liệu): Sử dụng API Module tương ứng để lấy dữ liệu từ Backend.
+- Bước 3 (Trải nghiệm): Thêm các hiệu ứng AOS (Animate on scroll) và Micro-animations để tăng độ premium.
+- Bước 4 (Validation): Kiểm tra tính đúng đắn của dữ liệu đầu vào (VD: Email phải đúng định dạng, Giá phải là số dương).
+
+==============================================================================
+TÀI LIỆU THAM KHẢO:
+- Danh sách Endpoint API: Xem file document/api.txt.
+- Hướng dẫn Layout: Xem file assets/js/layout-manager.js.
+==============================================================================
+
+IV. HƯỚNG DẪN QUY TRÌNH CHUẨN (SOP) - Ví dụ: Trang Danh mục Sách
+------------------------------------------------------------------------------
+BƯỚC 1: Tạo Giao diện (Mẫu Index.html)
+- Viết vào: Books/Index.html
+- Quy tắc: Không viết <html>/<body>. Dùng ID cho vùng dữ liệu động.
+------------------------------------------------------------------------------
+<div class="container py-5">
+    <h2 class="font-serif fw-bold mb-4">Tất cả sản phẩm</h2>
+    <div class="row g-4" id="books-list-container">
+        <!-- JS sẽ render dữ liệu vào đây -->
+    </div>
+</div>
+
+------------------------------------------------------------------------------
+BƯỚC 2: Viết Logic (Mẫu module JS)
+- Viết vào: assets/js/modules/books.js
+------------------------------------------------------------------------------
+const books = {
+    loadIndex: async () => {
+        const res = await api.get('/books');
+        if (res.status === 200) {
+            let html = "";
+            res.data.forEach(item => {
+                html += `<div class="col-md-3">...${item.tenSach}...</div>`;
+            });
+            $("#books-list-container").html(html);
+        }
+    }
+};
+
+------------------------------------------------------------------------------
+BƯỚC 3: Kết nối (Mẫu Layout Manager)
+- Viết vào: assets/js/layout-manager.js -> hàm initViewLogic
+------------------------------------------------------------------------------
+case "Books/Index": 
+    books.loadIndex(); 
+    break;
+
+==============================================================================
+CHÚC NHÓM LÀM VIỆC HIỆU QUẢ!
+==============================================================================

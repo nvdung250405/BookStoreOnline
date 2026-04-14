@@ -1,0 +1,70 @@
+<!-- Admin Orders Area - List View -->
+<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
+    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
+        <div class="mb-5 px-3">
+            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4>
+        </div>
+        <nav class="nav flex-column gap-2 mb-auto">
+            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
+            <div class="text-white-25 small text-uppercase mt-4 mb-2 tracking-widest fw-bold">Kinh doanh</div>
+            <a href="javascript:void(0)" onclick="layout.render('Orders/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-clipboard me-2"></i> Đơn hàng</a>
+            <a href="javascript:void(0)" onclick="layout.render('Users/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-user me-2"></i> Thành viên</a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">Đơn hàng</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold font-serif mb-0">Quản lý Đơn hàng</h2>
+            </div>
+        </div>
+
+        <!-- Order Filters -->
+        <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+            <div class="d-flex gap-2">
+                <button class="btn btn-accent rounded-pill px-4">Tất cả</button>
+                <button class="btn btn-outline-dark rounded-pill px-4">Đang xử lý</button>
+                <button class="btn btn-outline-dark rounded-pill px-4">Đã giao</button>
+                <button class="btn btn-outline-dark rounded-pill px-4">Đã hủy</button>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Mã đơn hàng</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-4 py-4 fw-bold">#BS-99120</td>
+                            <td>Nguyễn Minh Khôi</td>
+                            <td>14/04/2024</td>
+                            <td class="fw-bold text-accent">430,000đ</td>
+                            <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Hoàn thành</span></td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-light rounded-pill px-3" onclick="layout.render('Orders/Admin', 'Details')">Chi tiết</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+    $("#header-area, #footer-area").hide();
+</script>

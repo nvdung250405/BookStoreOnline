@@ -3,18 +3,20 @@ package com.bookstore.service;
 import com.bookstore.dto.NhaCungCapDto;
 import com.bookstore.entity.NhaCungCap;
 import com.bookstore.repository.NhaCungCapRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @SuppressWarnings("null")
 public class NhaCungCapService {
 
     private final NhaCungCapRepository nhaCungCapRepository;
+
+    public NhaCungCapService(NhaCungCapRepository nhaCungCapRepository) {
+        this.nhaCungCapRepository = nhaCungCapRepository;
+    }
 
     public List<NhaCungCapDto> layTatCaNhaCungCap() {
         return nhaCungCapRepository.findAll().stream()
@@ -28,8 +30,8 @@ public class NhaCungCapService {
 
     public NhaCungCapDto themNhaCungCap(NhaCungCapDto dto) {
         NhaCungCap ncc = new NhaCungCap();
-        ncc.setTenNcc(dto.tenNcc());
-        ncc.setThongTinLienHe(dto.thongTinLienHe());
+        ncc.setTenNcc(dto.getTenNcc());
+        ncc.setThongTinLienHe(dto.getThongTinLienHe());
 
         NhaCungCap saved = nhaCungCapRepository.save(ncc);
         return new NhaCungCapDto(saved.getMaNcc(), saved.getTenNcc(), saved.getThongTinLienHe());
@@ -39,8 +41,8 @@ public class NhaCungCapService {
         NhaCungCap ncc = nhaCungCapRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Nhà cung cấp!"));
 
-        ncc.setTenNcc(dto.tenNcc());
-        ncc.setThongTinLienHe(dto.thongTinLienHe());
+        ncc.setTenNcc(dto.getTenNcc());
+        ncc.setThongTinLienHe(dto.getThongTinLienHe());
 
         NhaCungCap updated = nhaCungCapRepository.save(ncc);
         return new NhaCungCapDto(updated.getMaNcc(), updated.getTenNcc(), updated.getThongTinLienHe());

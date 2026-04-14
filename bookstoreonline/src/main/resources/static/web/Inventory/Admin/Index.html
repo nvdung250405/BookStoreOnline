@@ -1,0 +1,56 @@
+<!-- Admin Inventory Area - List View -->
+<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
+    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
+        <div class="mb-5 px-3">
+            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4>
+        </div>
+        <nav class="nav flex-column gap-2 mb-auto">
+            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
+            <a href="javascript:void(0)" onclick="layout.render('Inventory/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-clipboard me-2"></i> Kiểm kho</a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold font-serif mb-0">Kiểm kê tồn kho</h2>
+                <p class="text-muted small">Quản lý nhập xuất và xuất dư tồn kho thực tế.</p>
+            </div>
+            <button class="btn btn-dark rounded-pill px-4 py-2 fw-bold">Tạo phiếu kiểm kho</button>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Sản phẩm</th>
+                                    <th>Số lượng hệ thống</th>
+                                    <th>Số lượng thực tế</th>
+                                    <th>Chênh lệch</th>
+                                    <th class="text-end pe-4">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-4 py-4">Cách sống đơn giản</td>
+                                    <td>45</td>
+                                    <td>45</td>
+                                    <td><span class="text-muted">0</span></td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-outline-dark rounded-pill px-3">Điều chỉnh</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+    $("#header-area, #footer-area").hide();
+</script>

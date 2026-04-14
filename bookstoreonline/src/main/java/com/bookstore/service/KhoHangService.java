@@ -3,7 +3,6 @@ package com.bookstore.service;
 import com.bookstore.dto.*;
 import com.bookstore.entity.*;
 import com.bookstore.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @SuppressWarnings("null")
 public class KhoHangService {
 
@@ -27,6 +25,26 @@ public class KhoHangService {
     private final PhieuXuatRepository phieuXuatRepository;
     private final DonHangRepository donHangRepository;
     private final ChiTietDonHangRepository chiTietDonHangRepository;
+
+    public KhoHangService(KhoHangRepository khoHangRepository,
+                         PhieuNhapRepository phieuNhapRepository,
+                         ChiTietPhieuNhapRepository chiTietPhieuNhapRepository,
+                         NhaCungCapRepository nhaCungCapRepository,
+                         NhanVienRepository nhanVienRepository,
+                         SachRepository sachRepository,
+                         PhieuXuatRepository phieuXuatRepository,
+                         DonHangRepository donHangRepository,
+                         ChiTietDonHangRepository chiTietDonHangRepository) {
+        this.khoHangRepository = khoHangRepository;
+        this.phieuNhapRepository = phieuNhapRepository;
+        this.chiTietPhieuNhapRepository = chiTietPhieuNhapRepository;
+        this.nhaCungCapRepository = nhaCungCapRepository;
+        this.nhanVienRepository = nhanVienRepository;
+        this.sachRepository = sachRepository;
+        this.phieuXuatRepository = phieuXuatRepository;
+        this.donHangRepository = donHangRepository;
+        this.chiTietDonHangRepository = chiTietDonHangRepository;
+    }
 
     @Transactional(readOnly = true)
     public InventoryDetailDTO scanBarcode(String isbn) {
@@ -68,17 +86,17 @@ public class KhoHangService {
     public ImportResponseDto nhapKhoHieuQua(ImportRequestDto request) {
 
         // 1. Kiểm tra đầu vào: Nhà cung cấp và Nhân viên
-        if (request.maNcc() == null) throw new IllegalArgumentException("Mã nhà cung cấp không được để trống");
-        NhaCungCap ncc = nhaCungCapRepository.findById(request.maNcc())
-                .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy Nhà Cung Cấp với ID: " + request.maNcc()));
+        if (request.getMaNcc() == null) throw new IllegalArgumentException("Mã nhà cung cấp không được để trống");
+        NhaCungCap ncc = nhaCungCapRepository.findById(request.getMaNcc())
+                .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy Nhà Cung Cấp với ID: " + request.getMaNcc()));
 
-        if (request.maNhanVien() == null) throw new IllegalArgumentException("Mã nhân viên không được để trống");
-        NhanVien nv = nhanVienRepository.findById(request.maNhanVien())
-                .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy Nhân Viên với ID: " + request.maNhanVien()));
+        if (request.getMaNhanVien() == null) throw new IllegalArgumentException("Mã nhân viên không được để trống");
+        NhanVien nv = nhanVienRepository.findById(request.getMaNhanVien())
+                .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy Nhân Viên với ID: " + request.getMaNhanVien()));
 
         // 2. Tính toán tổng tiền trước
-        BigDecimal tongTien = request.chiTietList().stream()
-                .map(item -> item.donGiaNhap().multiply(BigDecimal.valueOf(item.soLuong())))
+        BigDecimal tongTien = request.getChiTietList().stream()
+                .map(item -> item.getDonGiaNhap().multiply(BigDecimal.valueOf(item.getSoLuong())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // 3. Khởi tạo Phiếu Nhập
@@ -95,34 +113,34 @@ public class KhoHangService {
         phieuNhapRepository.save(phieuNhap);
 
         // 4. Duyệt qua từng cuốn sách được quét để lưu chi tiết và cộng kho
-        for (ChiTietImportRequest item : request.chiTietList()) {
+        for (ChiTietImportRequest item : request.getChiTietList()) {
 
             // 4.1. Lấy thông tin sách & Chặn sách điện tử
-            if (item.isbn() == null) continue;
-            Sach sach = sachRepository.findById(item.isbn())
-                    .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy sách với mã ISBN: " + item.isbn()));
+            if (item.getIsbn() == null) continue;
+            Sach sach = sachRepository.findById(item.getIsbn())
+                    .orElseThrow(() -> new RuntimeException("Lỗi: Không tìm thấy sách với mã ISBN: " + item.getIsbn()));
 
             if (!(sach instanceof SachVatLy)) {
-                throw new RuntimeException("Lỗi logic: Sách " + item.isbn() + " (" + sach.getTenSach() + ") là E-Book, không thể nhập vào kho vật lý!");
+                throw new RuntimeException("Lỗi logic: Sách " + item.getIsbn() + " (" + sach.getTenSach() + ") là E-Book, không thể nhập vào kho vật lý!");
             }
 
             // 4.2. Lưu chi tiết phiếu nhập với Khóa phức hợp
-            ChiTietPhieuNhapId idChiTiet = new ChiTietPhieuNhapId(maPhieuNhapMoi, item.isbn());
+            ChiTietPhieuNhapId idChiTiet = new ChiTietPhieuNhapId(maPhieuNhapMoi, item.getIsbn());
 
             ChiTietPhieuNhap chiTiet = new ChiTietPhieuNhap();
             chiTiet.setId(idChiTiet);
             chiTiet.setPhieuNhap(phieuNhap);
             chiTiet.setSach(sach);
-            chiTiet.setSoLuong(item.soLuong());
-            chiTiet.setDonGiaNhap(item.donGiaNhap());
+            chiTiet.setSoLuong(item.getSoLuong());
+            chiTiet.setDonGiaNhap(item.getDonGiaNhap());
 
             chiTietPhieuNhapRepository.save(chiTiet);
 
             // 4.3. Cộng dồn số lượng tồn vào kho
-            KhoHang kho = khoHangRepository.findByIsbn(item.isbn())
-                    .orElseThrow(() -> new RuntimeException("Lỗi: Sách " + item.isbn() + " chưa được khởi tạo không gian trong kho hàng!"));
+            KhoHang kho = khoHangRepository.findByIsbn(item.getIsbn())
+                    .orElseThrow(() -> new RuntimeException("Lỗi: Sách " + item.getIsbn() + " chưa được khởi tạo không gian trong kho hàng!"));
 
-            kho.setSoLuongTon(kho.getSoLuongTon() + item.soLuong());
+            kho.setSoLuongTon(kho.getSoLuongTon() + item.getSoLuong());
             khoHangRepository.save(kho);
         }
 
@@ -132,7 +150,7 @@ public class KhoHangService {
     @Transactional
     public String xuatKhoTuDong(ExportRequestDto request) {
         // 1. Lấy mã đơn hàng từ DTO (DTO của bạn đã là String nên không cần convert nữa)
-        String maDHStr = request.maDonHang();
+        String maDHStr = request.getMaDonHang();
         if (maDHStr == null) throw new IllegalArgumentException("Mã đơn hàng không được để trống");
 
         // 2. Tìm đơn hàng
@@ -183,7 +201,7 @@ public class KhoHangService {
         phieuXuat.setNgayXuat(LocalDateTime.now());
 
         // Nếu Entity PhieuXuat của bạn có trường nguoiXuat thì uncomment dòng dưới:
-        // phieuXuat.setNguoiXuat(request.nguoiXuat());
+        // phieuXuat.setNguoiXuat(request.getNguoiXuat());
 
         phieuXuatRepository.save(phieuXuat);
 

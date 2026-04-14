@@ -1,0 +1,107 @@
+<!-- Admin Books Area - List View -->
+<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
+    <!-- Sidebar Navigation (Same as Dashboard) -->
+    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
+        <div class="mb-5 px-3">
+            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4>
+        </div>
+        <nav class="nav flex-column gap-2 mb-auto" id="admin-nav">
+            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
+            <div class="text-white-25 small text-uppercase mt-4 mb-2 tracking-widest fw-bold">Quản lý kho</div>
+            <a href="javascript:void(0)" onclick="layout.render('Books/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-notes me-2"></i> Sản phẩm (Sách)</a>
+            <a href="javascript:void(0)" onclick="layout.render('Categories/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Danh mục</a>
+            <a href="javascript:void(0)" onclick="layout.render('Authors/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-user me-2"></i> Tác giả</a>
+            <!-- ... -->
+        </nav>
+    </aside>
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">Sản phẩm</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold font-serif mb-0">Quản lý kho sách</h2>
+            </div>
+            <button onclick="layout.render('Books/Admin', 'Create')" class="btn btn-accent px-4 py-2 rounded-pill fw-bold shadow-sm">
+                <i class="icon icon-plus me-2"></i> Thêm sách mới
+            </button>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0"><i class="icon icon-search"></i></span>
+                        <input type="text" class="form-control border-start-0 shadow-none" placeholder="Tìm theo tên sách, tác giả...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select shadow-none">
+                        <option selected>Tất cả danh mục</option>
+                        <option>Kinh tế</option>
+                        <option>Văn học</option>
+                    </select>
+                </div>
+                <div class="col-md-2 ms-auto">
+                    <button class="btn btn-outline-dark w-100 rounded-pill">Lọc</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Table -->
+        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Sản phẩm</th>
+                            <th>Thể loại</th>
+                            <th>Giá bán</th>
+                            <th>Số lượng</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="books-admin-list">
+                        <tr>
+                            <td class="ps-4 py-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="assets/images/product-item1.jpg" class="rounded shadow-sm" width="50" alt="book">
+                                    <div>
+                                        <h6 class="fw-bold mb-0">Cách sống đơn giản</h6>
+                                        <small class="text-muted">ID: #00129</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Văn học</td>
+                            <td class="fw-bold text-accent">400,000đ</td>
+                            <td>45</td>
+                            <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Còn hàng</span></td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group gap-2">
+                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm" title="Sửa"><i class="icon icon-notes"></i></button>
+                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm text-danger" title="Xóa"><i class="icon icon-close"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- More items... -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .nav-link.active-admin { color: white !important; font-weight: bold; }
+    .extra-small { font-size: 0.75rem; }
+    #header-area, #footer-area { display: none; }
+</style>
+<script>
+    $("#header-area, #footer-area").hide();
+</script>

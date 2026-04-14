@@ -1,0 +1,85 @@
+<!-- Users Area - Profile View -->
+<section class="bg-light py-5">
+    <div class="container-xl py-5">
+        <div class="row">
+            <div class="col-lg-3">
+                <!-- User Sidebar (Same as History) -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <div class="text-center mb-4 pb-4 border-bottom">
+                        <div class="avatar-placeholder rounded-circle bg-accent text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">A</div>
+                        <h5 class="fw-bold mb-0">Admin User</h5>
+                        <p class="small text-muted mb-0">admin@bookstore.com</p>
+                    </div>
+                    <ul class="nav flex-column gap-2">
+                        <li class="nav-item">
+                            <a href="javascript:void(0)" onclick="layout.render('Users', 'Profile')" class="nav-link active-nav-link text-white rounded-pill px-3 py-2 shadow-sm"><i class="icon icon-user me-2"></i> Hồ sơ cá nhân</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="javascript:void(0)" onclick="layout.render('Orders', 'History')" class="nav-link text-dark rounded-pill px-3 py-2 hvr-accent"><i class="icon icon-clipboard me-2"></i> Lịch sử mua hàng</a>
+                        </li>
+                        <li class="nav-item mt-3 pt-3 border-top">
+                            <a href="#" class="nav-link text-danger"><i class="icon icon-close me-2"></i> Đăng xuất</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5 bg-white" data-aos="fade-up">
+                    <h2 class="fw-bold font-serif mb-5">Thông tin tài khoản</h2>
+                    
+                    <form id="profile-form">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Họ và tên</label>
+                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3" value="Admin User">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Email</label>
+                                <input type="email" class="form-control form-control-lg border-light bg-light rounded-3" value="admin@bookstore.com" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Số điện thoại</label>
+                                <input type="tel" class="form-control form-control-lg border-light bg-light rounded-3" value="0123456789">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-muted">Ngày sinh</label>
+                                <input type="date" class="form-control form-control-lg border-light bg-light rounded-3">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Địa chỉ mặc định</label>
+                                <textarea class="form-control form-control-lg border-light bg-light rounded-3" rows="3">123 Đường Láng, Đống Đa, Hà Nội</textarea>
+                            </div>
+                            
+                            <div class="col-12 mt-5">
+                                <hr class="my-5">
+                                <h5 class="fw-bold mb-4 font-serif">Đổi mật khẩu</h5>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Mật khẩu hiện tại</label>
+                                        <input type="password" class="form-control form-control-lg border-light bg-light rounded-3">
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Mật khẩu mới</label>
+                                        <input type="password" class="form-control form-control-lg border-light bg-light rounded-3">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold text-muted">Xác nhận mật khẩu mới</label>
+                                        <input type="password" class="form-control form-control-lg border-light bg-light rounded-3">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-5 text-end">
+                                <button type="submit" class="btn btn-accent btn-lg px-5 rounded-pill fw-bold shadow-sm">
+                                    Lưu thay đổi
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

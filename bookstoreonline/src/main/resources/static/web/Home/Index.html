@@ -1,0 +1,259 @@
+<!-- Home Page View content (Fully Integrated with Bootstrap 5) -->
+
+<!-- 1. Billboard / Hero Section -->
+<section id="billboard" class="pattern-overlay bg-light py-5">
+    <div class="container-xl py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6" data-aos="fade-right">
+                <div class="banner-content">
+                    <h1 class="display-2 fw-bold mb-4 text-dark font-serif">Thế giới tri thức <br><span class="text-accent">Trong tầm tay</span></h1>
+                    <p class="lead text-muted mb-5">Khám phá hàng ngàn tựa sách hấp dẫn từ văn học, kinh tế đến công nghệ. Giao hàng nhanh chóng, ưu đãi mỗi ngày.</p>
+                    <div class="btn-wrap d-flex gap-3">
+                        <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="btn btn-outline-accent btn-accent-arrow btn-lg px-4">Khám phá ngay <i class="icon icon-ns-arrow-right"></i></a>
+                        <a href="#featured-books" class="btn btn-outline-dark btn-lg px-4">Sách nổi bật</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center" data-aos="zoom-in">
+                <div class="main-slider mt-5 mt-lg-0">
+                    <div class="slider-item">
+                        <img src="assets/images/main-banner1.jpg" alt="banner" class="img-fluid rounded-4 shadow-lg border border-5 border-white">
+                    </div>
+                    <!-- Slick will add more slider items here if initialized -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2. Client Placeholder (Logos) -->
+<section id="client-holder" class="py-5 bg-white border-bottom border-top">
+    <div class="container">
+        <div class="row g-4 align-items-center justify-content-center text-center opacity-50">
+            <div class="col-6 col-md-2"><img src="assets/images/client-image1.png" alt="client" class="img-fluid" style="max-height: 40px"></div>
+            <div class="col-6 col-md-2"><img src="assets/images/client-image2.png" alt="client" class="img-fluid" style="max-height: 40px"></div>
+            <div class="col-6 col-md-2"><img src="assets/images/client-image3.png" alt="client" class="img-fluid" style="max-height: 40px"></div>
+            <div class="col-6 col-md-2"><img src="assets/images/client-image4.png" alt="client" class="img-fluid" style="max-height: 40px"></div>
+            <div class="col-6 col-md-2"><img src="assets/images/client-image5.png" alt="client" class="img-fluid" style="max-height: 40px"></div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. Featured Books Section -->
+<section id="featured-books" class="py-5 bg-sand">
+    <div class="container-xl py-5">
+        <div class="section-header text-center mb-5">
+            <span class="text-uppercase tracking-widest text-accent fw-bold small">Bộ sưu tập đặc sắc</span>
+            <h2 class="display-5 fw-bold font-serif mt-2">Sách Nổi Bật</h2>
+        </div>
+
+        <div class="row g-4 justify-content-center" id="featured-books-container">
+            <!-- Item 1 -->
+            <div class="col-xl-3 col-lg-4 col-sm-6" data-aos="fade-up">
+                <div class="product-item bg-white p-3 rounded-4 shadow-sm border-0 h-100 text-center transition-all">
+                    <div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light">
+                        <img src="assets/images/product-item1.jpg" alt="Books" class="img-fluid product-image-bounce">
+                        <button type="button" class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 border-0 add-to-cart-hover">
+                            Thêm vào giỏ
+                        </button>
+                    </div>
+                    <div class="product-detail">
+                        <h5 class="mb-1 fw-bold"><a href="javascript:void(0)" onclick="layout.render('Books', 'Details')" class="text-decoration-none text-dark hvr-accent">Cách sống đơn giản</a></h5>
+                        <p class="author text-muted small mb-3">Armor Ramsey</p>
+                        <div class="price fw-bold text-accent fs-5">400,000đ</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Item 2 -->
+            <div class="col-xl-3 col-lg-4 col-sm-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="product-item bg-white p-3 rounded-4 shadow-sm border-0 h-100 text-center transition-all">
+                    <div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light">
+                        <img src="assets/images/product-item2.jpg" alt="Books" class="img-fluid product-image-bounce">
+                        <button type="button" class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 border-0 add-to-cart-hover">Thêm vào giỏ</button>
+                    </div>
+                    <div class="product-detail">
+                        <h5 class="mb-1 fw-bold"><a href="javascript:void(0)" class="text-decoration-none text-dark hvr-accent">Hành trình sa mạc</a></h5>
+                        <p class="author text-muted small mb-3">Sanchit Howdy</p>
+                        <div class="price fw-bold text-accent fs-5">380,000đ</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Item 3 -->
+            <div class="col-xl-3 col-lg-4 col-sm-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="product-item bg-white p-3 rounded-4 shadow-sm border-0 h-100 text-center transition-all">
+                    <div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light">
+                        <img src="assets/images/product-item3.jpg" alt="Books" class="img-fluid product-image-bounce">
+                        <button type="button" class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 border-0 add-to-cart-hover">Thêm vào giỏ</button>
+                    </div>
+                    <div class="product-detail">
+                        <h5 class="mb-1 fw-bold"><a href="javascript:void(0)" class="text-decoration-none text-dark hvr-accent">Vẻ đẹp Scarlett</a></h5>
+                        <p class="author text-muted small mb-3">Arthur Doyle</p>
+                        <div class="price fw-bold text-accent fs-5">450,000đ</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Item 4 -->
+            <div class="col-xl-3 col-lg-4 col-sm-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="product-item bg-white p-3 rounded-4 shadow-sm border-0 h-100 text-center transition-all">
+                    <div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light">
+                        <img src="assets/images/product-item4.jpg" alt="Books" class="img-fluid product-image-bounce">
+                        <button type="button" class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 border-0 add-to-cart-hover">Thêm vào giỏ</button>
+                    </div>
+                    <div class="product-detail">
+                        <h5 class="mb-1 fw-bold"><a href="javascript:void(0)" class="text-decoration-none text-dark hvr-accent">Ngày xửa ngày xưa</a></h5>
+                        <p class="author text-muted small mb-3">Klien Marry</p>
+                        <div class="price fw-bold text-accent fs-5">350,000đ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="btn btn-dark btn-lg px-5 rounded-pill shadow-sm">Xem tất cả sản phẩm</a>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Best Selling Section -->
+<section id="best-selling" class="leaf-pattern-overlay py-5 bg-sand">
+    <div class="corner-pattern-overlay"></div>
+    <div class="container py-5">
+        <div class="row align-items-center g-5 justify-content-center">
+            <div class="col-lg-5 col-md-6" data-aos="fade-right">
+                <div class="products-thumb shadow-lg rounded-4 overflow-hidden border border-5 border-white">
+                    <img src="assets/images/single-image.jpg" alt="book" class="img-fluid w-100">
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-6" data-aos="fade-left">
+                <div class="product-entry">
+                    <span class="text-uppercase tracking-widest text-accent fw-bold small">Được yêu thích nhất</span>
+                    <h2 class="display-5 fw-bold font-serif mb-4 pb-2 border-bottom border-accent border-3" style="width: fit-content;">Sách Bán Chạy</h2>
+                    <div class="products-content">
+                        <div class="author-name text-muted mb-2">Tác giả: <span class="fw-bold text-dark">Timbur Hood</span></div>
+                        <h3 class="h2 fw-bold mb-4 font-serif">Hạnh phúc của loài chim</h3>
+                        <p class="text-muted mb-5 lh-lg">Một tác phẩm sâu sắc về tự do và hành trình tìm kiếm bản ngã. Được bình chọn là cuốn sách cảm hứng nhất năm 2024 tại Việt Nam.</p>
+                        <div class="price-box mb-5">
+                            <span class="h1 fw-bold text-accent">450,000đ</span>
+                        </div>
+                        <div class="btn-wrap">
+                            <a href="javascript:void(0)" onclick="layout.render('Books', 'Details')" class="btn btn-outline-accent btn-accent-arrow btn-lg px-4 fw-bold">Mua Ngay <i class="icon icon-ns-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. Popular Books (Tabs) Section -->
+<section id="popular-books" class="py-5 bg-white">
+    <div class="container-xl py-5">
+        <div class="section-header text-center mb-5">
+            <span class="text-uppercase tracking-widest text-accent fw-bold small">Lựa chọn của độc giả</span>
+            <h2 class="display-5 fw-bold font-serif mt-2">Sách Phổ Biến</h2>
+        </div>
+   
+        <ul class="nav nav-pills justify-content-center mb-5 gap-3" id="book-tabs">
+            <li class="nav-item border-bottom border-2 border-transparent"><a class="nav-link active rounded-pill px-4" href="javascript:void(0)" data-tab-target="#all-genre">Tất cả</a></li>
+            <li class="nav-item"><a class="nav-link rounded-pill px-4" href="javascript:void(0)" data-tab-target="#business">Kinh doanh</a></li>
+            <li class="nav-item"><a class="nav-link rounded-pill px-4" href="javascript:void(0)" data-tab-target="#technology">Công nghệ</a></li>
+            <li class="nav-item"><a class="nav-link rounded-pill px-4" href="javascript:void(0)" data-tab-target="#romantic">Lãng mạn</a></li>
+            <li class="nav-item"><a class="nav-link rounded-pill px-4" href="javascript:void(0)" data-tab-target="#adventure">Phiêu lưu</a></li>
+        </ul>
+
+        <div class="tab-content" id="book-tab-content">
+            <div id="all-genre" data-tab-content class="active">
+                <div class="row g-4">
+                    <!-- Sample Item for layout -->
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="product-item text-center">
+                            <div class="image-holder mb-3 overflow-hidden rounded-3 bg-light p-2 shadow-sm border">
+                                <img src="assets/images/tab-item1.jpg" alt="Books" class="img-fluid">
+                            </div>
+                            <h5>Nghệ thuật chân dung</h5>
+                            <p class="small text-muted">Adam Silber</p>
+                            <div class="text-accent fw-bold">400,000đ</div>
+                        </div>
+                    </div>
+                    <!-- Mocking some items -->
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="product-item text-center">
+                            <div class="image-holder mb-3 overflow-hidden rounded-3 bg-light p-2 shadow-sm border">
+                                <img src="assets/images/tab-item2.jpg" alt="Books" class="img-fluid">
+                            </div>
+                            <h5>Ngày xửa ngày xưa</h5>
+                            <p class="small text-muted">Klien Marry</p>
+                            <div class="text-accent fw-bold">350,000đ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Other tab contents will be populated later -->
+        </div>
+    </div>
+</section>
+
+<!-- 6. Quotation Section -->
+<section id="quotation" class="py-5 bg-accent text-white text-center">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10" data-aos="flip-up">
+                <i class="icon icon-quote-left fs-1 opacity-25 mb-4 d-block"></i>
+                <h2 class="display-6 font-serif fw-bold mb-4">"Mỗi cuốn sách là một giấc mơ mà bạn cầm trong tay."</h2>
+                <div class="author-name text-uppercase tracking-widest fw-bold">— Neil Gaiman</div>			
+            </div>
+        </div>
+    </div>		
+</section>
+
+<!-- 7. Subscribe Section -->
+<section id="subscribe" class="py-5 bg-sand border-top border-bottom">
+    <div class="container py-5">
+        <div class="row g-4 justify-content-center align-items-center">
+            <div class="col-lg-5 text-center text-lg-start">
+                <h2 class="display-6 fw-bold font-serif mb-2">Đăng ký bản tin</h2>
+                <p class="text-muted mb-0 lh-base">Nhận thông báo về sách mới, sự kiện và các chương trình ưu đãi độc quyền hàng tuần.</p>
+            </div>
+            <div class="col-lg-6">
+                <form class="bg-white p-2 rounded-pill shadow-sm d-flex border border-accent">
+                    <input type="email" class="form-control border-0 bg-transparent px-4 py-3 shadow-none flex-grow-1" placeholder="Nhập địa chỉ email của bạn...">
+                    <button class="btn btn-accent rounded-pill px-5 fw-bold" type="submit">Gửi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    :root {
+        --accent-color: #C5A992;
+        --dark-color: #2F2F2F;
+        --nav-pill-bg: #f3f2ec;
+    }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .text-accent { color: var(--accent-color); }
+    .bg-accent { background-color: var(--accent-color); }
+    .border-accent { border-color: var(--accent-color) !important; }
+    .bg-sand { background-color: #FDFCF9; }
+    .tracking-widest { letter-spacing: 0.2em; }
+    .transition-all { transition: all 0.3s ease; }
+    .hvr-accent:hover { color: var(--accent-color) !important; }
+    
+    .nav-pills .nav-link { color: #888; background: var(--nav-pill-bg); transition: 0.3s; }
+    .nav-pills .nav-link.active { background-color: var(--accent-color) !important; color: white !important; }
+    .nav-pills .nav-link:hover:not(.active) { background: #e8e6db; color: var(--dark-color); }
+
+    .product-image-bounce { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .product-item:hover .product-image-bounce { transform: translateY(-8px) scale(1.03); }
+    
+    .add-to-cart-hover { transform: translateY(100%); transition: 0.3s; }
+    .product-item:hover .add-to-cart-hover { transform: translateY(0); }
+
+    .slick-dots li { border: 1px solid var(--accent-color) !important; }
+    .slick-dots li.slick-active { background: var(--accent-color) !important; }
+</style>
+
+<script>
+    // Trigger animations manually for loaded content if AOS is available
+    if(typeof AOS !== 'undefined') AOS.refresh();
+</script>

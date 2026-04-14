@@ -1,0 +1,48 @@
+<!-- Register View -->
+<section id="register-form-section" class="py-5">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-accent text-white py-4 text-center border-0">
+                        <h2 class="h3 mb-0 fw-bold">Tham gia cộng đồng Booksaw</h2>
+                    </div>
+                    <div class="card-body p-5">
+                        <form id="registerForm" class="row gy-4">
+                            <div class="col-md-6">
+                                <label for="reg-username" class="form-label fw-bold">Tên đăng nhập</label>
+                                <input type="text" id="reg-username" name="username" class="form-control form-control-lg border-light bg-light" placeholder="VD: nva_book" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="reg-email" class="form-label fw-bold">Email</label>
+                                <input type="email" id="reg-email" name="email" class="form-control form-control-lg border-light bg-light" placeholder="user@gmail.com" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="reg-password" class="form-label fw-bold">Mật khẩu</label>
+                                <input type="password" id="reg-password" name="password" class="form-control form-control-lg border-light bg-light" placeholder="••••••••" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="reg-confirm-password" class="form-label fw-bold">Xác nhận mật khẩu</label>
+                                <input type="password" id="reg-confirm-password" name="confirm-password" class="form-control form-control-lg border-light bg-light" placeholder="••••••••" required>
+                            </div>
+                            <div class="col-12 text-center mt-3">
+                                <div class="form-check text-start d-inline-block">
+                                    <input type="checkbox" class="form-check-input" id="terms" required>
+                                    <label class="form-check-label small" for="terms">Tôi đồng ý với <a href="#" class="text-accent fw-bold text-decoration-none">Điều khoản sử dụng</a></label>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-accent btn-lg px-5 py-3 fw-bold shadow-sm">
+                                    Đăng ký tài khoản <i class="icon icon-ns-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                            <div class="col-12 text-center mt-4 border-top pt-4">
+                                <p class="text-muted small mb-0">Đã có tài khoản? <a href="javascript:void(0)" onclick="layout.render('Auth', 'Login')" class="text-accent fw-bold text-decoration-none">Đăng nhập tài khoản</a></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

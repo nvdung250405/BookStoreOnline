@@ -5,7 +5,6 @@ import com.bookstore.dto.ChiTietDonHangDTO;
 import com.bookstore.dto.DonHangResponseDTO;
 import com.bookstore.entity.*;
 import com.bookstore.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +16,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @SuppressWarnings("null")
 public class DonHangServiceImpl implements DonHangService {
 
@@ -29,6 +27,24 @@ public class DonHangServiceImpl implements DonHangService {
     private final ThanhToanRepository thanhToanRepository;
     private final AuditLogRepository auditLogRepository;
     private final TaiKhoanRepository taiKhoanRepository;
+
+    public DonHangServiceImpl(DonHangRepository donHangRepository,
+                             ChiTietDonHangRepository chiTietDonHangRepository,
+                             KhachHangRepository khachHangRepository,
+                             GioHangRepository gioHangRepository,
+                             VoucherRepository voucherRepository,
+                             ThanhToanRepository thanhToanRepository,
+                             AuditLogRepository auditLogRepository,
+                             TaiKhoanRepository taiKhoanRepository) {
+        this.donHangRepository = donHangRepository;
+        this.chiTietDonHangRepository = chiTietDonHangRepository;
+        this.khachHangRepository = khachHangRepository;
+        this.gioHangRepository = gioHangRepository;
+        this.voucherRepository = voucherRepository;
+        this.thanhToanRepository = thanhToanRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.taiKhoanRepository = taiKhoanRepository;
+    }
 
     @Override
     @Transactional

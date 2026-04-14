@@ -1,0 +1,29 @@
+<!-- Support Chat View (Widget) -->
+<div class="chat-container bg-white shadow-lg rounded-4 overflow-hidden border" style="max-width: 400px; height: 500px; display: flex; flex-direction: column;">
+    <div class="chat-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="mb-0 fw-bold"><i class="icon icon-paper-plane me-2 text-accent"></i> Hỗ trợ trực tuyến</h6>
+            <span class="extra-small text-white-50">Thường phản hồi trong vài phút</span>
+        </div>
+        <button class="btn btn-sm text-white-50 p-0 border-0" onclick="$('.chat-container').fadeOut()"><i class="icon icon-close"></i></button>
+    </div>
+
+    <div class="chat-messages flex-grow-1 p-3 overflow-auto bg-light d-flex flex-column gap-3" id="chat-box">
+        <div class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start" style="max-width: 80%;">
+            Chào bạn! Tôi là trợ lý AI của Booksaw. Tôi có thể giúp gì cho bạn hôm nay?
+        </div>
+    </div>
+
+    <div class="chat-input p-3 border-top bg-white">
+        <form id="chat-form" class="input-group">
+            <input type="text" id="chat-user-msg" class="form-control border-light bg-light rounded-start-pill shadow-none" placeholder="Nhập tin nhắn..." required>
+            <button class="btn btn-accent rounded-end-pill px-4" type="submit"><i class="icon icon-paper-plane"></i></button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .extra-small { font-size: 0.7rem; }
+    #chat-box::-webkit-scrollbar { width: 4px; }
+    #chat-box::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+</style>

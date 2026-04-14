@@ -1,0 +1,89 @@
+<!-- Books Area - Index View (Shop) -->
+<section class="bg-light py-5">
+    <div class="container-xl py-5">
+        <!-- Header & Filter Bar -->
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6" data-aos="fade-right">
+                <h1 class="display-5 fw-bold font-serif m-0">Tất cả sản phẩm</h1>
+                <p class="text-muted mt-2">Tìm thấy <span id="product-count" class="fw-bold text-accent">0</span> cuốn sách phù hợp</p>
+            </div>
+            <div class="col-md-6" data-aos="fade-left">
+                <div class="d-flex justify-content-md-end gap-3 flex-wrap">
+                    <select class="form-select border-0 shadow-sm rounded-pill px-4 py-2" style="width: 200px">
+                        <option selected>Sắp xếp theo...</option>
+                        <option value="price-asc">Giá tăng dần</option>
+                        <option value="price-desc">Giá giảm dần</option>
+                        <option value="newest">Mới nhất</option>
+                    </select>
+                    <button class="btn btn-white shadow-sm rounded-pill px-4 py-2 border hvr-accent"><i class="icon icon-search me-2"></i>Lọc</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            <!-- Left Sidebar (Categories) -->
+            <div class="col-lg-3" data-aos="fade-up">
+                <div class="sidebar sticky-top" style="top: 100px; z-index: 10">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Danh mục</h5>
+                            <ul class="list-unstyled d-grid gap-3">
+                                <li><a href="javascript:void(0)" class="text-decoration-none text-muted hvr-accent d-flex justify-content-between">Văn học <span>(24)</span></a></li>
+                                <li><a href="javascript:void(0)" class="text-decoration-none text-muted hvr-accent d-flex justify-content-between">Kinh tế <span>(18)</span></a></li>
+                                <li><a href="javascript:void(0)" class="text-decoration-none text-muted hvr-accent d-flex justify-content-between">Kỹ năng <span>(42)</span></a></li>
+                                <li><a href="javascript:void(0)" class="text-decoration-none text-muted hvr-accent d-flex justify-content-between">Ngoại ngữ <span>(12)</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 bg-accent text-white">
+                        <div class="card-body p-4 text-center">
+                            <i class="icon icon-clipboard fs-2 mb-3"></i>
+                            <h6 class="fw-bold mb-3">Ưu đãi mùa hè!</h6>
+                            <p class="small mb-4">Giảm giá lên đến 50% cho tất cả sách giáo khoa.</p>
+                            <button class="btn btn-white btn-sm rounded-pill px-4">Xem ngay</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content (Product Grid) -->
+            <div class="col-lg-9" data-aos="fade-up" data-aos-delay="100">
+                <div class="row g-4" id="books-list">
+                    <!-- Sample Card -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="product-item bg-white p-3 rounded-4 shadow-sm border-0 text-center transition-all h-100">
+                            <div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light">
+                                <img src="assets/images/product-item1.jpg" alt="Books" class="img-fluid product-image-bounce">
+                                <button type="button" class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 border-0 add-to-cart-hover">
+                                    Thêm vào giỏ
+                                </button>
+                            </div>
+                            <h6 class="mb-1 fw-bold"><a href="javascript:void(0)" onclick="layout.render('Books', 'Details')" class="text-decoration-none text-dark hvr-accent">Cách sống đơn giản</a></h6>
+                            <p class="author text-muted small mb-3">Armor Ramsey</p>
+                            <div class="price fw-bold text-accent fs-6">400,000đ</div>
+                        </div>
+                    </div>
+                    <!-- Mocking more items for visual feel -->
+                    <div class="col-md-4 col-sm-6"><div class="product-item bg-white p-3 rounded-4 shadow-sm border-0 text-center transition-all h-100"><div class="image-holder position-relative mb-4 overflow-hidden rounded-3 bg-light"><img src="assets/images/product-item2.jpg" class="img-fluid product-image-bounce"><button class="btn btn-accent w-100 position-absolute bottom-0 start-0 py-2 add-to-cart-hover">Thêm</button></div><h6>Hành trình sa mạc</h6><p class="small text-muted">Sanchit Howdy</p> <div class="text-accent fw-bold text-6">380,000đ</div></div></div>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="mt-5 pt-4">
+                    <ul class="pagination justify-content-center border-0 gap-2">
+                        <li class="page-item"><a class="page-link rounded-circle border-0 shadow-sm p-3 hvr-accent" href="#"><i class="icon icon-arrow-left"></i></a></li>
+                        <li class="page-item active"><a class="page-link rounded-circle border-0 shadow-sm p-3 px-4" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link rounded-circle border-0 shadow-sm p-3 px-4" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link rounded-circle border-0 shadow-sm p-3 hvr-accent" href="#"><i class="icon icon-arrow-right"></i></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .pagination .page-link { color: var(--dark-color); }
+    .pagination .page-item.active .page-link { background-color: var(--accent-color); border-color: var(--accent-color); color: white; }
+    .sidebar .hvr-accent:hover span { color: var(--accent-color); }
+</style>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhà Sách Online - Thế giới tri thức</title>
+
+    <!-- 1. Bootstrap 5 Core -->
+    <link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/css/bootstrap.min.css">
+    <!-- 2. Booksaw Vendor Styles -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendor.css">
+    <link rel="stylesheet" type="text/css" href="assets/fonts/icomoon/icomoon.css">
+    <!-- 3. Booksaw Main Styles -->
+    <link rel="stylesheet" type="text/css" href="assets/css/booksaw.css">
+    <!-- 4. Project Special Overrides -->
+    <link rel="stylesheet" type="text/css" href="assets/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+    <script src="assets/lib/jquery/jquery.min.js"></script>
+    <script src="assets/js/vendor/modernizr.js"></script>
+</head>
+
+<body>
+    <div id="header-area"></div>
+    <main id="render-body" class="container-fluid p-0"></main>
+    <div id="footer-area"></div>
+
+    <!-- Global Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="appToast" class="toast border-0 shadow-lg rounded-4" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-accent text-white border-0 rounded-top-4">
+                <i class="icon icon-clipboard me-2"></i>
+                <strong class="me-auto">Thông báo hệ thống</strong>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body bg-white rounded-bottom-4 fw-medium" id="toastMessage">
+                <!-- Message injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/vendor/plugins.js"></script>
+    <script src="assets/js/vendor/script.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/modules/auth.js"></script>
+    <script src="assets/js/modules/books.js"></script>
+    <script src="assets/js/modules/authors.js"></script>
+    <script src="assets/js/modules/cart.js"></script>
+    <script src="assets/js/modules/orders.js"></script>
+    <script src="assets/js/modules/inventory.js"></script>
+    <script src="assets/js/modules/vouchers.js"></script>
+    <script src="assets/js/modules/review.js"></script>
+    <script src="assets/js/modules/support.js"></script>
+    <script src="assets/js/layout-manager.js"></script>
+    
+    <script>
+        $(document).ready(() => {
+            // Khởi chạy hệ thống layout, nạp trang chủ mặc định
+            layout.render('', 'Home/Index');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!-- Admin Reviews Area - List View -->
+<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
+    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
+        <div class="mb-5 px-3"><h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4></div>
+        <nav class="nav flex-column gap-2 mb-auto">
+            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
+            <a href="javascript:void(0)" onclick="layout.render('Reviews/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-clipboard me-2"></i> Đánh giá</a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <h2 class="fw-bold font-serif mb-5">Kiểm duyệt Đánh giá</h2>
+        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="bg-light"><tr><th class="ps-4">Khách hàng</th><th>Sản phẩm</th><th>Nội dung</th><th>Đánh giá</th><th>Thao tác</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-4">Thanh Tâm</td>
+                            <td>Cách sống đơn giản</td>
+                            <td class="small text-muted">Sách rất hay, đóng gói cẩn thận...</td>
+                            <td><span class="text-warning"><i class="icon icon-star"></i> 5/5</span></td>
+                            <td><button class="btn btn-sm btn-outline-danger rounded-pill">Ẩn</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script>$("#header-area, #footer-area").hide();</script>

@@ -6,7 +6,6 @@ import com.bookstore.dto.DonHangResponseDTO;
 import com.bookstore.service.DonHangService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +14,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders")
 @CrossOrigin("*")
-@RequiredArgsConstructor
 @Tag(name = "Order Management", description = "Quản lý đơn hàng và thanh toán")
 public class DonHangController {
 
     private final DonHangService donHangService;
+
+    public DonHangController(DonHangService donHangService) {
+        this.donHangService = donHangService;
+    }
 
     @PostMapping("/checkout")
     @Operation(summary = "Xử lý giao dịch đặt hàng", description = "Tạo đơn hàng mới từ giỏ hàng hiện tại")

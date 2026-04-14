@@ -1,0 +1,118 @@
+<!-- Book Details View -->
+<section class="bg-sand py-5">
+    <div class="container-xl py-5">
+        <div class="row g-5 align-items-start">
+            <!-- Left: Product Image -->
+            <div class="col-lg-5" data-aos="fade-right">
+                <div class="product-image-container p-3 bg-white rounded-5 shadow-lg border border-5 border-white text-center">
+                    <img id="book-image" src="assets/images/main-banner2.jpg" class="img-fluid rounded-4" alt="Sách">
+                    <div class="mt-4 d-flex justify-content-center gap-2">
+                        <button class="btn btn-light rounded-circle shadow-sm p-3"><i class="icon icon-search"></i></button>
+                        <button class="btn btn-light rounded-circle shadow-sm p-3"><i class="icon icon-facebook"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Product Info -->
+            <div class="col-lg-7 ps-lg-5" data-aos="fade-left">
+                <div class="product-detail">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-4 py-2 px-3 bg-white rounded-pill shadow-sm d-inline-flex border">
+                            <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('', 'Home/Index')" class="text-decoration-none text-muted">Trang chủ</a></li>
+                            <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none text-muted">Cửa hàng</a></li>
+                            <li class="breadcrumb-item small active text-accent fw-bold" id="breadcrumb-category">Thể loại</li>
+                        </ol>
+                    </nav>
+
+                    <h1 class="display-4 fw-bold mb-4 font-serif text-dark" id="book-title">Hạnh phúc của loài chim</h1>
+                    
+                    <div class="meta-row d-flex flex-wrap gap-4 mb-5 pb-4 border-bottom">
+                        <div class="meta-item">
+                            <span class="text-muted d-block small text-uppercase fw-bold tracking-widest">Tác giả</span>
+                            <span class="fw-bold text-dark fs-5" id="book-author">Timbur Hood</span>
+                        </div>
+                        <div class="meta-item border-start ps-4">
+                            <span class="text-muted d-block small text-uppercase fw-bold tracking-widest">Đánh giá</span>
+                            <div class="text-warning small pt-1">
+                                <i class="icon icon-star"></i><i class="icon icon-star"></i><i class="icon icon-star"></i><i class="icon icon-star"></i><i class="icon icon-star-half"></i>
+                                <span class="ms-1 text-dark fw-bold">(4.8)</span>
+                            </div>
+                        </div>
+                        <div class="meta-item border-start ps-4">
+                            <span class="text-muted d-block small text-uppercase fw-bold tracking-widest">SKU</span>
+                            <span class="text-dark small" id="book-sku">BK-123456</span>
+                        </div>
+                    </div>
+
+                    <div class="price-box mb-5 d-flex align-items-baseline gap-3">
+                        <span class="display-5 fw-bold text-accent" id="book-price">450,000đ</span>
+                        <span class="text-muted text-decoration-line-through h4 mb-0 opacity-50">500,000đ</span>
+                        <span class="badge bg-danger rounded-pill px-3 py-2 ms-2">-10% OFF</span>
+                    </div>
+
+                    <div class="description-box mb-5">
+                        <h6 class="text-uppercase fw-bold tracking-widest small mb-4 text-accent border-start border-accent border-4 ps-3">Mô tả sản phẩm</h6>
+                        <p id="book-description" class="text-muted lh-lg fs-5">
+                            Cuốn sách mở ra một góc nhìn mới về tâm lý học và sự tự do. Với giọng văn tản mạn nhưng sâu sắc, Timbur Hood đưa người đọc đi qua những vùng đất của tâm hồn, nơi hạnh phúc không còn là đích đến mà là một hành trình...
+                        </p>
+                    </div>
+
+                    <div class="purchase-box bg-white p-4 rounded-5 shadow-lg border-accent border border-2 border-opacity-25">
+                        <div class="row align-items-end g-4">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted mb-2">Số lượng</label>
+                                <div class="quantity-input d-flex align-items-center border rounded-pill bg-light">
+                                    <button class="btn btn-link link-dark border-0 p-2 shadow-none" onclick="this.parentNode.querySelector('input').stepDown()"><i class="icon icon-minus"></i></button>
+                                    <input type="number" id="quantity" class="form-control border-0 bg-transparent text-center fw-bold shadow-none" value="1" min="1">
+                                    <button class="btn btn-link link-dark border-0 p-2 shadow-none" onclick="this.parentNode.querySelector('input').stepUp()"><i class="icon icon-plus"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" id="btn-add-to-cart" class="btn btn-accent btn-lg w-100 py-3 fw-bold shadow-sm rounded-pill transition-all">
+                                    Thêm vào giỏ hàng <i class="icon icon-clipboard ms-2"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-outline-dark btn-lg w-100 py-3 rounded-pill shadow-sm hvr-accent"><i class="icon icon-heart"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products Section -->
+<section id="related-products" class="py-5 bg-white border-top">
+    <div class="container-xl py-5">
+        <div class="section-header mb-5 d-flex justify-content-between align-items-end">
+            <div>
+                <span class="text-uppercase tracking-widest text-accent fw-bold small">Có thể bạn thích</span>
+                <h2 class="display-6 fw-bold font-serif m-0">Sách cùng thể loại</h2>
+            </div>
+            <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-accent fw-bold text-decoration-none">Xem toàn bộ <i class="icon icon-ns-arrow-right"></i></a>
+        </div>
+        <div class="row g-4" id="related-books-container">
+            <!-- Will be populated by JS -->
+            <div class="col-md-3">
+                <div class="product-item text-center">
+                    <div class="image-holder mb-3 overflow-hidden rounded-4 bg-light shadow-sm border p-2">
+                        <img src="assets/images/product-item1.jpg" alt="Books" class="img-fluid">
+                    </div>
+                    <h6>Cách sống đơn giản</h6>
+                    <div class="text-accent fw-bold small">400,000đ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .bg-sand { background-color: #FDFCF9; }
+    .btn-accent { background-color: #C5A992; color: white; border: none; }
+    .btn-accent:hover { background-color: #2F2F2F; transform: translateY(-3px); }
+    .product-image-container { transition: transform 0.5s ease; }
+    .product-image-container:hover { transform: scale(1.02); }
+    .font-serif { font-family: 'Playfair Display', serif; }
+</style>

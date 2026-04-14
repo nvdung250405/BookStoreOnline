@@ -9,7 +9,6 @@ import com.bookstore.security.VNPayUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +21,17 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/payments")
 @CrossOrigin("*")
-@RequiredArgsConstructor
-@SuppressWarnings("null")
 @Tag(name = "Payment Management", description = "Xử lý thanh toán VNPay")
+@SuppressWarnings("null")
 public class ThanhToanController {
 
     private final DonHangRepository donHangRepository;
     private final ThanhToanRepository thanhToanRepository;
+
+    public ThanhToanController(DonHangRepository donHangRepository, ThanhToanRepository thanhToanRepository) {
+        this.donHangRepository = donHangRepository;
+        this.thanhToanRepository = thanhToanRepository;
+    }
 
     @Value("${vnpay.tmn-code}")
     private String vnp_TmnCode;

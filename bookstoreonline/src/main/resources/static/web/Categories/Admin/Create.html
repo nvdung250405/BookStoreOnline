@@ -1,0 +1,59 @@
+<!-- Admin Categories Area - Create View -->
+<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
+    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
+        <div class="mb-5 px-3">
+            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4>
+        </div>
+        <nav class="nav flex-column gap-2 mb-auto">
+            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
+            <a href="javascript:void(0)" onclick="layout.render('Books/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-notes me-2"></i> Sản phẩm (Sách)</a>
+            <a href="javascript:void(0)" onclick="layout.render('Categories/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-clipboard me-2"></i> Danh mục</a>
+        </nav>
+    </aside>
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="mb-5 text-start">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Categories/Admin', 'Index')" class="text-decoration-none text-muted">Danh mục</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">Thêm mới</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0">Tạo danh mục mới</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5 bg-white">
+                    <form id="category-create-form">
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Tên danh mục</label>
+                                <input type="text" class="form-control form-control-lg border-light bg-light rounded-3 shadow-none" placeholder="VD: Kinh tế, Văn học..." required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-muted">Mô tả chi tiết</label>
+                                <textarea class="form-control border-light bg-light rounded-3 shadow-none" rows="5" placeholder="Nhập mô tả về danh mục này..."></textarea>
+                            </div>
+                            <div class="col-12 mt-5 text-end">
+                                <button type="submit" class="btn btn-accent btn-lg px-5 rounded-pill fw-bold shadow-sm">
+                                    Lưu danh mục
+                                </button>
+                                <button type="button" onclick="layout.render('Categories/Admin', 'Index')" class="btn btn-link link-dark ms-3 text-decoration-none small">Hủy bỏ</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white opacity-75">
+                    <h6 class="fw-bold font-serif mb-3">Thông tin bổ sung</h6>
+                    <p class="small text-muted mb-0">Danh mục mới sau khi tạo sẽ hiển thị ngay lập tức trên trang chủ và trang cửa hàng nếu có sản phẩm liên quan.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+    $("#header-area, #footer-area").hide();
+</script>

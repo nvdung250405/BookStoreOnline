@@ -1,0 +1,63 @@
+<!-- Admin Dashboard View -->
+<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100 w-100">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column shadow-lg flex-shrink-0" style="width: 280px; min-height: 100vh;">
+        <div class="mb-5 px-3">
+            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ</h4>
+            <small class="text-white-50">Booksaw Management</small>
+        </div>
+
+        <nav class="nav flex-column gap-2 mb-auto" id="admin-nav">
+            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-clipboard me-2 text-accent"></i> Tổng quan</a>
+            
+            <div class="text-white-25 small text-uppercase mt-4 mb-2 tracking-widest fw-bold">Dữ liệu chính</div>
+            <a href="javascript:void(0)" onclick="layout.render('Books/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-notes me-2"></i> Sản phẩm (Sách)</a>
+            <a href="javascript:void(0)" onclick="layout.render('Categories/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Danh mục</a>
+            <a href="javascript:void(0)" onclick="layout.render('Authors/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-user me-2"></i> Tác giả</a>
+            
+            <div class="text-white-25 small text-uppercase mt-4 mb-2 tracking-widest fw-bold">Giao dịch</div>
+            <a href="javascript:void(0)" onclick="layout.render('Orders/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Đơn hàng</a>
+            <a href="javascript:void(0)" onclick="layout.render('Users/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-user me-2"></i> Thành viên</a>
+        </nav>
+
+        <div class="border-top border-white border-opacity-10 pt-4 mt-5">
+            <a href="javascript:void(0)" onclick="layout.render('', 'Home/Index')" class="btn btn-accent w-100 rounded-pill small fw-bold">Quay lại Trang chủ</a>
+            <a href="javascript:void(0)" onclick="auth.logout()" class="text-white-50 text-decoration-none small d-block text-center mt-3"><i class="icon icon-close me-2"></i> Đăng xuất</a>
+        </div>
+    </aside>
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <!-- Dashboard Stats and table same as before but cleaner -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 class="fw-bold font-serif mb-0">Bảng điều khiển</h2>
+            <div class="avatar-placeholder rounded-circle bg-accent text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">A</div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white h-100 transition-all hover-up">
+                    <span class="text-muted small text-uppercase fw-bold mb-2 d-block">Đơn hàng mới</span>
+                    <h3 class="display-6 fw-bold text-accent">12</h3>
+                </div>
+            </div>
+            <!-- ... other stats ... -->
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-5 p-4 bg-white">
+            <h5 class="fw-bold font-serif mb-4">Hoạt động gần đây</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Hoạt động</th><th>Thời gian</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                        <tr><td>#BS-1002 - Nguyễn Thuận</td><td>vừa xong</td><td><span class="badge bg-success rounded-pill">Đã xử lý</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .hvr-admin:hover { transform: translateX(5px); color: white !important; background: rgba(255,255,255,0.05); }
+    .nav-link.active-admin { color: white !important; font-weight: bold; }
+</style>
