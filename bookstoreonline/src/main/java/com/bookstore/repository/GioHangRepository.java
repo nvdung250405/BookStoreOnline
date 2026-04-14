@@ -1,7 +1,7 @@
 package com.bookstore.repository;
 
 import com.bookstore.entity.GioHang;
-import com.bookstore.entity.KhachHang;
+//import com.bookstore.entity.KhachHang;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

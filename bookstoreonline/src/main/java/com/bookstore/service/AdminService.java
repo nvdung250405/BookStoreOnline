@@ -5,7 +5,7 @@ import com.bookstore.dto.AdminUserResponseDTO;
 import com.bookstore.dto.UserProfileDTO;
 import com.bookstore.entity.NhanVien;
 import com.bookstore.entity.TaiKhoan;
-import com.bookstore.entity.KhachHang;
+//import com.bookstore.entity.KhachHang;
 import com.bookstore.repository.NhanVienRepository;
 import com.bookstore.repository.TaiKhoanRepository;
 import com.bookstore.repository.KhachHangRepository;
