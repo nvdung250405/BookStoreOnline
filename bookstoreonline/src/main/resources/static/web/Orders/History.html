@@ -37,3 +37,13 @@
     .extra-small { font-size: 0.72rem; letter-spacing: 0.05em; }
     .text-accent { color: #C5A992; }
 </style>
+
+<script>
+    // Trigger load when this partial view is inserted into DOM
+    (function() {
+        if (typeof orders !== 'undefined') {
+            orders.loadHistory();
+        }
+    })();
+</script>
+

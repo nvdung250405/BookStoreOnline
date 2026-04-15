@@ -21,11 +21,12 @@
             <div class="col-md-5">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="icon icon-search"></i></span>
-                    <input type="text" class="form-control border-start-0 shadow-none bg-transparent" placeholder="Search by title, ISBN, author..." id="book-search-input">
+                    <input type="text" class="form-control border-start-0 shadow-none bg-transparent" placeholder="Search by title, ISBN, author..." id="book-search-input"
+                           onkeyup="books.adminSearch(this.value)">
                 </div>
             </div>
             <div class="col-md-4 ms-auto text-end">
-                <button class="btn btn-outline-dark rounded-pill px-4">Advanced Filters</button>
+                <button class="btn btn-outline-dark rounded-pill px-4" onclick="books.toggleAdvancedFilters()">Advanced Filters</button>
             </div>
         </div>
     </div>

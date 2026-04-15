@@ -13,10 +13,48 @@ const books = {
             const itemList = res.data || res;
             if (Array.isArray(itemList)) {
                 books.renderGrid("#featured-books-container", itemList.slice(0, 8));
+                books.renderPopular("#popular-books-container", itemList.slice(0, 8));
+                // Populate best seller
+                if (itemList.length > 0) {
+                    books.renderBestSeller(itemList[0]);
+                }
             }
         } catch (error) {
             console.error("Failed to load featured books", error);
         }
+    },
+
+    // 1b. Render best seller section
+    renderBestSeller: (book) => {
+        if (!book) return;
+        $('#best-seller-author').text(book.authorName || book.author || 'Tác giả');
+        $('#best-seller-title').text(book.title || '---');
+        $('#best-seller-desc').text(book.description ? book.description.substring(0, 150) + '...' : 'Miêu tả chưa có.');
+        $('#best-seller-price').text(api.formatCurrency(book.price));
+        $('#best-seller-link').attr('onclick', `layout.render('Books','Details','${book.isbn}')`);
+    },
+
+    // 1c. Render popular books grid (for Home page tabs)
+    renderPopular: (selector, items) => {
+        const container = $(selector);
+        if (!container.length) return;
+        container.empty();
+        if (!items || items.length === 0) return;
+        items.forEach(book => {
+            const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
+            container.append(`
+                <div class="col-xl-3 col-lg-4 col-sm-6 mb-4">
+                    <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
+                        <div class="image-holder position-relative mb-3 overflow-hidden rounded-3 bg-light p-2">
+                            <img src="${imagePath}" alt="${book.title}" class="img-fluid" style="height:200px;object-fit:contain">
+                        </div>
+                        <h6 class="fw-bold mb-1"><a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="text-decoration-none text-dark">${book.title}</a></h6>
+                        <div class="fw-bold text-accent mb-2">${api.formatCurrency(book.price)}</div>
+                        <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="cart.add('${book.isbn}',1)"><i class="icon icon-plus me-1"></i>Thêm vào giỏ</button>
+                    </div>
+                </div>
+            `);
+        });
     },
 
     // 2. AI Search Integration
@@ -110,6 +148,37 @@ const books = {
             api.showToast("Failed to load book list", "error");
         }
     },
+
+    // 3b. Load books by category name keyword (for Home tabs)
+    loadByCategory: async (categoryKeyword) => {
+        // Update active tab style
+        $('#book-tabs .nav-link').removeClass('active');
+        $(`#book-tabs .nav-link[onclick*="'${categoryKeyword}'"]`).addClass('active');
+
+        const container = $('#popular-books-container');
+        container.html('<div class="col-12 text-center py-4"><div class="spinner-border text-accent spinner-border-sm"></div></div>');
+
+        try {
+            const res = await api.get('/books');
+            const all = res.data || res;
+            if (!Array.isArray(all)) return;
+
+            let filtered = all;
+            if (categoryKeyword !== 'ALL') {
+                filtered = all.filter(b =>
+                    (b.categoryName || '').toLowerCase().includes(categoryKeyword.toLowerCase())
+                );
+                if (filtered.length === 0) {
+                    // fallback: show all if nothing matches
+                    filtered = all.slice(0, 8);
+                }
+            }
+            books.renderPopular('#popular-books-container', filtered.slice(0, 8));
+        } catch (e) {
+            container.html('<div class="col-12 text-center py-5 text-danger">Lỗi tải danh mục.</div>');
+        }
+    },
+
 
     // 4. Render Grid Utility
     renderGrid: (selector, itemList) => {
@@ -340,6 +409,84 @@ const books = {
             api.showToast("Updated successfully!");
             layout.render('Books', 'Admin/Index');
         } catch (e) { api.showToast("Error updating: " + e.message, "error"); }
+    },
+
+    // 12. Admin search (filter visible rows in table)
+    adminSearch: (keyword) => {
+        const kw = (keyword || '').toLowerCase().trim();
+        $('#books-admin-list tr').each(function() {
+            const text = $(this).text().toLowerCase();
+            $(this).toggle(!kw || text.includes(kw));
+        });
+    },
+
+    // 13. Toggle advanced filters panel
+    toggleAdvancedFilters: () => {
+        let panel = $('#advanced-filters-panel');
+        if (!panel.length) {
+            const html = `
+                <div id="advanced-filters-panel" class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white mt-2 animate__animated animate__fadeIn">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Danh mục</label>
+                            <select id="filter-category" class="form-select shadow-none">
+                                <option value="">Tất cả danh mục</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Giá từ</label>
+                            <input type="number" id="filter-price-min" class="form-control shadow-none" placeholder="VD: 50000">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Giá đến</label>
+                            <input type="number" id="filter-price-max" class="form-control shadow-none" placeholder="VD: 500000">
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="books.applyAdvancedFilters()">Lọc</button>
+                            <button class="btn btn-outline-secondary rounded-pill px-3" onclick="books.resetFilters()">Reset</button>
+                        </div>
+                    </div>
+                </div>`;
+            $('.card.border-0.shadow-sm.rounded-4.p-3.mb-4.bg-white').after(html);
+            // Populate categories
+            api.get('/categories').then(res => {
+                const cats = res.data || res;
+                if (Array.isArray(cats)) {
+                    cats.forEach(c => {
+                        $('#filter-category').append(`<option value="${c.id}">${c.name || c.categoryName}</option>`);
+                    });
+                }
+            }).catch(() => {});
+        } else {
+            panel.toggle();
+        }
+    },
+
+    // 14. Apply advanced filters
+    applyAdvancedFilters: () => {
+        const catId = $('#filter-category').val();
+        const minP  = parseFloat($('#filter-price-min').val()) || 0;
+        const maxP  = parseFloat($('#filter-price-max').val()) || Infinity;
+
+        $('#books-admin-list tr').each(function() {
+            const row = $(this);
+            // Price is in the 3rd column
+            const priceText = row.find('td:eq(2)').text().replace(/[^\d]/g, '');
+            const price = parseFloat(priceText) || 0;
+            const showByPrice = price >= minP && price <= maxP;
+            row.toggle(showByPrice);
+        });
+        api.showToast('Đã áp dụng bộ lọc', 'success');
+    },
+
+    // 15. Reset filters
+    resetFilters: () => {
+        $('#filter-category').val('');
+        $('#filter-price-min').val('');
+        $('#filter-price-max').val('');
+        $('#book-search-input').val('');
+        $('#books-admin-list tr').show();
+        api.showToast('Đã reset bộ lọc', 'success');
     }
 };
 

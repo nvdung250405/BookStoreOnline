@@ -290,5 +290,87 @@ const orders = {
             case 'CANCELLED': return 'bg-danger text-white';
             default: return 'bg-secondary text-white';
         }
+    },
+
+    trackOrder: async (orderId) => {
+        if (!orderId || !orderId.trim()) {
+            api.showToast('Vui lòng nhập mã đơn hàng', 'warning');
+            return;
+        }
+        orderId = orderId.trim();
+        const resultContainer = $('#tracking-result-container');
+        resultContainer.hide();
+
+        try {
+            const res = await api.get(`/orders/${orderId}`);
+            const o = res.data;
+            if (!o) {
+                api.showToast('Không tìm thấy đơn hàng #' + orderId, 'error');
+                return;
+            }
+
+            $('#tracking-display-id').text('#' + o.orderId);
+            $('#tracking-carrier').text('Giao Hàng Nhanh (GHN)');
+            $('#tracking-status-badge').text(o.status).attr('class', `badge ${orders.getStatusClass(o.status)} px-3 py-2 rounded-pill fw-bold`);
+
+            // Build timeline
+            const timeline = $('#tracking-timeline');
+            timeline.empty();
+            const steps = [
+                { status: 'NEW',       label: 'Đơn hàng mới',            icon: '📋', date: o.createdAt },
+                { status: 'CONFIRMED', label: 'Xác nhận đơn hàng',      icon: '✅', date: o.confirmedAt || null },
+                { status: 'SHIPPING',  label: 'Đang giao hàng',          icon: '🚚', date: o.shippedAt || null },
+                { status: 'COMPLETED', label: 'Giao hàng thành công',    icon: '🎉', date: o.completedAt || null },
+            ];
+
+            const statusOrder = ['NEW','CONFIRMED','SHIPPING','COMPLETED'];
+            const currentIdx = statusOrder.indexOf(o.status);
+
+            steps.forEach((step, idx) => {
+                const isActive = idx <= currentIdx;
+                timeline.append(`
+                    <div class="tracking-step ${isActive ? 'active' : ''} mb-4">
+                        <div class="tracking-step-dot"></div>
+                        <div class="ms-3">
+                            <div class="fw-bold ${isActive ? '' : 'text-muted'}">${step.icon} ${step.label}</div>
+                            <div class="small text-muted">${step.date ? common.formatDate(step.date, true) : (isActive ? 'Hoạt động' : 'Chưa thực hiện')}</div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            resultContainer.fadeIn();
+        } catch (e) {
+            api.showToast('Không tìm thấy đơn hàng #' + orderId + '. Kiểm tra lại mã.', 'error');
+        }
+    },
+
+    exportAdminOrders: async (format = 'json') => {
+        api.showToast('Đang xuất dữ liệu...', 'info');
+        try {
+            const res = await api.get('/orders/admin');
+            const list = res.data || [];
+
+            const data = list.map(o => ({
+                id: o.orderId,
+                customer: o.customerName,
+                date: o.createdAt,
+                total: o.totalAmount,
+                status: o.status,
+                payment: o.paymentMethod || 'N/A'
+            }));
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = `orders_export_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            api.showToast(`Xuất ${list.length} đơn hàng thành công!`, 'success');
+        } catch (e) {
+            api.showToast('Lỗi khi xuất dữ liệu: ' + e.message, 'error');
+        }
     }
 };
+

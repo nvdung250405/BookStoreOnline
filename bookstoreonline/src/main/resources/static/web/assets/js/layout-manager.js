@@ -294,6 +294,34 @@ const layout = {
             case "Support/Chat":
                 support.initChat();
                 break;
+            case "Authors/Admin/Index":
+                if (typeof authors !== 'undefined') authors.loadAdminList();
+                break;
+            case "Publishers/Admin/Index":
+                if (typeof publishers !== 'undefined') publishers.loadAdminList();
+                break;
+            case "Reviews/Admin/Index":
+                if (typeof review !== 'undefined') review.loadAdminList();
+                break;
+            case "Payments/Admin/Index":
+                if (typeof payments !== 'undefined') payments.loadAdminList();
+                break;
+            case "Shipping/Admin/Index":
+                if (typeof shipping !== 'undefined') shipping.loadAdminList();
+                break;
+            case "AuditLogs/Admin/Index":
+                if (typeof auditlog !== 'undefined') auditlog.loadList();
+                break;
+            case "Vouchers/Admin/Create":
+                // form ready, no preload
+                break;
+            case "Vouchers/Admin/Edit":
+                if (id && typeof vouchers !== 'undefined') vouchers.loadForEdit(id);
+                break;
+            case "Home/About":
+            case "Home/Contact":
+                // Static pages, no special init needed
+                break;
         }
     },
 

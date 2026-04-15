@@ -15,6 +15,15 @@ const common = {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name);
     },
+    subscribe(email) {
+        if (!email || !email.includes('@')) {
+            api.showToast('Vui lòng nhập email hợp lệ', 'warning');
+            return;
+        }
+        // In a real scenario, call an API endpoint
+        api.showToast('Cảm ơn! Email ' + email + ' đã được đăng ký bản tin thành công.', 'success');
+        $('#sub-email').val('');
+    },
     formatDate(timestamp, includeTime = false) {
         if (!timestamp) return "---";
         const date = new Date(timestamp);

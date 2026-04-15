@@ -13,8 +13,8 @@
                     Export Report
                 </button>
                 <ul class="dropdown-menu border-0 shadow-sm dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">Export to Excel (.xlsx)</a></li>
-                    <li><a class="dropdown-item" href="#">Generate PDF Summary</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="orders.exportAdminOrders('excel')">Export to Excel (.xlsx)</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="orders.exportAdminOrders('json')">Export JSON Summary</a></li>
                 </ul>
             </div>
         </div>
@@ -63,7 +63,7 @@
                         <th class="py-3 text-end pe-4">Operations</th>
                     </tr>
                 </thead>
-                <tbody id="orders-admin-list">
+                <tbody id="admin-orders-list">
                     <!-- Data populated from orders.js -->
                      <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-accent"></div></td></tr>
                 </tbody>

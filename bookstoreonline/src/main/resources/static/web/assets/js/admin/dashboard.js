@@ -96,5 +96,45 @@ const dashboard = {
             const tbody = document.getElementById('audit-log-list');
             if (tbody) tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">Không thể tải nhật ký</td></tr>';
         }
+    },
+
+    // 4. Export Report (tải báo cáo đơn giản dạng JSON)
+    exportReport: async () => {
+        api.showToast('Đang tạo báo cáo...', 'info');
+        try {
+            const [statsRes, rankRes] = await Promise.all([
+                api.get('/admin/dashboard/stats'),
+                api.get('/admin/dashboard/ranking')
+            ]);
+            const stats = statsRes.data || {};
+            const ranking = rankRes.data || [];
+
+            const report = {
+                generatedAt: new Date().toLocaleString('vi-VN'),
+                stats: {
+                    totalRevenue: stats.totalRevenue || 0,
+                    pendingOrders: stats.pendingOrders || 0,
+                    totalBooks: stats.totalBooks || 0,
+                    totalUsers: stats.totalUsers || 0,
+                    lowStockCount: stats.lowStockCount || 0
+                },
+                topBooks: ranking.slice(0, 10).map((b, i) => ({
+                    rank: i + 1,
+                    title: b.title || b.isbn,
+                    totalSold: b.totalSold || 0
+                }))
+            };
+
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = `booksaw_report_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            api.showToast('Xuất báo cáo thành công!', 'success');
+        } catch (e) {
+            api.showToast('Lỗi khi xuất báo cáo: ' + e.message, 'error');
+        }
     }
 };
