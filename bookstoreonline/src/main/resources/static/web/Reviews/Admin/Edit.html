@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh Sửa Đánh Giá - NhaSachOnline</title>
+    <link rel="stylesheet" href="../../assets/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/vendor.css">
+    <link rel="stylesheet" href="../../assets/fonts/icomoon/icomoon.css">
+    <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+    <div id="app"></div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="mb-4">Chỉnh Sửa Đánh Giá Sách</h2>
+                
+                <form id="reviewForm" class="needs-validation">
+                    <input type="hidden" id="maDg" />
+
+                    <!-- Khách Hàng (readonly) -->
+                    <div class="mb-3">
+                        <label for="khachHang" class="form-label">Khách Hàng</label>
+                        <input type="text" id="khachHang" class="form-control" readonly />
+                    </div>
+
+                    <!-- Sách (readonly) -->
+                    <div class="mb-3">
+                        <label for="sach" class="form-label">Sách</label>
+                        <input type="text" id="sach" class="form-control" readonly />
+                    </div>
+
+                    <!-- Điểm Đánh Giá -->
+                    <div class="mb-3">
+                        <label for="diem" class="form-label">Điểm Đánh Giá <span class="text-danger">*</span></label>
+                        <select id="diem" class="form-control" required>
+                            <option value="">-- Chọn điểm --</option>
+                            <option value="1">⭐ 1 Sao - Tệ</option>
+                            <option value="2">⭐⭐ 2 Sao - Không Tốt</option>
+                            <option value="3">⭐⭐⭐ 3 Sao - Bình Thường</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Sao - Tốt</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 Sao - Xuất Sắc</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn điểm</div>
+                    </div>
+
+                    <!-- Nhận Xét -->
+                    <div class="mb-3">
+                        <label for="nhanXet" class="form-label">Nhận Xét <span class="text-danger">*</span></label>
+                        <textarea id="nhanXet" class="form-control" rows="5" required 
+                                  placeholder="Nhập nhận xét của bạn..."></textarea>
+                        <small class="text-muted d-block mt-1">Tối đa 1000 ký tự</small>
+                        <div class="invalid-feedback">Vui lòng nhập nhận xét</div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="icon-edit"></i> Cập Nhật
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="history.back()">
+                            <i class="icon-close"></i> Hủy
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/lib/jquery/jquery-3.6.0.min.js"></script>
+    <script src="../../assets/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/modules/review.js"></script>
+    <script>
+        $(document).ready(function() {
+            const maDg = common.getQueryParam('id');
+            if (maDg) {
+                loadReview(maDg);
+            }
+
+            $('#reviewForm').on('submit', function(e) {
+                e.preventDefault();
+                if (this.checkValidity()) {
+                    updateReview();
+                }
+            });
+        });
+
+        function loadReview(maDg) {
+            api.get(`/reviews/${maDg}`).then(data => {
+                $('#maDg').val(data.maDg);
+                $('#khachHang').val(data.khachHang.hoTen);
+                $('#sach').val(data.sach.tenSach);
+                $('#diem').val(data.diemDg);
+                $('#nhanXet').val(data.nhanXet);
+            }).catch(err => {
+                api.showToast('Không thể tải đánh giá', 'error');
+                setTimeout(() => history.back(), 1500);
+            });
+        }
+
+        function updateReview() {
+            const maDg = $('#maDg').val();
+            const review = {
+                diemDg: parseInt($('#diem').val()),
+                nhanXet: $('#nhanXet').val()
+            };
+
+            api.put(`/reviews/${maDg}`, review).then(data => {
+                api.showToast('Cập nhật đánh giá thành công!', 'success');
+                setTimeout(() => layout.render('Reviews', 'Admin/Index'), 1500);
+            }).catch(err => {
+                api.showToast(err.message || 'Lỗi khi cập nhật đánh giá', 'error');
+            });
+        }
+    </script>
+</body>
+</html>

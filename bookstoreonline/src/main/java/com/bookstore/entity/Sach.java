@@ -2,7 +2,10 @@ package com.bookstore.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Set;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "sach")
@@ -46,6 +49,17 @@ public class Sach {
     @Column(name = "da_xoa")
     private Boolean daXoa = false;
 
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public Sach() {}
 
     public String getIsbn() { return isbn; }
@@ -68,4 +82,10 @@ public class Sach {
     public void setDanhSachTacGia(Set<TacGia> danhSachTacGia) { this.danhSachTacGia = danhSachTacGia; }
     public Boolean getDaXoa() { return daXoa; }
     public void setDaXoa(Boolean daXoa) { this.daXoa = daXoa; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

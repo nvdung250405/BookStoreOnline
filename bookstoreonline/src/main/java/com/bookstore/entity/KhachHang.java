@@ -1,6 +1,9 @@
 package com.bookstore.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "khach_hang")
@@ -27,6 +30,17 @@ public class KhachHang {
     @Column(name = "diem_tich_luy")
     private Integer diemTichLuy = 0;
 
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public KhachHang() {}
 
     public Long getMaKhachHang() { return maKhachHang; }
@@ -41,4 +55,10 @@ public class KhachHang {
     public void setDiaChiGiaoHang(String diaChiGiaoHang) { this.diaChiGiaoHang = diaChiGiaoHang; }
     public Integer getDiemTichLuy() { return diemTichLuy; }
     public void setDiemTichLuy(Integer diemTichLuy) { this.diemTichLuy = diemTichLuy; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
 }

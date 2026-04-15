@@ -30,4 +30,22 @@ public class ShippingService {
                 history
         );
     }
+
+    public void updateShippingStatus(String maVanChuyen, String status, String notes) {
+        // This would be used to update shipping status in the database
+        // In a real scenario, this would integrate with shipping provider APIs
+        // and update the van_chuyen table in the database
+        
+        // Mock implementation for now - in production:
+        // 1. Validate shipping ID exists
+        // 2. Validate status is one of the allowed values
+        // 3. Update van_chuyen record with new status
+        // 4. Log the change for audit trail
+        // 5. Trigger notifications if needed
+        
+        System.out.println("Updating shipping " + maVanChuyen + " to status: " + status);
+        if (notes != null && !notes.isEmpty()) {
+            System.out.println("Notes: " + notes);
+        }
+    }
 }

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Đánh Giá - NhaSachOnline</title>
+    <link rel="stylesheet" href="../../assets/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../assets/css/vendor.css">
+    <link rel="stylesheet" href="../../assets/fonts/icomoon/icomoon.css">
+    <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+    <div id="app"></div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="mb-4">Thêm Đánh Giá Sách</h2>
+                
+                <form id="reviewForm" class="needs-validation">
+                    <!-- Khách Hàng -->
+                    <div class="mb-3">
+                        <label for="khachHang" class="form-label">Khách Hàng <span class="text-danger">*</span></label>
+                        <select id="khachHang" class="form-control" required>
+                            <option value="">-- Chọn khách hàng --</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn khách hàng</div>
+                    </div>
+
+                    <!-- Sách -->
+                    <div class="mb-3">
+                        <label for="sach" class="form-label">Sách <span class="text-danger">*</span></label>
+                        <select id="sach" class="form-control" required>
+                            <option value="">-- Chọn sách --</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn sách</div>
+                    </div>
+
+                    <!-- Điểm Đánh Giá -->
+                    <div class="mb-3">
+                        <label for="diem" class="form-label">Điểm Đánh Giá <span class="text-danger">*</span></label>
+                        <select id="diem" class="form-control" required>
+                            <option value="">-- Chọn điểm --</option>
+                            <option value="1">⭐ 1 Sao - Tệ</option>
+                            <option value="2">⭐⭐ 2 Sao - Không Tốt</option>
+                            <option value="3">⭐⭐⭐ 3 Sao - Bình Thường</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Sao - Tốt</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 Sao - Xuất Sắc</option>
+                        </select>
+                        <div class="invalid-feedback">Vui lòng chọn điểm</div>
+                    </div>
+
+                    <!-- Nhận Xét -->
+                    <div class="mb-3">
+                        <label for="nhanXet" class="form-label">Nhận Xét <span class="text-danger">*</span></label>
+                        <textarea id="nhanXet" class="form-control" rows="5" required 
+                                  placeholder="Nhập nhận xét của bạn..."></textarea>
+                        <small class="text-muted d-block mt-1">Tối đa 1000 ký tự</small>
+                        <div class="invalid-feedback">Vui lòng nhập nhận xét</div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="icon-plus"></i> Thêm Đánh Giá
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="history.back()">
+                            <i class="icon-close"></i> Hủy
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/lib/jquery/jquery-3.6.0.min.js"></script>
+    <script src="../../assets/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/js/modules/review.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load customers and books when page loads
+            loadCustomersForForm();
+            loadBooksForForm();
+
+            // Handle form submission
+            $('#reviewForm').on('submit', function(e) {
+                e.preventDefault();
+                if (this.checkValidity()) {
+                    submitReview();
+                }
+            });
+        });
+
+        function loadCustomersForForm() {
+            api.get('/khach-hang').then(data => {
+                const select = $('#khachHang');
+                select.html('<option value="">-- Chọn khách hàng --</option>');
+                if (data && Array.isArray(data)) {
+                    data.forEach(kh => {
+                        select.append(`<option value="${kh.maKhachHang}">${kh.hoTen} (${kh.username})</option>`);
+                    });
+                }
+            });
+        }
+
+        function loadBooksForForm() {
+            api.get('/sach').then(data => {
+                const select = $('#sach');
+                select.html('<option value="">-- Chọn sách --</option>');
+                if (data && Array.isArray(data)) {
+                    data.forEach(book => {
+                        select.append(`<option value="${book.isbn}">${book.tenSach}</option>`);
+                    });
+                }
+            });
+        }
+
+        function submitReview() {
+            const review = {
+                maKhachHang: $('#khachHang').val(),
+                isbn: $('#sach').val(),
+                diemDg: parseInt($('#diem').val()),
+                nhanXet: $('#nhanXet').val()
+            };
+
+            api.post('/reviews', review).then(data => {
+                api.showToast('Thêm đánh giá thành công!', 'success');
+                setTimeout(() => layout.render('Reviews', 'Admin/Index'), 1500);
+            }).catch(err => {
+                api.showToast(err.message || 'Lỗi khi thêm đánh giá', 'error');
+            });
+        }
+    </script>
+</body>
+</html>

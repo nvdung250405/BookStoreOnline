@@ -92,6 +92,7 @@ CREATE TABLE sach (
     isbn NVARCHAR(13) PRIMARY KEY,
     ten_sach NVARCHAR(255) NOT NULL,
     gia_niem_yet DECIMAL(10,2) NOT NULL CHECK (gia_niem_yet >= 0),
+    so_trang INT,
     ma_danhmuc INT,
     ma_nxb INT,
     mo_ta_ngu_nghia NVARCHAR(MAX),
