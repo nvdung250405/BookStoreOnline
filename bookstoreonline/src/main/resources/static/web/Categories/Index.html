@@ -1,51 +1,50 @@
 <!-- Categories Area - Index View -->
-<section class="bg-sand py-5">
-    <div class="container-xl py-5 text-center">
-        <div class="section-header mb-5">
+<section class="bg-sand py-5 min-vh-100">
+    <div class="container-xl py-5">
+        <div class="section-header text-center mb-5">
             <span class="text-uppercase tracking-widest text-accent fw-bold small">Duyệt theo chủ đề</span>
             <h1 class="display-4 fw-bold font-serif mt-2">Danh mục Sách</h1>
+            <p class="text-muted mt-2">Tìm kiếm cuốn sách phù hợp theo từng thể loại bạn yêu thích</p>
         </div>
 
-        <div class="row g-4 mt-5">
-            <!-- Category Item 1 -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up">
-                <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none">
-                    <div class="category-card bg-white p-5 rounded-5 shadow-sm hvr-float transition-all border card-hover-accent">
-                        <i class="icon icon-notes fs-1 text-accent mb-4 d-block"></i>
-                        <h3 class="fw-bold font-serif mb-3">Văn học</h3>
-                        <p class="text-muted small">Khám phá những tác phẩm kinh điển và hiện đại từ các tác giả lừng danh thế giới.</p>
-                        <span class="badge bg-light text-muted rounded-pill px-3 py-2 mt-3 border">245 cuốn sách</span>
-                    </div>
-                </a>
-            </div>
-            <!-- Category Item 2 -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none">
-                    <div class="category-card bg-white p-5 rounded-5 shadow-sm hvr-float transition-all border card-hover-accent">
-                        <i class="icon icon-clipboard fs-1 text-accent mb-4 d-block"></i>
-                        <h3 class="fw-bold font-serif mb-3">Kinh tế</h3>
-                        <p class="text-muted small">Kiến thức quản trị, đầu tư và phát triển bản thân cho sự nghiệp vững bước.</p>
-                        <span class="badge bg-light text-muted rounded-pill px-3 py-2 mt-3 border">182 cuốn sách</span>
-                    </div>
-                </a>
-            </div>
-            <!-- Category Item 3 -->
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none">
-                    <div class="category-card bg-white p-5 rounded-5 shadow-sm hvr-float transition-all border card-hover-accent">
-                        <i class="icon icon-search fs-1 text-accent mb-4 d-block"></i>
-                        <h3 class="fw-bold font-serif mb-3">Công nghệ</h3>
-                        <p class="text-muted small">Cập nhật những xu hướng mới nhất về lập trình, AI và thế giới số.</p>
-                        <span class="badge bg-light text-muted rounded-pill px-3 py-2 mt-3 border">95 cuốn sách</span>
-                    </div>
-                </a>
-            </div>
+        <!-- Loading state -->
+        <div id="categories-loading" class="text-center py-5">
+            <div class="spinner-border text-accent" role="status"></div>
+            <p class="text-muted mt-3">Đang tải danh mục...</p>
+        </div>
+
+        <!-- Dynamic category grid -->
+        <div class="row g-4" id="categories-grid" style="display:none;">
+            <!-- Populated by categories.loadPublicList() -->
+        </div>
+
+        <!-- Empty state -->
+        <div id="categories-empty" class="text-center py-5" style="display:none;">
+            <div style="font-size:3rem;">📚</div>
+            <p class="text-muted mt-3">Chưa có danh mục nào.</p>
         </div>
     </div>
 </section>
 
 <style>
-    .category-card { border-color: transparent; }
-    .card-hover-accent:hover { border-color: var(--accent-color) !important; background-color: #fdfcf9 !important; }
-    .hvr-float:hover { transform: translateY(-10px); }
+    .bg-sand { background-color: #FDFCF9; }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .tracking-widest { letter-spacing: 0.15em; }
+    .text-accent { color: #C5A992 !important; }
+    .category-card {
+        border: 1.5px solid transparent;
+        transition: all 0.28s cubic-bezier(.25,.8,.25,1);
+    }
+    .category-card:hover {
+        border-color: #C5A992;
+        background-color: #fdfcf9 !important;
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(197,169,146,0.18) !important;
+    }
+    .cat-icon {
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
 </style>
+

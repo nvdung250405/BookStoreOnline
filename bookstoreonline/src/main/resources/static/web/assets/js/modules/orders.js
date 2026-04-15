@@ -125,61 +125,115 @@ const orders = {
 
     loadHistory: async () => {
         const user = api.getUser();
-        if (!user) return;
+        const tbody = $("#order-history-body");
+        if (!tbody.length) return;
+
+        if (!user) {
+            tbody.html('<tr><td colspan="5" class="text-center py-5 text-muted">Vui lòng đăng nhập để xem lịch sử đơn hàng.</td></tr>');
+            return;
+        }
+
+        // Show loading spinner
+        tbody.html(`
+            <tr>
+                <td colspan="5" class="text-center py-5">
+                    <div class="spinner-border text-secondary spinner-border-sm" role="status"></div>
+                    <span class="ms-2 text-muted small">Đang tải lịch sử đơn hàng...</span>
+                </td>
+            </tr>
+        `);
+
         try {
             const res = await api.get(`/orders/history?username=${user.username}`);
             const list = res.data || [];
-            const tbody = $("#order-history-body");
-            if (!tbody.length) return;
             tbody.empty();
 
             if (list.length === 0) {
-                tbody.html('<tr><td colspan="5" class="text-center py-5">You haven\'t placed any orders yet.</td></tr>');
+                tbody.html('<tr><td colspan="5" class="text-center py-5 text-muted">Bạn chưa có đơn hàng nào.</td></tr>');
                 return;
             }
 
             list.forEach(order => {
                 tbody.append(`
                     <tr>
-                        <td class="fw-bold">#${order.orderId}</td>
+                        <td class="ps-4 fw-bold">#${order.orderId}</td>
                         <td>${common.formatDate(order.createdAt)}</td>
                         <td class="fw-bold">${api.formatCurrency(order.totalAmount)}</td>
                         <td><span class="badge ${orders.getStatusClass(order.status)}">${order.status}</span></td>
-                        <td class="text-end">
-                            <button onclick="layout.render('Orders', 'Details', '${order.orderId}')" class="btn btn-sm btn-light">View</button>
+                        <td class="text-end pe-4">
+                            <button onclick="layout.render('Orders', 'Details', '${order.orderId}')" class="btn btn-sm btn-outline-dark rounded-pill px-3">Xem chi tiết</button>
                         </td>
                     </tr>
                 `);
             });
         } catch (e) {
+            tbody.html('<tr><td colspan="5" class="text-center py-5 text-danger">Lỗi khi tải lịch sử đơn hàng.</td></tr>');
             api.showToast("Error loading order history", "error");
         }
     },
 
     loadDetail: async (orderId) => {
+        // Show loading in items table
+        const tbody = $("#invoice-items");
+        if (tbody.length) {
+            tbody.html(`<tr><td colspan="4" class="text-center py-4">
+                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                <span class="ms-2 text-muted small">Đang tải chi tiết đơn hàng...</span>
+            </td></tr>`);
+        }
+
         try {
             const res = await api.get(`/orders/${orderId}`);
             const o = res.data;
-            
-            $("#order-detail-id").text(o.orderId);
-            $("#order-detail-date").text(common.formatDate(o.createdAt, true));
-            $("#order-detail-status").text(o.status).attr("class", `badge ${orders.getStatusClass(o.status)}`);
-            $("#order-detail-address").text(o.shippingAddress);
-            $("#order-detail-total").text(api.formatCurrency(o.totalAmount));
 
-            const tbody = $("#order-items-body");
+            // Header info
+            $("#invoice-id").text(`#${o.orderId}`);
+            $("#invoice-date").text(common.formatDate(o.createdAt, true));
+            $("#invoice-status")
+                .text(o.status)
+                .attr("class", `badge ${orders.getStatusClass(o.status)}`);
+            $("#invoice-payment").text(o.paymentMethod || "---");
+
+            // Customer info
+            $("#invoice-customer-name").text(o.customerName || o.username || "---");
+            $("#invoice-customer-phone").text(o.customerPhone || o.phone || "---");
+            $("#invoice-customer-address").text(o.shippingAddress || "---");
+
+            // Items table
             tbody.empty();
-            (o.orderDetails || []).forEach(item => {
+            const details = o.orderDetails || o.items || [];
+            let subtotal = 0;
+
+            details.forEach(item => {
+                const unitPrice  = item.finalPrice || item.unitPrice || item.price || 0;
+                const lineTotal  = unitPrice * item.quantity;
+                subtotal += lineTotal;
                 tbody.append(`
                     <tr>
-                        <td><strong>${item.title}</strong><br><small class="text-muted">ISBN: ${item.isbn}</small></td>
-                        <td class="text-center">x${item.quantity}</td>
-                        <td class="text-end">${api.formatCurrency(item.finalPrice)}</td>
-                        <td class="text-end fw-bold">${api.formatCurrency(item.finalPrice * item.quantity)}</td>
+                        <td class="ps-4">
+                            <strong>${item.title || item.bookTitle || "---"}</strong>
+                            ${item.isbn ? `<br><small class="text-muted">ISBN: ${item.isbn}</small>` : ""}
+                        </td>
+                        <td class="text-center">${item.quantity}</td>
+                        <td class="text-end">${api.formatCurrency(unitPrice)}</td>
+                        <td class="text-end pe-4 fw-bold">${api.formatCurrency(lineTotal)}</td>
                     </tr>
                 `);
             });
+
+            if (details.length === 0) {
+                tbody.html('<tr><td colspan="4" class="text-center py-4 text-muted">Không có sản phẩm nào.</td></tr>');
+            }
+
+            // Totals
+            const total    = o.totalAmount || subtotal;
+            const shipping = total >= 200000 ? 0 : 30000;
+            $("#invoice-subtotal").text(api.formatCurrency(subtotal));
+            $("#invoice-shipping").text(shipping === 0 ? "Miễn phí" : api.formatCurrency(shipping));
+            $("#invoice-total").text(api.formatCurrency(total));
+
         } catch (e) {
+            if (tbody.length) tbody.html('<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi khi tải chi tiết đơn hàng.</td></tr>');
             api.showToast("Error loading order details", "error");
         }
     },

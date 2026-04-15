@@ -37,7 +37,10 @@ const layout = {
         // 2. Load Header/Footer (Customer only)
         if (!isAdmin) {
             if ($("#header-area").is(':empty')) {
-                await $("#header-area").load("Shared/Header.html", () => layout.updateUserHeader());
+                await $("#header-area").load("Shared/Header.html", () => {
+                    layout.updateUserHeader();
+                    categories.loadCategoryDropdown();
+                });
             } else {
                 layout.updateUserHeader();
             }
@@ -228,7 +231,7 @@ const layout = {
                 }
                 break;
             case "Support/Index":
-                support.loadAdminTickets();
+                support.loadUserTickets();
                 break;
             case "Users/Admin/Index":
                 users.loadAdminList();
@@ -241,6 +244,9 @@ const layout = {
                 break;
             case "Categories/Admin/Index":
                 categories.loadAdminList();
+                break;
+            case "Categories/Index":
+                categories.loadPublicList();
                 break;
             case "Dashboard/Admin/Index":
                 dashboard.init();

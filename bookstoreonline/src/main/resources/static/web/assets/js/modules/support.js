@@ -13,21 +13,30 @@ const support = {
                 $("#chat-user-msg").val("");
             }
         });
+        // Focus input when widget opens
+        setTimeout(() => $("#chat-user-msg").focus(), 200);
+    },
+
+    // Escape HTML to prevent XSS
+    escapeHtml: (text) => {
+        return $('<div>').text(text).html();
     },
 
     sendChat: async (message) => {
         const chatBox = $("#chat-box");
+        const safeMsg = support.escapeHtml(message);
+
         chatBox.append(`
-            <div class="message-user bg-accent text-white p-3 rounded-4 shadow-sm align-self-end text-end" style="max-width: 80%;">
-                ${message}
+            <div class="message-user bg-accent text-white p-3 rounded-4 shadow-sm align-self-end text-end" style="max-width: 85%; font-size:0.85rem;">
+                ${safeMsg}
             </div>
         `);
         support.scrollToBottom();
 
         const typingId = "typing-" + Date.now();
         chatBox.append(`
-            <div id="${typingId}" class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start" style="max-width: 80%;">
-                <span class="spinner-grow spinner-grow-sm text-accent"></span> AI is thinking...
+            <div id="${typingId}" class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start" style="max-width: 85%; font-size:0.85rem; color:#888;">
+                <span class="spinner-grow spinner-grow-sm me-1" style="color:#C5A992;"></span> Đang soạn...
             </div>
         `);
         support.scrollToBottom();
@@ -37,14 +46,18 @@ const support = {
             $(`#${typingId}`).remove();
             if (res.status === 200) {
                 chatBox.append(`
-                    <div class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start" style="max-width: 80%;">
-                        ${res.data || "I'm sorry, I don't understand."}
+                    <div class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start" style="max-width: 85%; font-size:0.85rem;">
+                        ${res.data || "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể nói rõ hơn không?"}
                     </div>
                 `);
             } else { throw new Error(); }
         } catch (e) {
             $(`#${typingId}`).remove();
-            chatBox.append(`<div class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start text-danger">System busy.</div>`);
+            chatBox.append(`
+                <div class="message-ai bg-white p-3 rounded-4 shadow-sm align-self-start text-danger" style="font-size:0.85rem;">
+                    Hệ thống bận, vui lòng thử lại sau.
+                </div>
+            `);
         }
         support.scrollToBottom();
     },
@@ -59,14 +72,99 @@ const support = {
         if (holder.children().length === 0) {
             holder.load("Shared/ChatWidget.html", function(response, status, xhr) {
                 if (status === "error") {
-                    api.showToast("Failed to load Chatbot", "error");
+                    api.showToast("Không thể tải chatbot", "error");
                     return;
                 }
                 support.initChat();
-                holder.fadeIn();
+                holder.fadeIn(200);
             });
         } else {
-            holder.fadeToggle();
+            holder.fadeToggle(200);
+        }
+    },
+
+    /**
+     * Load user's own support tickets (Customer view - 4 cols)
+     */
+    loadUserTickets: async () => {
+        const user = api.getUser();
+        const tbody = $("#support-list-body");
+        if (!tbody.length) return;
+
+        tbody.html(`
+            <tr><td colspan="4" class="text-center py-5">
+                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                <span class="ms-2 text-muted small">Đang tải...</span>
+            </td></tr>
+        `);
+
+        if (!user) {
+            tbody.html('<tr><td colspan="4" class="text-center py-5 text-muted">Vui lòng đăng nhập để xem yêu cầu hỗ trợ.</td></tr>');
+            return;
+        }
+
+        try {
+            const res = await api.get(`/support/user/${user.username}`);
+            const tickets = res.data || [];
+            tbody.empty();
+
+            if (tickets.length === 0) {
+                tbody.html('<tr><td colspan="4" class="text-center py-5 text-muted">Bạn chưa có yêu cầu hỗ trợ nào.</td></tr>');
+                return;
+            }
+
+            tickets.forEach(ticket => {
+                tbody.append(`
+                    <tr>
+                        <td class="ps-4 fw-bold">${ticket.subject || ticket.title || "---"}</td>
+                        <td>${ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString('vi-VN') : '---'}</td>
+                        <td>${support.getStatusBadge(ticket.status)}</td>
+                        <td class="text-end pe-4">
+                            <span class="text-muted small">#${ticket.id}</span>
+                        </td>
+                    </tr>
+                `);
+            });
+        } catch (e) {
+            tbody.html('<tr><td colspan="4" class="text-center py-5 text-danger">Lỗi khi tải danh sách yêu cầu.</td></tr>');
+        }
+    },
+
+    /**
+     * Open modal to create new ticket
+     */
+    openCreateTicket: () => {
+        $("#support-title").val("");
+        $("#support-content").val("");
+        const modal = new bootstrap.Modal(document.getElementById("support-modal"));
+        modal.show();
+    },
+
+    /**
+     * Submit new ticket from modal
+     */
+    submitTicket: async () => {
+        const user = api.getUser();
+        if (!user) { api.showToast("Vui lòng đăng nhập", "warning"); return; }
+
+        const subject = $("#support-title").val().trim();
+        const content = $("#support-content").val().trim();
+
+        if (!subject || !content) {
+            api.showToast("Vui lòng điền đầy đủ thông tin", "warning");
+            return;
+        }
+
+        const btn = $("button[onclick='support.submitTicket()']").text("Đang gửi...").prop("disabled", true);
+        try {
+            await api.post(`/support?username=${encodeURIComponent(user.username)}&subject=${encodeURIComponent(subject)}&content=${encodeURIComponent(content)}`);
+            api.showToast("Đã gửi yêu cầu hỗ trợ thành công!", "success");
+            bootstrap.Modal.getInstance(document.getElementById("support-modal")).hide();
+            support.loadUserTickets();
+        } catch (e) {
+            api.showToast("Gửi yêu cầu thất bại: " + e.message, "error");
+        } finally {
+            btn.text("Gửi yêu cầu").prop("disabled", false);
         }
     },
 

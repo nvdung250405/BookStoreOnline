@@ -7,7 +7,88 @@ const categories = {
     _flatList: [],   
     _treeData: [],   
 
-    // ─── LOAD ───────────────────────────────────────────────────────────────
+
+    // ─── ICONS for categories ────────────────────────────────────────────────
+    _catIcons: ['📚','📖','✍️','💡','🔬','🌍','🎭','🏛️','💼','🎨','🖥️','🎵','🌱','⚽','👶','🍳','🧠','🔭','📐','🗺️'],
+
+    // ─── PUBLIC LIST (Customer view) ────────────────────────────────────────
+    loadPublicList: async () => {
+        const grid    = $('#categories-grid');
+        const loading = $('#categories-loading');
+        const empty   = $('#categories-empty');
+
+        loading.show(); grid.hide(); empty.hide();
+
+        try {
+            const res = await api.get('/categories');
+            const list = res.data || [];
+
+            loading.hide();
+
+            if (list.length === 0) {
+                empty.show();
+                return;
+            }
+
+            grid.empty();
+            list.forEach((cat, idx) => {
+                const icon = categories._catIcons[idx % categories._catIcons.length];
+                const subCount = (cat.subCategories || []).length;
+                const delay = (idx % 3) * 100;
+                grid.append(`
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="${delay}">
+                        <a href="javascript:void(0)"
+                           onclick="layout.render('Books','Index'); books.filterByCategory && books.filterByCategory(${cat.categoryId})"
+                           class="text-decoration-none">
+                            <div class="category-card bg-white p-5 rounded-5 shadow-sm">
+                                <span class="cat-icon">${icon}</span>
+                                <h3 class="fw-bold font-serif mb-3" style="font-size:1.25rem;">${cat.categoryName}</h3>
+                                <p class="text-muted small mb-3">
+                                    ${subCount > 0
+                                        ? `Bao gồm ${subCount} danh mục con`
+                                        : 'Khám phá các đầu sách trong danh mục này'}
+                                </p>
+                                <span class="badge rounded-pill px-3 py-2"
+                                      style="background:#f5f2eb; color:#888; border:1px solid #e8e4dc; font-size:0.75rem;">
+                                    Xem sách
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                `);
+            });
+
+            grid.show();
+        } catch (e) {
+            loading.hide();
+            empty.show();
+            console.error('loadPublicList error', e);
+        }
+    },
+
+    // ─── DROPDOWN for Header nav ─────────────────────────────────────────────
+    loadCategoryDropdown: async () => {
+        const container = $('#header-category-items');
+        if (!container.length) return;
+        try {
+            const res = await api.get('/categories');
+            const list = res.data || [];
+            container.empty();
+            if (list.length === 0) return;
+            list.slice(0, 8).forEach(cat => {
+                container.append(`
+                    <li><a class="dropdown-item small py-2" href="javascript:void(0)"
+                           onclick="layout.render('Categories','Index')">
+                        ${cat.categoryName}
+                    </a></li>
+                `);
+            });
+        } catch (e) {
+            container.empty();
+        }
+    },
+
+    // ─── LOAD ────────────────────────────────────────────────────────────────
     loadAdminList: async () => {
         try {
             const res = await api.get('/categories');
