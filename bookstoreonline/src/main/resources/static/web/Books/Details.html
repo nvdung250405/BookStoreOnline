@@ -63,15 +63,26 @@
                     <div class="purchase-box bg-white p-4 rounded-4 shadow-sm border border-opacity-10 border-dark mt-4">
                         <label class="form-label fw-bold text-muted mb-3 text-uppercase tracking-widest d-block" style="font-size: 0.75rem; letter-spacing: 1px;">Số lượng</label>
                         <div class="d-flex flex-wrap align-items-center gap-3 w-100">
-                            <!-- Nút 1: Chỉnh số lượng -->
-                            <div style="width: 115px !important; min-width: 115px !important; max-width: 115px !important; flex-shrink: 0;">
-                                <div class="custom-qty-box d-flex justify-content-between align-items-center border rounded-pill bg-light overflow-hidden" style="height: 48px;" id="qty-wrapper">
-                                    <button type="button" class="btn btn-link link-dark border-0 p-0 shadow-none text-decoration-none d-flex align-items-center justify-content-center" style="width: 35px; height: 100%;" onclick="this.parentNode.querySelector('input').stepDown()">
-                                        <b style="font-size: 20px; font-family: monospace; line-height: 1; padding-bottom: 2px;">-</b>
+                            <!-- Nút 1: Chỉnh số lượng (Giao diện Premium mới) -->
+                            <div style="width: 120px; flex-shrink: 0;">
+                                <div class="d-flex justify-content-between align-items-center bg-light rounded-pill border shadow-sm" style="height: 48px; padding: 0 6px;" id="qty-wrapper">
+                                    <button type="button" class="btn btn-white rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center p-0" 
+                                            style="width: 38px; height: 38px; background: white; transition: all 0.2s;"
+                                            onclick="let i=document.getElementById('quantity'); i.stepDown(); document.getElementById('qty-display').textContent=i.value;"
+                                            onmouseover="this.style.transform='scale(1.1)'; this.style.background='#f8f9fa'"
+                                            onmouseout="this.style.transform='scale(1)'; this.style.background='white'">
+                                        <span style="font-size: 1.5rem; line-height: 1; margin-top: -4px; font-weight: 300;">-</span>
                                     </button>
-                                    <input type="number" id="quantity" class="border-0 bg-transparent text-center fw-bold shadow-none p-0 m-0 w-100" style="height: 100%; min-width: 0; outline: none; font-size: 16px; -moz-appearance: textfield;" value="1" min="1">
-                                    <button type="button" class="btn btn-link link-dark border-0 p-0 shadow-none text-decoration-none d-flex align-items-center justify-content-center" style="width: 35px; height: 100%;" onclick="this.parentNode.querySelector('input').stepUp()">
-                                        <b style="font-size: 20px; font-family: monospace; line-height: 1; padding-bottom: 2px;">+</b>
+                                    
+                                    <span id="qty-display" class="fw-bolder" style="flex: 1; text-align: center; font-size: 1.1rem; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100%; color: #111;">1</span>
+                                    <input type="number" id="quantity" value="1" min="1" style="display: none;">
+
+                                    <button type="button" class="btn btn-white rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center p-0" 
+                                            style="width: 38px; height: 38px; background: white; transition: all 0.2s;"
+                                            onclick="let i=document.getElementById('quantity'); i.stepUp(); document.getElementById('qty-display').textContent=i.value;"
+                                            onmouseover="this.style.transform='scale(1.1)'; this.style.background='#f8f9fa'"
+                                            onmouseout="this.style.transform='scale(1)'; this.style.background='white'">
+                                        <span style="font-size: 1.4rem; line-height: 1; font-weight: 300;">+</span>
                                     </button>
                                 </div>
                                 <style>

@@ -82,10 +82,24 @@ const cart = {
                         </div>
                     </td>
                     <td class="text-center">
-                        <div class="quantity-input d-inline-flex align-items-center border rounded-pill bg-light mx-auto">
-                            <button onclick="cart.update('${item.isbn}', ${item.quantity - 1})" class="btn btn-sm link-dark border-0 p-2 shadow-none"><i class="icon icon-minus"></i></button>
-                            <input type="number" class="form-control border-0 bg-transparent text-center fw-bold shadow-none p-0" value="${item.quantity}" style="width: 40px" readonly>
-                            <button onclick="cart.update('${item.isbn}', ${item.quantity + 1})" class="btn btn-sm link-dark border-0 p-2 shadow-none"><i class="icon icon-plus"></i></button>
+                        <div class="d-inline-flex align-items-center bg-light rounded-pill border shadow-sm" style="height: 36px; min-width: 100px; padding: 0 4px; justify-content: space-between;">
+                            <button onclick="cart.update('${item.isbn}', ${Number(item.quantity) - 1})" 
+                                    class="btn btn-sm btn-white rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center p-0" 
+                                    style="width: 28px; height: 28px; background: white; transition: all 0.2s; flex-shrink: 0;"
+                                    onmouseover="this.style.transform='scale(1.1)'; this.style.background='#f8f9fa'"
+                                    onmouseout="this.style.transform='scale(1)'; this.style.background='white'">
+                                <span style="font-size: 1.2rem; line-height: 1; margin-top: -2px;">-</span>
+                            </button>
+                            <span class="fw-bolder" style="flex: 1; text-align: center; font-size: 0.95rem; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100%; color: #111;">
+                                ${item.quantity}
+                            </span>
+                            <button onclick="cart.update('${item.isbn}', ${Number(item.quantity) + 1})" 
+                                    class="btn btn-sm btn-white rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center p-0" 
+                                    style="width: 28px; height: 28px; background: white; transition: all 0.2s; flex-shrink: 0;"
+                                    onmouseover="this.style.transform='scale(1.1)'; this.style.background='#f8f9fa'"
+                                    onmouseout="this.style.transform='scale(1)'; this.style.background='white'">
+                                <span style="font-size: 1.1rem; line-height: 1;">+</span>
+                            </button>
                         </div>
                     </td>
                     <td class="text-end pe-4 fw-bold text-accent fs-5">${api.formatCurrency(itemTotal)}</td>
