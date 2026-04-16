@@ -207,10 +207,13 @@ public class PaymentController {
             paymentRepository.save(payment);
             orderRepository.save(order);
 
-            String redirectUrl = "http://localhost:8080/web/index.html#/Orders/PaymentResult/" + order.getOrderId();
+            String redirectUrl = "http://localhost:8080/web/index.html"
+                    + "?vnp_ResponseCode=" + responseCode
+                    + "&vnp_TxnRef=" + txnRef
+                    + "#/Orders/PaymentResult/" + order.getOrderId();
             return new RedirectView(redirectUrl);
         } else {
-            return new RedirectView("http://localhost:8080/web/index.html#/Orders/PaymentResult/error");
+            return new RedirectView("http://localhost:8080/web/index.html?vnp_ResponseCode=99#/Orders/PaymentResult/error");
         }
     }
 }
