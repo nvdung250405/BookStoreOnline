@@ -1,0 +1,51 @@
+<div class="admin-supplier-details-page p-4">
+    <div class="mb-4">
+        <a href="javascript:void(0)" onclick="layout.render('Suppliers/Admin', 'Index')" class="text-decoration-none text-muted small mb-2 d-inline-block">
+            <i class="icon icon-chevron-left me-1"></i> Quay lại danh sách
+        </a>
+        <h3 class="fw-bold mb-1">Chi tiết Đối tác</h3>
+        <p class="text-muted small mb-0">Xem toàn bộ thông tin lưu trữ của nhà cung cấp</p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-body p-5">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                        <i class="icon icon-user text-accent" style="font-size: 2.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col">
+                    <h2 class="fw-bold mb-1" id="detail-supplier-name">...</h2>
+                    <p class="text-muted mb-0">ID: <span id="detail-supplier-id">...</span> | Nhà cung cấp & Đối tác</p>
+                </div>
+            </div>
+
+            <hr class="my-4 opacity-50">
+
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <div class="p-4 rounded-4 bg-light border-0">
+                        <label class="extra-small fw-bold text-muted text-uppercase d-block mb-2">Tên định danh</label>
+                        <p class="fs-5 fw-bold mb-0 text-dark" id="disp-supplier-name">...</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-4 rounded-4 bg-light border-0">
+                        <label class="extra-small fw-bold text-muted text-uppercase d-block mb-2">Địa chỉ</label>
+                        <p class="fs-5 fw-bold mb-0 text-dark" id="disp-supplier-contact">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 d-flex gap-2">
+                <button id="btn-edit-redirect" class="btn btn-accent rounded-pill px-5 py-2 fw-bold shadow-sm">
+                    <i class="icon icon-edit me-2"></i> Chỉnh sửa
+                </button>
+                <button onclick="layout.render('Suppliers/Admin', 'Index')" class="btn btn-light rounded-pill px-4 py-2 text-muted fw-bold">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

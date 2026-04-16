@@ -2,6 +2,7 @@ package com.bookstore.controller;
 
 import com.bookstore.dto.ApiResponse;
 import com.bookstore.dto.AuditLogDTO;
+import com.bookstore.dto.AuditLogStatsDTO;
 import com.bookstore.service.AuditLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,12 @@ public class AuditLogController {
 
     public AuditLogController(AuditLogService auditLogService) {
         this.auditLogService = auditLogService;
+    }
+
+    @GetMapping("/stats")
+    @Operation(summary = "Lấy thống kê nhật ký hệ thống", description = "Các thông số về số lượng log, người dùng hoạt động...")
+    public ResponseEntity<ApiResponse<AuditLogStatsDTO>> getStats() {
+        return ResponseEntity.ok(ApiResponse.success("Lấy thống kê thành công", auditLogService.getAuditStats()));
     }
 
     @GetMapping

@@ -94,7 +94,13 @@ public class AuthService {
         // 3. Save to database
         accountRepository.save(account);
 
-        // 4. Return registration info
+        // 4. Create default customer profile
+        com.bookstore.entity.Customer customer = new com.bookstore.entity.Customer();
+        customer.setAccount(account);
+        customer.setFullName("MEMBER_" + account.getUsername());
+        customerRepository.save(customer);
+
+        // 5. Return registration info
         return new LoginResponse(account.getUsername(), account.getRole(), null, account.getUsername());
     }
 

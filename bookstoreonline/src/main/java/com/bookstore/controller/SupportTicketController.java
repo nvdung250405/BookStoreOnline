@@ -32,6 +32,12 @@ public class SupportTicketController {
         return ApiResponse.success(supportTicketService.getAllTickets());
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Chi tiết một yêu cầu")
+    public ApiResponse<SupportTicketDTO> getTicket(@PathVariable Long id) {
+        return ApiResponse.success(supportTicketService.getTicketById(id));
+    }
+
     @GetMapping("/user/{username}")
     @Operation(summary = "Yêu cầu của tôi")
     public ApiResponse<List<SupportTicketDTO>> getRequestsByCustomer(@PathVariable String username) {

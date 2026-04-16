@@ -9,4 +9,5 @@ public interface SupportTicketService {
     void submitTicket(String username, String subject, String content);
     void updateStatus(Long id, String status);
     void respondToTicket(Long id, String reply, String internalNote, String statusCode);
+    SupportTicketDTO getTicketById(Long id);
 }

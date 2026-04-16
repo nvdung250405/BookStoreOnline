@@ -32,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final AccountRepository accountRepository;
     private final InventoryRepository inventoryRepository;
     private final InventoryLogRepository inventoryLogRepository;
+    private final AuditLogService auditLogService;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderDetailRepository orderDetailRepository,
@@ -43,7 +44,8 @@ public class OrderServiceImpl implements OrderService {
                             AccountRepository accountRepository,
                             BookRepository bookRepository,
                             InventoryRepository inventoryRepository,
-                            InventoryLogRepository inventoryLogRepository) {
+                            InventoryLogRepository inventoryLogRepository,
+                            AuditLogService auditLogService) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.customerRepository = customerRepository;
@@ -55,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
         this.bookRepository = bookRepository;
         this.inventoryRepository = inventoryRepository;
         this.inventoryLogRepository = inventoryLogRepository;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -133,6 +136,8 @@ public class OrderServiceImpl implements OrderService {
         payment.setStatusCode("PENDING");
         paymentRepository.save(payment);
 
+        auditLogService.log(customer.getAccount(), "ORDER_CHECKOUT", "Khách hàng đặt hàng mới: #" + orderId + " (Tổng tiền: " + totalPayment + ")");
+
         return mapToResponseDTO(order, detailDTOs);
     }
 
@@ -167,6 +172,8 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         restockInventory(order);
+        
+        auditLogService.log(order.getCustomer().getAccount(), "CANCEL_ORDER", "Đơn hàng #" + orderId + " đã bị hủy.");
     }
 
     private void restockInventory(Order order) {
@@ -257,6 +264,8 @@ public class OrderServiceImpl implements OrderService {
         payment.setStatusCode("PENDING");
         paymentRepository.save(payment);
 
+        auditLogService.log(customer.getAccount(), "ADMIN_CREATE_ORDER", "Admin tạo đơn hàng #" + orderId + " cho khách hàng " + customer.getFullName());
+
         return mapToResponseDTO(order, detailDTOs);
     }
 
@@ -282,6 +291,8 @@ public class OrderServiceImpl implements OrderService {
         if ("CANCELLED".equals(status) && !"CANCELLED".equals(oldStatus)) {
             restockInventory(order);
         }
+
+        auditLogService.log("UPDATE_ORDER_STATUS", "Cập nhật đơn hàng #" + orderId + " sang trạng thái " + status);
 
         try {
             String currentUser = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();

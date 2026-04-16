@@ -160,10 +160,14 @@
         </div>
     </div>
 
-    <div class="sidebar-footer p-3 border-top bg-light">
+    <div class="sidebar-footer p-3 border-top bg-light d-flex flex-column gap-2">
+        <a href="javascript:void(0)" onclick="layout.render('', 'Home/Index')" class="btn btn-accent w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 py-2 fw-bold shadow-sm">
+            <i class="icon icon-ns-home"></i>
+            <span>Quay lại trang chủ</span>
+        </a>
         <a href="javascript:void(0)" onclick="auth.logout()" class="btn btn-outline-danger w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 py-2">
             <i class="icon icon-ns-logout"></i>
-            <span>Đăng xuất khỏi hệ thống</span>
+            <span>Đăng xuất hệ thống</span>
         </a>
     </div>
 </aside>

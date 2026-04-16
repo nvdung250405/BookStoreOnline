@@ -1,52 +1,95 @@
-<!-- Users/Admin/Create.html - Create Staff/Admin Account -->
 <div class="p-4 p-md-5 w-100">
     <div class="d-flex align-items-center gap-3 mb-5">
-        <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-light rounded-circle p-2 shadow-sm">
-            <i class="icon icon-ns-arrow-left"></i>
+        <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-light rounded-circle p-2 shadow-sm" title="Quay lại">
+            <i class="icon icon-arrow-left fs-5"></i>
         </button>
         <div>
-            <h2 class="fw-bold font-serif mb-0">Create New Account</h2>
-            <p class="text-muted mb-0 small">Add a new staff member or system administrator to the platform</p>
+            <h2 class="fw-bold font-serif mb-0">Tạo Tài Khoản Nhân Viên</h2>
+            <p class="text-muted mb-0 small">Hệ thống sẽ tự động sinh tên đăng nhập và mật khẩu cho nhân viên hệ thống</p>
         </div>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm rounded-5 p-5 bg-white">
-                <div class="row g-4">
-                    <div class="col-12">
-                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Username <span class="text-danger">*</span></label>
-                        <input type="text" id="new-username" class="form-control form-control-lg rounded-pill border-light px-4 bg-light shadow-none" placeholder="e.g. staff_01">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-5 p-5 bg-white text-center">
+                <!-- <div class="mb-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <i class="icon icon-user-plus text-accent" style="font-size: 3.5rem;"></i>
                     </div>
-                    <div class="col-12">
-                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Secure Password <span class="text-danger">*</span></label>
-                        <input type="password" id="new-password" class="form-control form-control-lg rounded-pill border-light px-4 bg-light shadow-none" placeholder="Minimum 6 characters">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Access Role <span class="text-danger">*</span></label>
-                        <select id="new-role" class="form-select form-select-lg rounded-pill border-light px-4 bg-light shadow-none">
-                            <option value="">-- Select Role --</option>
-                            <option value="STAFF">STAFF - Sales Representative</option>
-                            <option value="STOREKEEPER">STOREKEEPER - Warehouse Manager</option>
-                            <option value="ADMIN">ADMIN - System Administrator</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Full Name</label>
-                        <input type="text" id="new-fullName" class="form-control rounded-pill border-light px-4 shadow-sm" placeholder="e.g. John Doe">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75">Contact Phone</label>
-                        <input type="tel" id="new-phone" class="form-control rounded-pill border-light px-4 shadow-sm" placeholder="e.g. 090xxxxxxx">
+                </div> -->
+                
+                <div>
+                    <label class="form-label fw-bold text-muted extra-small text-uppercase opacity-75 mb-3">Chọn Vai Trò Nhân Viên <span class="text-danger">*</span></label>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <label class="role-card">
+                            <input type="radio" name="role-select" value="STAFF" checked>
+                            <div class="role-card-inner">
+                                <i class="icon icon-user"></i>
+                                <span>STAFF</span>
+                                <small>Nhân viên</small>
+                            </div>
+                        </label>
+                        <label class="role-card">
+                            <input type="radio" name="role-select" value="STOREKEEPER">
+                            <div class="role-card-inner">
+                                <i class="icon icon-user"></i>
+                                <span>KHO</span>
+                                <small>Thủ kho</small>
+                            </div>
+                        </label>
+                        <label class="role-card">
+                            <input type="radio" name="role-select" value="ADMIN">
+                            <div class="role-card-inner">
+                                <i class="icon icon-user"></i>
+                                <span>ADMIN</span>
+                                <small>Quản trị</small>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
-                <div class="mt-5 d-flex gap-3">
-                    <button onclick="users.adminCreate()" class="btn btn-accent btn-lg rounded-pill px-5 fw-bold flex-grow-1 shadow-sm transition-all">
-                        <i class="icon icon-ns-user-plus me-2"></i> Create Account
+                <div class="d-grid pt-3">
+                    <button onclick="usersAutoCreate()" class="btn btn-accent btn-lg rounded-pill py-3 fw-bold shadow-sm transition-all" id="btn-auto-create">
+                        <i class="icon icon-magic-wand me-2"></i> Tạo Tài Khoản Ngay
                     </button>
-                    <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-light btn-lg rounded-pill px-4 transition-all">
-                        Cancel
+                    <button onclick="layout.render('Users', 'Admin/Index')" class="btn btn-link text-muted mt-3 py-2 text-decoration-none">
+                        Hủy bỏ và quay lại
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal hiển thị kết quả tạo tài khoản -->
+    <div class="modal fade" id="creation-result-modal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-body p-4 text-center">
+                    <div class="text-success mb-3">
+                        <i class="icon icon-check-circle" style="font-size: 4rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3 font-serif">Tạo Thành Công!</h5>
+                    <p class="text-muted small mb-4">Lưu lại thông tin đăng nhập dành cho thành viên vừa tạo:</p>
+                    
+                    <div class="bg-light p-3 rounded-4 border-0 mb-4 text-start">
+                        <div class="mb-3">
+                            <label class="extra-small text-muted text-uppercase fw-bold d-block">Tên đăng nhập</label>
+                            <span class="fw-bold text-dark fs-5" id="res-username">...</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="extra-small text-muted text-uppercase fw-bold d-block">Mật khẩu mặc định</label>
+                            <span class="fw-bold text-dark fs-5" id="res-password">...</span>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-accent rounded-pill w-100 fw-bold py-2 shadow-sm" 
+                                onclick="common.copyToClipboard('TK: ' + $('#res-username').text() + ' - MK: ' + $('#res-password').text())">
+                                <i class="icon icon-copy me-2"></i> Sao chép
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-dark rounded-pill px-5 fw-bold w-100 py-2" data-bs-dismiss="modal" onclick="layout.render('Users', 'Admin/Index')">
+                        Xong
                     </button>
                 </div>
             </div>
@@ -54,9 +97,92 @@
     </div>
 </div>
 
+<script>
+    (function() {
+        // Đảm bảo logic luôn là bản mới nhất khi load trang này
+        window.usersAutoCreate = async function() {
+            const role = $("input[name='role-select']:checked").val();
+            if (!role) {
+                api.showToast("Vui lòng chọn vai trò", "warning");
+                return;
+            }
+
+            const btn = $("#btn-auto-create");
+            const originHTML = btn.html();
+            btn.html('<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...').prop('disabled', true);
+
+            try {
+                // Gọi API
+                const res = await api.post(`/admin/accounts/auto-generate?role=${role}`, {});
+                const data = res.data || res;
+                
+                if (data && data.username) {
+                    $("#res-username").text(data.username);
+                    $("#res-password").text(data.password || '123456');
+                    
+                    const modalEl = document.getElementById('creation-result-modal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    modal.show();
+                } else {
+                    api.showToast("Tạo thành công nhưng không nhận được thông tin phản hồi.", "warning");
+                }
+            } catch (e) {
+                console.error(e);
+                api.showToast("Lỗi khi tạo tài khoản: " + (e.message || "Không xác định"), "error");
+            } finally {
+                btn.html(originHTML).prop('disabled', false);
+            }
+        };
+    })();
+</script>
+
 <style>
-    .font-serif { font-family: 'Playfair Display', serif; }
-    .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
+    .extra-small { font-size: 0.75rem; letter-spacing: 0.1em; }
     .btn-accent { background-color: #C5A992; color: white; border: none; }
     .btn-accent:hover { background-color: #2F2F2F; transform: translateY(-3px); }
+    .btn-outline-accent { border: 1px solid #C5A992; color: #C5A992; background: transparent; }
+    .btn-outline-accent:hover { background-color: #C5A992; color: white; }
+    
+    /* Role Cards Styling */
+    .role-card {
+        cursor: pointer;
+        width: 120px;
+    }
+    .role-card input {
+        display: none;
+    }
+    .role-card-inner {
+        padding: 20px 10px;
+        border: 2px solid #f3f3f3;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #fff;
+    }
+    .role-card-inner i {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: #ddd;
+    }
+    .role-card-inner span {
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #2F2F2F;
+    }
+    .role-card-inner small {
+        font-size: 0.65rem;
+        color: #999;
+    }
+    .role-card input:checked + .role-card-inner {
+        border-color: #C5A992;
+        background-color: #C5A99208;
+        box-shadow: 0 8px 20px rgba(197, 169, 146, 0.15);
+        transform: translateY(-5px);
+    }
+    .role-card input:checked + .role-card-inner i {
+        color: #C5A992;
+    }
+    .cursor-pointer { cursor: pointer; }
 </style>

@@ -63,6 +63,13 @@ const layout = {
                 }
 
                 layout.current = { area, view, id: id || null };
+
+                // Persist current view state for reload recovery
+                sessionStorage.setItem('last_area', area || '');
+                sessionStorage.setItem('last_view', view || '');
+                if (id) sessionStorage.setItem('last_id', id);
+                else sessionStorage.removeItem('last_id');
+
                 layout.initViewLogic(area, view, id);
 
                 if (typeof initBooksawTheme === 'function') {
@@ -70,6 +77,11 @@ const layout = {
                 }
 
                 layout.updateActiveNav();
+
+                // Global Trigger for profile reminder (if not already in profile page)
+                if (view !== 'Profile' && typeof users !== 'undefined' && users.checkIncompleteProfile) {
+                    users.checkIncompleteProfile();
+                }
 
                 // Scroll handling
                 if (targetId) {
@@ -315,6 +327,11 @@ const layout = {
                 break;
             case "Suppliers/Admin/Index":
                 suppliers.loadList();
+                break;
+            case "Suppliers/Admin/Edit":
+            case "Suppliers/Admin/Details":
+            case "Suppliers/Admin/Delete":
+                if (id) suppliers.loadDetail(id);
                 break;
             case "Shipping/Tracking":
                 // Ready for tracking ID input

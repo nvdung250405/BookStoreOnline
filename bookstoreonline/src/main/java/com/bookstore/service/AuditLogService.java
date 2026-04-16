@@ -1,8 +1,12 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.AuditLogDTO;
+import com.bookstore.dto.AuditLogStatsDTO;
+import com.bookstore.entity.Account;
 import com.bookstore.entity.AuditLog;
 import com.bookstore.repository.AuditLogRepository;
+import com.bookstore.repository.AccountRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +19,11 @@ import java.util.stream.Collectors;
 public class AuditLogService {
 
     private final AuditLogRepository auditLogRepository;
+    private final AccountRepository accountRepository;
 
-    public AuditLogService(AuditLogRepository auditLogRepository) {
+    public AuditLogService(AuditLogRepository auditLogRepository, AccountRepository accountRepository) {
         this.auditLogRepository = auditLogRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Transactional(readOnly = true)
@@ -46,14 +52,50 @@ public class AuditLogService {
         return auditLogRepository.findById(id).map(this::convertToDTO);
     }
 
+    @Transactional(readOnly = true)
+    public AuditLogStatsDTO getAuditStats() {
+        List<AuditLog> allLogs = auditLogRepository.findAll();
+        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        
+        long totalLogs = allLogs.size();
+        long todayLogs = allLogs.stream().filter(l -> !l.getTimestamp().isBefore(todayStart)).count();
+        long activeUsers = allLogs.stream().map(l -> l.getAccount() != null ? l.getAccount().getUsername() : "System").distinct().count();
+        long dataChanges = allLogs.stream().filter(l -> l.getAction().matches(".*(CREATE|UPDATE|DELETE|STOCK).*")).count();
+        
+        return new AuditLogStatsDTO(totalLogs, todayLogs, activeUsers, dataChanges);
+    }
+
     @Transactional
-    public void log(com.bookstore.entity.Account account, String action, String details) {
+    public void log(String action, String details) {
+        Account account = getCurrentAccount();
+        if (account == null) return; // Skip logging if no user is authenticated
+
         AuditLog log = new AuditLog();
         log.setAccount(account);
         log.setAction(action);
         log.setDetails(details);
         log.setTimestamp(LocalDateTime.now());
         auditLogRepository.save(log);
+    }
+
+    @Transactional
+    public void log(Account account, String action, String details) {
+        if (account == null) return;
+        AuditLog log = new AuditLog();
+        log.setAccount(account);
+        log.setAction(action);
+        log.setDetails(details);
+        log.setTimestamp(LocalDateTime.now());
+        auditLogRepository.save(log);
+    }
+
+    private Account getCurrentAccount() {
+        try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            return accountRepository.findById(username).orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private AuditLogDTO convertToDTO(AuditLog log) {

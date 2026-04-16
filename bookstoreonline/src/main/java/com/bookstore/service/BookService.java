@@ -5,6 +5,7 @@ import com.bookstore.repository.*;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookUpdateRequest;
 import com.bookstore.entity.*;
+import com.bookstore.service.AuditLogService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,19 +22,22 @@ public class BookService {
     private final AuthorRepository authorRepository;
     private final PhysicalBookRepository physicalBookRepository;
     private final EBookRepository eBookRepository;
+    private final AuditLogService auditLogService;
 
     public BookService(BookRepository bookRepository,
             CategoryRepository categoryRepository,
             PublisherRepository publisherRepository,
             AuthorRepository authorRepository,
             PhysicalBookRepository physicalBookRepository,
-            EBookRepository eBookRepository) {
+            EBookRepository eBookRepository,
+            AuditLogService auditLogService) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
         this.authorRepository = authorRepository;
         this.physicalBookRepository = physicalBookRepository;
         this.eBookRepository = eBookRepository;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +108,7 @@ public class BookService {
             eBookRepository.save(ebook);
         }
 
+        auditLogService.log("CREATE_BOOK", "Thêm sách mới: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
         return BookDTO.fromEntity(savedBook);
     }
 
@@ -163,6 +168,7 @@ public class BookService {
             eBookRepository.save(ebook);
         }
 
+        auditLogService.log("UPDATE_BOOK", "Cập nhật sách: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
         return BookDTO.fromEntity(savedBook);
     }
 
@@ -178,5 +184,6 @@ public class BookService {
         book.setIsDeleted(true);
         book.setDeletedAt(java.time.LocalDateTime.now());
         bookRepository.save(book);
+        auditLogService.log("DELETE_BOOK", "Xóa sách: " + book.getTitle() + " (ISBN: " + book.getIsbn() + ")");
     }
 }

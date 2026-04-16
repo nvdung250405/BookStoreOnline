@@ -70,6 +70,26 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="delete-voucher-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-body p-4 text-center">
+                    <div class="text-danger mb-3">
+                        <i class="icon icon-trash" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2 font-serif">Xác nhận xóa</h5>
+                    <p class="text-muted small mb-4">
+                        Bạn có chắc chắn muốn xóa mã giảm giá <strong id="del-voucher-code" class="text-danger"></strong> không?<br>Hành động này không thể hoàn tác.
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" id="btn-confirm-delete-voucher" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Xóa ngay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
