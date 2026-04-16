@@ -34,6 +34,13 @@ public class AdminAccountController {
         return ResponseEntity.ok(ApiResponse.success("Tạo tài khoản thành công", response));
     }
 
+    @PostMapping("/auto-generate")
+    @Operation(summary = "Tự động tạo tài khoản theo vai trò", description = "Hệ thống tự sinh username (staff1, kho1...) và mật khẩu mặc định 123456")
+    public ResponseEntity<ApiResponse<AdminUserResponseDTO>> autoGenerate(@RequestParam String role) {
+        AdminUserResponseDTO response = adminService.autoCreateAccount(role);
+        return ResponseEntity.ok(ApiResponse.success("Đã tự động tạo tài khoản thành công", response));
+    }
+
 
     @GetMapping("/get-users")
     @Operation(summary = "Lấy danh sách toàn bộ người dùng", description = "Admin lấy danh sách tất cả tài khoản kèm thông tin hồ sơ chi tiết")
@@ -59,5 +66,23 @@ public class AdminAccountController {
             @RequestParam String role) {
         adminService.updateUserRole(username, role);
         return ResponseEntity.ok(ApiResponse.success("Thay đổi quyền tài khoản thành công", null));
+    }
+
+    @PutMapping("/{username}/profile")
+    @Operation(summary = "Admin cập nhật thông tin hồ sơ", description = "Cho phép Admin sửa họ tên, SĐT, địa chỉ, bộ phận của bất kỳ ai.")
+    public ResponseEntity<ApiResponse<String>> updateProfileAdmin(
+            @PathVariable String username,
+            @RequestBody AccountProfileDTO dto) {
+        adminService.updateUserProfileAdmin(username, dto);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật hồ sơ thành công", null));
+    }
+
+    @PutMapping("/{username}/reset-password")
+    @Operation(summary = "Admin đặt lại mật khẩu", description = "Đặt lại mật khẩu cho người dùng mà không cần mật khẩu cũ.")
+    public ResponseEntity<ApiResponse<String>> resetPasswordAdmin(
+            @PathVariable String username,
+            @RequestParam String newPassword) {
+        adminService.resetPasswordAdmin(username, newPassword);
+        return ResponseEntity.ok(ApiResponse.success("Đã đặt lại mật khẩu thành công", null));
     }
 }

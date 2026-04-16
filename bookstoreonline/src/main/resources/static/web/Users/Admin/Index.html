@@ -31,7 +31,7 @@
                 </select>
             </div>
             <div class="col-md-auto">
-                <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="users.loadAdminList()">
+                <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="users.applyFiltersAndRender()">
                     <i class="icon icon-search me-2"></i> Áp dụng bộ lọc
                 </button>
             </div>
@@ -43,11 +43,11 @@
                     <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                         <tr>
                             <th class="ps-4 py-3">Thông tin Người dùng</th>
-                            <th class="py-3">Địa chỉ Email</th>
+                            <th class="py-3">Họ và tên</th>
                             <th class="py-3">Quyền hạn</th>
                             <th class="py-3">Ngày tham gia</th>
                             <th class="py-3">Trạng thái</th>
-                            <th class="text-end pe-4 py-3">Thao tác</th>
+                            <th class="text-center py-3">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="users-admin-list">
@@ -65,8 +65,163 @@
     </main>
 </div>
 
+<div class="modal fade" id="role-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-body p-4 text-center">
+                <div class="text-primary mb-3">
+                    <i class="icon icon-user" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-3 font-serif">Đổi quyền hạn</h5>
+                <p class="text-muted small mb-3">Chọn vai trò mới cho <strong id="role-username" class="text-dark"></strong>:</p>
+                <select id="role-select-modal" class="form-select rounded-3 bg-light border-0 mb-4">
+                    <option value="ADMIN">Quản trị viên (ADMIN)</option>
+                    <option value="STAFF">Nhân viên (STAFF)</option>
+                    <option value="STOREKEEPER">Thủ kho (STOREKEEPER)</option>
+                    <option value="CUSTOMER">Khách hàng (CUSTOMER)</option>
+                </select>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" id="btn-confirm-role" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="status-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3" id="status-icon-container">
+                    </div>
+                <h5 class="fw-bold mb-2 font-serif" id="status-title">Xác nhận</h5>
+                <p class="text-muted small mb-4" id="status-message"></p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" id="btn-confirm-status" class="btn rounded-pill px-4 fw-bold shadow-sm">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="user-details-modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <h5 class="fw-bold font-serif mb-0">Hồ sơ chi tiết & Quản trị</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    <!-- Left: Profile Info -->
+                    <div class="col-md-7">
+                        <div class="p-4 bg-light rounded-4 h-100">
+                            <h6 class="fw-bold text-muted extra-small text-uppercase mb-4"><i class="icon icon-user me-2"></i>Thông tin cơ bản</h6>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Tên đăng nhập (ID)</label>
+                                <input type="text" id="edit-username" class="form-control rounded-3 border-0 bg-white" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Họ và tên</label>
+                                <input type="text" id="edit-fullName" class="form-control rounded-3 border-light shadow-none">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Số điện thoại</label>
+                                <input type="text" id="edit-phone" class="form-control rounded-3 border-light shadow-none">
+                            </div>
+                            <div class="mb-3" id="edit-address-container">
+                                <label class="form-label small text-muted mb-1">Địa chỉ giao hàng</label>
+                                <textarea id="edit-address" class="form-control rounded-3 border-light shadow-none" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3" id="edit-dept-container" style="display: none;">
+                                <label class="form-label small text-muted mb-1">Bộ phận công tác</label>
+                                <select id="edit-department" class="form-select rounded-3 border-light shadow-none">
+                                    <option value="MANAGEMENT">MANAGEMENT - Ban quản trị</option>
+                                    <option value="SALES">SALES - Kinh doanh & Dịch vụ</option>
+                                    <option value="WAREHOUSE">WAREHOUSE - Vận hành kho</option>
+                                </select>
+                            </div>
+                            <button onclick="users.saveAdminEdit()" class="btn btn-primary rounded-pill w-100 mt-2 fw-bold py-2 shadow-sm">
+                                Lưu thay đổi hồ sơ
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Right: System & Security -->
+                    <div class="col-md-5">
+                        <div class="p-4 border rounded-4 mb-4">
+                            <h6 class="fw-bold text-muted extra-small text-uppercase mb-3"><i class="icon icon-shield me-2"></i>Hệ thống</h6>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1">Quyền hạn</label>
+                                <select id="edit-role" class="form-select rounded-3 border-light shadow-none" onchange="users.onRoleChangeInModal()">
+                                    <option value="ADMIN">ADMIN</option>
+                                    <option value="STAFF">STAFF</option>
+                                    <option value="STOREKEEPER">STOREKEEPER</option>
+                                    <option value="CUSTOMER">CUSTOMER</option>
+                                </select>
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label small text-muted mb-1 d-block">Trạng thái hiện tại</label>
+                                <div id="edit-status-display"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-danger border-opacity-25 rounded-4 bg-danger bg-opacity-10">
+                            <h6 class="fw-bold text-danger extra-small text-uppercase mb-3"><i class="icon icon-key me-2"></i>Đổi mật khẩu nhanh</h6>
+                            <p class="extra-small text-muted mb-3">Admin có thể đặt lại mật khẩu mà không cần mật khẩu cũ.</p>
+                            <div class="mb-3">
+                                <input type="text" id="admin-new-password" class="form-control form-control-sm rounded-pill border-0 shadow-sm" placeholder="Nhập mật khẩu mới...">
+                            </div>
+                            <button onclick="users.adminResetPassword()" class="btn btn-danger btn-sm rounded-pill w-100 fw-bold shadow-none">
+                                Đặt lại mật khẩu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
+
+    /* ── Phân trang hiện đại (Modern Pagination) ── */
+    .custom-page-btn {
+        border: none !important;
+        border-radius: 50px !important; /* Bo tròn hoàn toàn từng nút */
+        padding: 8px 18px;
+        color: #6b7280;
+        background-color: #f9f7f5; 
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    /* Hiệu ứng khi di chuột */
+    .custom-page-btn:hover {
+        background-color: #e5e7eb;
+        color: #111827;
+        transform: translateY(-1px);
+    }
+
+    /* Nút đang được chọn (Active) */
+    .page-item.active .custom-page-btn {
+        background-color: var(--accent-color, #C5A992) !important; 
+        color: #fff !important;
+        box-shadow: 0 4px 12px rgba(197, 169, 146, 0.4) !important;
+    }
+
+    /* Nút bị vô hiệu hóa (Disabled) */
+    .page-item.disabled .custom-page-btn {
+        background-color: transparent !important;
+        color: #9ca3af !important;
+        box-shadow: none !important;
+        cursor: not-allowed;
+    }
+
 </style>
 
 <script>

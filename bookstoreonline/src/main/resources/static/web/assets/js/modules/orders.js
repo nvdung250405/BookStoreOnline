@@ -16,18 +16,112 @@ const orders = {
         orders.renderSummary();
     },
 
+    // 2. VNPay QR Payment logic
+    qrPollingInterval: null,
+    qrCountdownInterval: null,
+
+    showVNPAYQR: async (paymentUrl, orderId, totalAmount) => {
+        // Clear previous QR if any
+        const qrContainer = document.getElementById("vnpay-qrcode");
+        if (!qrContainer) return;
+        qrContainer.innerHTML = "";
+
+        // Generate QR Code
+        new QRCode(qrContainer, {
+            text: paymentUrl,
+            width: 250,
+            height: 250,
+            colorDark: "#2F2F2F",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Set UI info
+        $("#qr-order-id").text(`#${orderId}`);
+        $("#qr-total-amount").text(api.formatCurrency(totalAmount));
+        $("#vnpay-direct-link").attr("href", paymentUrl);
+        $("#payment-timer").text("05:00");
+
+        // Show Modal
+        const modalElement = document.getElementById('vnpayQRModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+
+        // Timer Logic (5 minutes)
+        let timeLeft = 300;
+        if (orders.qrCountdownInterval) clearInterval(orders.qrCountdownInterval);
+        orders.qrCountdownInterval = setInterval(() => {
+            timeLeft--;
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            $("#payment-timer").text(`${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`);
+
+            if (timeLeft <= 0) {
+                clearInterval(orders.qrCountdownInterval);
+                clearInterval(orders.qrPollingInterval);
+                const inst = bootstrap.Modal.getInstance(modalElement);
+                if (inst) inst.hide();
+                api.showToast("Mã thanh toán đã hết hạn. Vui lòng thử lại.", "error");
+            }
+        }, 1000);
+
+        // Start Polling
+        if (orders.qrPollingInterval) clearInterval(orders.qrPollingInterval);
+
+        orders.qrPollingInterval = setInterval(async () => {
+            try {
+                const res = await api.get(`/orders/${orderId}`);
+                const order = res.data;
+                // If status is no longer NEW (e.g., CONFIRMED), payment was processed
+                if (order && order.status !== 'NEW') {
+                    clearInterval(orders.qrPollingInterval);
+                    clearInterval(orders.qrCountdownInterval);
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) modalInstance.hide();
+
+                    if (order.status === 'CONFIRMED') {
+                        api.showToast("Thanh toán thành công!", "success");
+                        layout.render('Orders', 'PaymentResult', orderId);
+                    } else if (order.status === 'CANCELLED') {
+                        api.showToast("Giao dịch đã bị hủy hoặc thất bại", "error");
+                    }
+                }
+            } catch (e) {
+                console.error("Polling error:", e);
+            }
+        }, 3000);
+
+        // Handle modal manual close
+        modalElement.addEventListener('hidden.bs.modal', function handler() {
+            clearInterval(orders.qrPollingInterval);
+            clearInterval(orders.qrCountdownInterval);
+            modalElement.removeEventListener('hidden.bs.modal', handler);
+        });
+    },
+
+    cancelQR: () => {
+        clearInterval(orders.qrPollingInterval);
+        clearInterval(orders.qrCountdownInterval);
+        const modalElement = document.getElementById('vnpayQRModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) modal.hide();
+        api.showToast("Đã hủy thanh toán QR", "info");
+    },
+
     renderSummary: async () => {
         const user = api.getUser();
         let cartData = [];
         if (user) {
              const res = await api.get('/cart');
              cartData = api.parseResponse(res) || [];
+            const res = await api.get(`/cart/${user.username}`);
+            cartData = res.data || [];
         }
-        
+
         const container = $("#checkout-summary");
         if (!container.length) return;
         container.empty();
-        
+
         let total = 0;
         cartData.forEach(item => {
             const itemTotal = item.totalPrice || (item.price * item.quantity);
@@ -62,12 +156,12 @@ const orders = {
                 const voucher = res.data;
                 sessionStorage.setItem('applied_voucher', voucher.voucherCode);
                 sessionStorage.setItem('applied_discount', voucher.discountValue);
-                
+
                 const msgDiv = $("#voucher-message");
                 msgDiv.html(`<i class="icon icon-check text-success me-2"></i><span class="text-success">Đã áp dụng mã! Giảm: ${api.formatCurrency(voucher.discountValue)}</span>`)
                     .removeClass("text-danger").addClass("text-success").show();
-                
-                orders.renderSummary(); 
+
+                orders.renderSummary();
             }
         } catch (e) {
             const msgDiv = $("#voucher-message");
@@ -88,6 +182,10 @@ const orders = {
         const cartRes = await api.get('/cart');
         const cartData = api.parseResponse(cartRes) || [];
         
+
+        const cartRes = await api.get(`/cart/${user.username}`);
+        const cartData = cartRes.data || [];
+
         if (cartData.length === 0) {
             api.showToast("Giỏ hàng của bạn đang trống!", "error");
             return;
@@ -112,7 +210,8 @@ const orders = {
 
             if (paymentMethod === 'VNPAY') {
                 const vnpayRes = await api.get(`/payments/vnpay/create?orderId=${orderId}`);
-                window.location.href = vnpayRes.data; 
+                // Redirect directly to VNPay site
+                window.location.href = vnpayRes.data;
             } else {
                 api.showToast("Đặt hàng thành công!");
                 layout.render('Orders', 'PaymentResult', orderId);
@@ -204,8 +303,8 @@ const orders = {
             let subtotal = 0;
 
             details.forEach(item => {
-                const unitPrice  = item.finalPrice || item.unitPrice || item.price || 0;
-                const lineTotal  = unitPrice * item.quantity;
+                const unitPrice = item.finalPrice || item.unitPrice || item.price || 0;
+                const lineTotal = unitPrice * item.quantity;
                 subtotal += lineTotal;
                 tbody.append(`
                     <tr>
@@ -225,7 +324,7 @@ const orders = {
             }
 
             // Totals
-            const total    = o.totalAmount || subtotal;
+            const total = o.totalAmount || subtotal;
             const shipping = total >= 200000 ? 0 : 30000;
             $("#invoice-subtotal").text(api.formatCurrency(subtotal));
             $("#invoice-shipping").text(shipping === 0 ? "Miễn phí" : api.formatCurrency(shipping));
@@ -281,7 +380,7 @@ const orders = {
     },
 
     getStatusClass: (status) => {
-        switch(status) {
+        switch (status) {
             case 'NEW': return 'bg-warning text-dark';
             case 'CONFIRMED': return 'bg-info text-white';
             case 'SHIPPING': return 'bg-primary text-white';
@@ -316,13 +415,13 @@ const orders = {
             const timeline = $('#tracking-timeline');
             timeline.empty();
             const steps = [
-                { status: 'NEW',       label: 'Đơn hàng mới',            icon: '📋', date: o.createdAt },
-                { status: 'CONFIRMED', label: 'Xác nhận đơn hàng',      icon: '✅', date: o.confirmedAt || null },
-                { status: 'SHIPPING',  label: 'Đang giao hàng',          icon: '🚚', date: o.shippedAt || null },
-                { status: 'COMPLETED', label: 'Giao hàng thành công',    icon: '🎉', date: o.completedAt || null },
+                { status: 'NEW', label: 'Đơn hàng mới', icon: '📋', date: o.createdAt },
+                { status: 'CONFIRMED', label: 'Xác nhận đơn hàng', icon: '✅', date: o.confirmedAt || null },
+                { status: 'SHIPPING', label: 'Đang giao hàng', icon: '🚚', date: o.shippedAt || null },
+                { status: 'COMPLETED', label: 'Giao hàng thành công', icon: '🎉', date: o.completedAt || null },
             ];
 
-            const statusOrder = ['NEW','CONFIRMED','SHIPPING','COMPLETED'];
+            const statusOrder = ['NEW', 'CONFIRMED', 'SHIPPING', 'COMPLETED'];
             const currentIdx = statusOrder.indexOf(o.status);
 
             steps.forEach((step, idx) => {
@@ -360,10 +459,10 @@ const orders = {
             }));
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement('a');
-            a.href     = url;
-            a.download = `orders_export_${new Date().toISOString().slice(0,10)}.json`;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `orders_export_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
             api.showToast(`Xuất ${list.length} đơn hàng thành công!`, 'success');

@@ -40,6 +40,22 @@ const common = {
             options.second = '2-digit';
         }
         return new Intl.DateTimeFormat('vi-VN', options).format(date);
+    },
+    copyToClipboard(text) {
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            api.showToast("Đã sao chép vào bộ nhớ tạm", "success");
+        }).catch(err => {
+            console.error('Lỗi sao chép:', err);
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            api.showToast("Đã sao chép vào bộ nhớ tạm", "success");
+        });
     }
 };
 
@@ -105,6 +121,8 @@ const api = {
     get: (endpoint) => api.request(endpoint, { method: 'GET' }),
     post: (endpoint, data) => api.request(endpoint, { method: 'POST', body: data }),
     put: (endpoint, data) => api.request(endpoint, { method: 'PUT', body: data }),
+    post: (endpoint, data = {}) => api.request(endpoint, { method: 'POST', body: JSON.stringify(data || {}) }),
+    put: (endpoint, data = {}) => api.request(endpoint, { method: 'PUT', body: JSON.stringify(data || {}) }),
     delete: (endpoint) => api.request(endpoint, { method: 'DELETE' }),
 
     /**

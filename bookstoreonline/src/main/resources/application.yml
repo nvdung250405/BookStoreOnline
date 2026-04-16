@@ -6,7 +6,7 @@ spring:
     name: bookstoreonline
 
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=nha_sach_online;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://localhost:1433;databaseName=nha_sach_online_new;encrypt=true;trustServerCertificate=true;
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -22,8 +22,8 @@ spring:
     open-in-view: false
 
 jwt:
-  secret: 7A25432A462D4A614E645267556B58703272357538782F413F4428472B4B6250
-  expiration: 86400000
+  secret: 7A25432A462D4A614E645267556B58703272357538782F413F4428472B4B6250   # 256-bit key (HEX)
+  expiration: 86400000   # 24 giờ (ms)
 
 springdoc:
   api-docs:
@@ -39,5 +39,5 @@ logging:
 vnpay:
   pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
   return-url: http://localhost:8080/api/payments/vnpay-callback
-  tmn-code: 1H6K1I7Z
-  hash-secret: 7A25432A462D4A614E645267556B58703272357538782F413F4428472B4B6250
+  tmn-code: 0W3URZ0L
+  hash-secret: J3CT4IHM1ZKN4AR49AVX3GBD30TBAY14

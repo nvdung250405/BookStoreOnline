@@ -8,7 +8,10 @@ import com.bookstore.util.RequestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,6 +72,55 @@ public class PaymentController {
             return ApiResponse.success("Payment result processed", "SUCCESS");
         } else {
             return ApiResponse.error(400, result);
+    @Operation(summary = "Xử lý kết quả VNPay", description = "Nhận và xác thực kết quả thanh toán từ VNPay")
+    @Transactional
+    public RedirectView vnpayCallback(@RequestParam Map<String, String> params) {
+        String vnp_SecureHash = params.get("vnp_SecureHash");
+        params.remove("vnp_SecureHashType");
+        params.remove("vnp_SecureHash");
+
+        List<String> fieldNames = new ArrayList<>(params.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        Iterator<String> itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = itr.next();
+            String fieldValue = params.get(fieldName);
+            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                hashData.append(fieldName);
+                hashData.append('=');
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+                if (itr.hasNext()) {
+                    hashData.append('&');
+                }
+            }
+        }
+
+        String checkSum = VNPayUtils.hmacSHA512(vnp_HashSecret, hashData.toString());
+        if (checkSum.equalsIgnoreCase(vnp_SecureHash)) {
+            String txnRef = params.get("vnp_TxnRef");
+            String responseCode = params.get("vnp_ResponseCode");
+
+            Payment payment = paymentRepository.findByTransactionReference(txnRef)
+                    .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+            Order order = payment.getOrder();
+
+            if ("00".equals(responseCode)) {
+                payment.setStatusCode("SUCCESS");
+                payment.setPaymentDate(LocalDateTime.now());
+                order.setStatusCode("CONFIRMED"); 
+            } else {
+                payment.setStatusCode("FAILED");
+                order.setStatusCode("CANCELLED"); 
+            }
+            paymentRepository.save(payment);
+            orderRepository.save(order);
+
+            String redirectUrl = "http://localhost:8080/web/index.html#/Orders/PaymentResult/" + order.getOrderId();
+            return new RedirectView(redirectUrl);
+        } else {
+            return new RedirectView("http://localhost:8080/web/index.html#/Orders/PaymentResult/error");
         }
     }
 }

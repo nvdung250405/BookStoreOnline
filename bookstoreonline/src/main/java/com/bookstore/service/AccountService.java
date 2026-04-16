@@ -54,18 +54,20 @@ public class AccountService {
         profileDTO.setRole(account.getRole());
 
         if ("CUSTOMER".equalsIgnoreCase(account.getRole())) {
-            Customer customer = customerRepository.findByAccount_Username(username)
-                    .orElseThrow(() -> new IllegalArgumentException("Customer profile not found"));
-            profileDTO.setFullName(customer.getFullName());
-            profileDTO.setPhone(customer.getPhone());
-            profileDTO.setShippingAddress(customer.getShippingAddress());
-            profileDTO.setLoyaltyPoints(customer.getLoyaltyPoints());
+            Customer customer = customerRepository.findByAccount_Username(username).orElse(null);
+            if (customer != null) {
+                profileDTO.setFullName(customer.getFullName());
+                profileDTO.setPhone(customer.getPhone());
+                profileDTO.setShippingAddress(customer.getShippingAddress());
+                profileDTO.setLoyaltyPoints(customer.getLoyaltyPoints());
+            }
         } else {
-            Staff staff = staffRepository.findByAccount_Username(username)
-                    .orElseThrow(() -> new IllegalArgumentException("Staff profile not found"));
-            profileDTO.setFullName(staff.getFullName());
-            profileDTO.setPhone(staff.getPhone());
-            profileDTO.setDepartment(staff.getDepartment());
+            Staff staff = staffRepository.findByAccount_Username(username).orElse(null);
+            if (staff != null) {
+                profileDTO.setFullName(staff.getFullName());
+                profileDTO.setPhone(staff.getPhone());
+                profileDTO.setDepartment(staff.getDepartment());
+            }
         }
 
         return profileDTO;

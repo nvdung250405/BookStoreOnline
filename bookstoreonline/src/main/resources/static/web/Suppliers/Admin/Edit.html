@@ -1,0 +1,45 @@
+<div class="admin-edit-supplier-page p-4">
+    <div class="mb-4">
+        <a href="javascript:void(0)" onclick="layout.render('Suppliers/Admin', 'Index')" class="text-decoration-none text-muted small mb-2 d-inline-block">
+            <i class="icon icon-chevron-left me-1"></i> Quay lại danh sách
+        </a>
+        <h3 class="fw-bold mb-1">Chỉnh sửa Đối tác / NCC</h3>
+        <p class="text-muted small mb-0">Cập nhật thông tin định danh cho nhà cung cấp</p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card-body p-4">
+            <form id="edit-supplier-form" onsubmit="suppliers.save(event)">
+                <input type="hidden" id="supplier-id">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Tên Nhà Cung Cấp</label>
+                        <div class="input-group input-group-lg border-0 bg-light rounded-3 overflow-hidden shadow-none">
+                            <span class="input-group-text bg-transparent border-0"><i class="icon icon-user text-muted"></i></span>
+                            <input type="text" id="supplier-name" class="form-control bg-transparent border-0 shadow-none" placeholder="Ví dụ: NXB Trẻ..." required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Địa chỉ</label>
+                        <div class="input-group input-group-lg border-0 bg-light rounded-3 overflow-hidden shadow-none">
+                            <span class="input-group-text bg-transparent border-0"><i class="icon icon-map-pin text-muted"></i></span>
+                            <input type="text" id="supplier-contact" class="form-control bg-transparent border-0 shadow-none" placeholder="Địa chỉ, Email hoặc SĐT..." required>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-accent rounded-pill px-5 py-2 fw-bold shadow-sm">
+                                <i class="icon icon-check me-2"></i> Cập nhật thay đổi
+                            </button>
+                            <button type="button" onclick="layout.render('Suppliers/Admin', 'Index')" class="btn btn-light rounded-pill px-4 py-2 text-muted fw-bold">
+                                Hủy bỏ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -4,7 +4,7 @@
             <h3 class="fw-bold mb-1">Quản lý Đối tác & Nhà cung cấp</h3>
             <p class="text-muted small mb-0">Danh mục các nhà xuất bản và đơn vị phân phối hàng hóa</p>
         </div>
-        <button class="btn btn-accent rounded-pill px-4 shadow-sm" onclick="suppliers.addSupplier()">
+        <button class="btn btn-accent rounded-pill px-4 shadow-sm" onclick="layout.render('Suppliers/Admin', 'Create')">
             <i class="icon icon-plus me-2"></i> Thêm Đối tác mới
         </button>
     </div>
@@ -15,14 +15,13 @@
                 <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                     <tr>
                         <th class="ps-4 py-3">Tên Đối tác / NCC</th>
-                        <th class="py-3">Mã số thuế</th>
-                        <th class="py-3">Số điện thoại liên lạc</th>
+                        <th class="py-3">Địa chỉ</th>
                         <th class="py-3 text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody id="suppliers-list">
                     <tr>
-                         <td colspan="4" class="text-center py-5 text-muted">
+                         <td colspan="3" class="text-center py-5 text-muted">
                             <div class="spinner-border spinner-border-sm text-accent mb-2"></div><br>Đang đồng bộ danh mục đối tác...
                          </td>
                     </tr>

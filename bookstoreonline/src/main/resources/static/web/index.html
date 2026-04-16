@@ -16,7 +16,6 @@
     <link rel="stylesheet" type="text/css" href="assets/css/booksaw.css">
     <!-- 4. Project Special Overrides -->
     <link rel="stylesheet" type="text/css" href="assets/style.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -24,6 +23,7 @@
         rel="stylesheet">
 
     <script src="assets/lib/jquery/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="assets/js/vendor/modernizr.js"></script>
 </head>
 
@@ -93,6 +93,34 @@
         </div>
     </div>
 
+    <!-- Profile Update Reminder Modal -->
+    <div class="modal fade" id="update-profile-reminder-modal" tabindex="-1" aria-hidden="true" style="z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 bg-accent text-white py-3">
+                    <h5 class="modal-title fw-bold">🔔 Nhắc nhở cập nhật thông tin</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="mb-3">
+                        <i class="icon icon-ns-user text-accent animate-bounce" style="font-size: 3.5rem;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-3">Thông tin hồ sơ chưa đầy đủ</h5>
+                    <p class="text-muted px-3" id="update-reminder-reason">
+                        Bạn chưa cập nhật đầy đủ thông tin cá nhân. Hãy hoàn thiện hồ sơ để trải nghiệm dịch vụ tốt hơn.
+                    </p>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Để sau</button>
+                    <button type="button" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm" 
+                            onclick="bootstrap.Modal.getOrCreateInstance(document.getElementById('update-profile-reminder-modal')).hide(); layout.render('Users', 'Profile');">
+                        Cập nhật ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/vendor/plugins.js"></script>
     <script src="assets/js/vendor/script.js"></script>
@@ -118,8 +146,46 @@
 
     <script>
         $(document).ready(() => {
-            // Khởi chạy hệ thống layout, nạp trang chủ mặc định
-            layout.render('', 'Home/Index');
+            // Hệ thống điều phối (Router) dựa trên Hash (#/)
+            function handleRoute() {
+                const hash = window.location.hash;
+                console.log("Navigating to hash:", hash);
+                
+                if (!hash || hash === '#/' || hash === '#') {
+                    layout.render('', 'Home/Index');
+                    return;
+                }
+
+                // Cấu trúc mong đợi: #/Area/View/Id hoặc #/View/Id
+                const parts = hash.substring(2).split('/');
+                if (parts.length >= 2) {
+                    const area = parts[0];
+                    const view = parts[1];
+                    const id = parts[2] || null;
+                    layout.render(area, view, id);
+                } else if (parts.length === 1) {
+                    layout.render('', parts[0]);
+                } else {
+                    layout.render('', 'Home/Index');
+                }
+            }
+
+            // Lắng nghe thay đổi URL
+            window.addEventListener('hashchange', handleRoute);
+            
+            // Chạy lần đầu khi vừa load trang
+            handleRoute();
+            // Restore last view or default to Home
+            const lastArea = sessionStorage.getItem('last_area');
+            const lastView = sessionStorage.getItem('last_view');
+            const lastId   = sessionStorage.getItem('last_id');
+
+            if (lastView) {
+                console.log(`Restoring View: ${lastArea}/${lastView}`);
+                layout.render(lastArea, lastView, lastId);
+            } else {
+                layout.render('', 'Home/Index');
+            }
         });
     </script>
 </body>

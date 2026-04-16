@@ -15,28 +15,22 @@
         </div>
 
         <!-- Filter & Search -->
-        <div class="row mb-4 gap-3 bg-white p-3 rounded-4 shadow-sm mx-0">
-            <div class="col-md-3">
-                <input type="text" class="form-control rounded-3 border-0 bg-light" id="support-search" placeholder="Tìm theo tiêu đề hoặc khách hàng...">
+        <div class="row mb-4 bg-white p-3 rounded-4 shadow-sm mx-0 align-items-center g-3">
+            <div class="col-md-5">
+                <input type="text" class="form-control rounded-3 border-0 bg-light py-2" id="support-search" placeholder="Tìm theo tiêu đề hoặc khách hàng...">
             </div>
-            <div class="col-md-2">
-                <select class="form-select rounded-3 border-0 bg-light" id="support-status-filter">
+            
+            <div class="col-md-3">
+                <select class="form-select rounded-3 border-0 bg-light py-2" id="support-status-filter">
                     <option value="">-- Tất cả Trạng thái --</option>
                     <option value="OPEN">Mở (Mới)</option>
                     <option value="PROCESSING">Đang xử lý</option>
                     <option value="CLOSED">Đã hoàn thành/Đóng</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <select class="form-select rounded-3 border-0 bg-light" id="support-priority-filter">
-                    <option value="">-- Độ ưu tiên --</option>
-                    <option value="LOW">Thấp</option>
-                    <option value="MEDIUM">Trung bình</option>
-                    <option value="HIGH">Cao</option>
-                </select>
-            </div>
+            
             <div class="col-md-auto">
-                <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="support.loadAdminTickets()">
+                <button class="btn btn-accent rounded-pill px-4 py-2 fw-bold w-100" onclick="support.loadAdminTickets()">
                     <i class="icon icon-search me-2"></i> Lọc danh sách
                 </button>
             </div>
@@ -74,3 +68,9 @@
 <style>
     .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
 </style>
+
+<script>
+    $(document).ready(function() {
+        support.loadAdminTickets();
+    });
+</script>

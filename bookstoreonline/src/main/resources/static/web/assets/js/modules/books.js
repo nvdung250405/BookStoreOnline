@@ -62,6 +62,116 @@ const books = {
             console.error("Failed to load store", error);
             $("#books-grid").html('<div class="col-12 text-center py-5 text-danger">Không thể tải danh sách sản phẩm. Vui lòng thử lại.</div>');
         }
+    // 1d. Public Load all books & categories for Index page
+    _allBooksCache: [],
+
+    loadAll: async () => {
+        const grid = $("#books-grid");
+        const catList = $("#categories-filter-list");
+
+        try {
+            // Load Categories for sidebar
+            const catRes = await api.get('/categories');
+            const categoriesData = catRes.data || [];
+            books.renderCategories(categoriesData);
+
+            // Load Books
+            grid.html(`
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-accent mb-3"></div>
+                    <div class="text-muted">Đang tải danh sách sách...</div>
+                </div>
+            `);
+
+            const res = await api.get('/books');
+            books._allBooksCache = res.data || [];
+            books.renderGrid("#books-grid", books._allBooksCache);
+
+        } catch (error) {
+            console.error("Failed to load books index", error);
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu. Vui lòng thử lại.</div>');
+        }
+    },
+
+    renderCategories: (data) => {
+        const container = $("#categories-filter-list");
+        if (!container.length) return;
+        container.empty();
+
+        container.append(`
+            <li>
+                <a href="javascript:void(0)" onclick="books.loadAll()" class="text-decoration-none text-dark d-flex justify-content-between align-items-center py-1 category-link active">
+                    <span class="small fw-bold">Tất cả</span>
+                    <i class="icon icon-chevron-right extra-small"></i>
+                </a>
+            </li>
+        `);
+
+        data.forEach(cat => {
+            container.append(`
+                <li>
+                    <a href="javascript:void(0)" onclick="books.filterByCategory(${cat.categoryId}, '${cat.categoryName}')" class="text-decoration-none text-muted d-flex justify-content-between align-items-center py-1 category-link">
+                        <span class="small">${cat.categoryName}</span>
+                        <i class="icon icon-chevron-right extra-small" style="font-size:0.6rem;"></i>
+                    </a>
+                </li>
+            `);
+        });
+    },
+
+    filterByCategory: async (categoryId, categoryName) => {
+        $("#category-title").text(categoryName || "Danh mục");
+        $(".category-link").removeClass("active fw-bold text-dark").addClass("text-muted");
+        $(event.currentTarget).addClass("active fw-bold text-dark").removeClass("text-muted");
+
+        const grid = $("#books-grid");
+        grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
+
+        try {
+            const res = await api.get(`/books?categoryName=${encodeURIComponent(categoryName)}`);
+            books.renderGrid("#books-grid", res.data || []);
+        } catch (e) {
+            grid.html('<div class="col-12 text-center py-5 text-danger">Không thể lọc theo danh mục này.</div>');
+        }
+    },
+
+    loadByPriceRange: async (min, max) => {
+        const grid = $("#books-grid");
+        grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
+        try {
+            const res = await api.get(`/books?minPrice=${min}&maxPrice=${max}`);
+            books.renderGrid("#books-grid", res.data || []);
+        } catch (e) {
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi lọc theo giá.</div>');
+        }
+    },
+
+    handleSort: (criteria) => {
+        let sorted = [...books._allBooksCache];
+        if (criteria === 'price-asc') {
+            sorted.sort((a, b) => a.price - b.price);
+        } else if (criteria === 'price-desc') {
+            sorted.sort((a, b) => b.price - a.price);
+        } else if (criteria === 'newest') {
+            sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        }
+        books.renderGrid("#books-grid", sorted);
+    },
+
+    loadDetail: async (isbn) => {
+        // Implementation for details page initialization if needed via layout-manager
+        // (Details are often handled by a separate call but good to have a placeholder)
+    },
+
+
+    // 1b. Render best seller section
+    renderBestSeller: (book) => {
+        if (!book) return;
+        $('#best-seller-author').text(book.authorName || book.author || 'Tác giả');
+        $('#best-seller-title').text(book.title || '---');
+        $('#best-seller-desc').text(book.description ? book.description.substring(0, 150) + '...' : 'Miêu tả chưa có.');
+        $('#best-seller-price').text(api.formatCurrency(book.price));
+        $('#best-seller-link').attr('onclick', `layout.render('Books','Details','${book.isbn}')`);
     },
 
     loadCategoriesSidebar: async () => {
@@ -235,6 +345,14 @@ const books = {
 
     loadByPriceRange: async (minPrice, maxPrice) => {
         api.showToast("Đang lọc theo giá...", "info");
+        const grid = $("#books-grid");
+        grid.html(`
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-accent mb-3" style="width:2.5rem;height:2.5rem;"></div>
+                <p class="text-muted">AI đang tìm kiếm: <strong>"${$('<div>').text(query).html()}"</strong></p>
+            </div>
+        `);
+
         try {
             const res = await api.get(`/books/search?minPrice=${minPrice}&maxPrice=${maxPrice}&status=ACTIVE`);
             const list = api.normalizeList(res) || [];
@@ -268,8 +386,8 @@ const books = {
                 return;
             }
             data.forEach(book => {
-                const typeBadge = book.bookType === 'EBOOK' 
-                    ? '<span class="badge bg-info text-dark rounded-pill px-2">EBOOK</span>' 
+                const typeBadge = book.bookType === 'EBOOK'
+                    ? '<span class="badge bg-info text-dark rounded-pill px-2">EBOOK</span>'
                     : '<span class="badge bg-secondary rounded-pill px-2">PHYSICAL</span>';
                 
                 const statusOptions = [
@@ -285,6 +403,7 @@ const books = {
                 });
                 const sSelect = `<select class="form-select form-select-sm rounded-pill py-0 px-2" style="width:140px; font-size:0.75rem" onchange="books.quickUpdateStatus('${book.isbn}', this.value)">${opts}</select>`;
                 
+
                 tbody.append(`
                     <tr>
                         <td class="ps-4 py-4">
@@ -336,6 +455,30 @@ const books = {
     },
 
     loadFilterCategories: async () => {
+    update: async (isbn) => {
+        const form = $("#edit-book-form") || $("#create-book-form");
+        if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+
+        const raw = {};
+        form.serializeArray().forEach(item => { raw[item.name] = item.value; });
+
+        const payload = {
+            title: raw.tenSach || raw.title,
+            price: parseFloat(raw.giaNiemYet || raw.price) || 0,
+            categoryId: raw.maDanhMuc ? parseInt(raw.maDanhMuc) : (raw.categoryId ? parseInt(raw.categoryId) : null),
+            publisherId: raw.maNxb ? parseInt(raw.maNxb) : (raw.publisherId ? parseInt(raw.publisherId) : null),
+            description: raw.moTa || raw.description || '',
+            coverImage: raw.anhBia || raw.coverImage || '',
+            coverAlt: raw.coverAlt || '',
+            authorIds: raw.maTacGia ? [parseInt(raw.maTacGia)] : (raw.authorId ? [parseInt(raw.authorId)] : []),
+            bookType: raw.bookType,
+            weight: raw.weight ? parseFloat(raw.weight) : null,
+            fileSize: raw.fileSize ? parseFloat(raw.fileSize) : null,
+            downloadUrl: raw.downloadUrl || null
+        };
+
+        console.log("Update Book Payload:", payload);
+        api.showToast("Đang cập nhật thông tin sách...", "info");
         try {
             const cats = api.normalizeList(await api.get('/categories')) || [];
             const sel = $("#filter-category");
@@ -407,6 +550,26 @@ const books = {
         const fd = new FormData(); fd.append('file', f);
         const r = await api.request('/admin/upload-image', { method: 'POST', body: fd });
         return r.data?.fileName || f.name;
+            const result = await response.json();
+            if (result.status === 200 || result.status === 201) {
+                const fileName = result.data.fileName;
+                // Update hidden inputs (system fileName)
+                $('#anhBia').val(fileName).trigger('input');
+                $('#edit-anhBia').val(fileName).trigger('input');
+
+                api.showToast("Tải ảnh lên thành công!", "success");
+            } else {
+                api.showToast("Lỗi: " + result.message, "error");
+            }
+        } catch (e) {
+            console.error("Upload error:", e);
+            api.showToast("Không thể kết nối đến máy chủ để tải ảnh", "error");
+        } finally {
+            overlay.addClass('d-none').removeClass('d-flex');
+            // Cleanup object URL to avoid memory leaks
+            // URL.revokeObjectURL(objectUrl); // Don't revoke yet as user might want to see it
+            input.value = "";
+        }
     },
 
     loadCategoriesIntoForm: async () => {
@@ -416,6 +579,21 @@ const books = {
             sel.empty().append('<option value="">-- Chọn danh mục --</option>');
             data.forEach(c => { sel.append(`<option value="${c.id || c.categoryId}">${c.name || c.categoryName}</option>`); });
         } catch (e) {}
+
+            const options = [];
+            const walk = (nodes, depth = 0) => {
+                (Array.isArray(nodes) ? nodes : []).forEach(n => {
+                    options.push({ id: n.id || n.categoryId, name: n.name || n.categoryName, depth: depth });
+                    if (n.subCategories) walk(n.subCategories, depth + 1);
+                });
+            };
+            walk(Array.isArray(data) ? data : []);
+
+            options.forEach(c => {
+                const indent = "&nbsp;".repeat(c.depth * 4);
+                sel.append(`<option value="${c.id}">${indent}${c.name}</option>`);
+            });
+        } catch (e) { console.warn('loadCategoriesIntoForm failed:', e.message); }
     },
 
     loadAuthors: async () => {
@@ -434,6 +612,29 @@ const books = {
             const sel = $('#maNxb'); if (sel.length) {
                 sel.empty().append('<option value="">-- Chọn NXB --</option>');
                 data.forEach(p => { sel.append(`<option value="${p.publisherId}">${p.publisherName}</option>`); });
+            const res = await api.get('/publishers');
+            const data = res.data || res;
+            const sel = $('#maNxb').length ? $('#maNxb') : $('#publisherId');
+            if (!sel.length) return;
+            sel.empty().append('<option value="">-- Chọn NXB --</option>');
+            (Array.isArray(data) ? data : []).forEach(p => {
+                sel.append(`<option value="${p.publisherId}">${p.publisherName}</option>`);
+            });
+        } catch (e) { console.error("loadPublishers error:", e); }
+    },
+
+    adminSearch: (query) => {
+        const grid = $("#books-admin-list");
+        if (!grid.length) return;
+
+        const rows = grid.find("tr");
+        rows.each(function () {
+            const row = $(this);
+            const text = row.text().toLowerCase();
+            if (text.includes(query.toLowerCase())) {
+                row.show();
+            } else {
+                row.hide();
             }
         } catch (e) {}
     },

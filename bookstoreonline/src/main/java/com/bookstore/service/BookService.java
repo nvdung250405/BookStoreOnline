@@ -6,6 +6,7 @@ import com.bookstore.repository.*;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookUpdateRequest;
 import com.bookstore.entity.*;
+import com.bookstore.service.AuditLogService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class BookService {
     private final PhysicalBookRepository physicalBookRepository;
     private final EBookRepository eBookRepository;
     private final InventoryRepository inventoryRepository;
+    private final AuditLogService auditLogService;
 
     public BookService(BookRepository bookRepository,
             CategoryRepository categoryRepository,
@@ -30,6 +32,7 @@ public class BookService {
             PhysicalBookRepository physicalBookRepository,
             EBookRepository eBookRepository,
             InventoryRepository inventoryRepository) {
+            AuditLogService auditLogService) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
@@ -37,6 +40,7 @@ public class BookService {
         this.physicalBookRepository = physicalBookRepository;
         this.eBookRepository = eBookRepository;
         this.inventoryRepository = inventoryRepository;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional(readOnly = true)
@@ -107,6 +111,8 @@ public class BookService {
         }
 
         return convertToDTO(savedBook);
+        auditLogService.log("CREATE_BOOK", "Thêm sách mới: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
+        return BookDTO.fromEntity(savedBook);
     }
 
     @Transactional
@@ -166,6 +172,8 @@ public class BookService {
         }
 
         return convertToDTO(savedBook);
+        auditLogService.log("UPDATE_BOOK", "Cập nhật sách: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
+        return BookDTO.fromEntity(savedBook);
     }
 
     @Transactional
@@ -180,6 +188,7 @@ public class BookService {
         book.setStatus(BookStatus.INACTIVE);
         book.setDeletedAt(java.time.LocalDateTime.now());
         bookRepository.save(book);
+        auditLogService.log("DELETE_BOOK", "Xóa sách: " + book.getTitle() + " (ISBN: " + book.getIsbn() + ")");
     }
 
     private BookDTO convertToDTO(Book book) {

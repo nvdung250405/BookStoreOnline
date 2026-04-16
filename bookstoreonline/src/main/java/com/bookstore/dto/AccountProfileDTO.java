@@ -2,6 +2,7 @@ package com.bookstore.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountProfileDTO {
@@ -28,6 +29,12 @@ public class AccountProfileDTO {
     @Schema(example = "BAN_HANG")
     private String department;
 
+    @Schema(example = "true")
+    private Boolean isActive;
+
+    @Schema(example = "2024-03-20T10:00:00")
+    private LocalDateTime createdAt;
+
     public AccountProfileDTO() {}
 
     public String getUsername() { return username; }
@@ -44,4 +51,10 @@ public class AccountProfileDTO {
     public void setLoyaltyPoints(Integer loyaltyPoints) { this.loyaltyPoints = loyaltyPoints; }
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
+
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

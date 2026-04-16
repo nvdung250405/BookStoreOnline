@@ -67,19 +67,18 @@
         <!-- Audit Log Table -->
         <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
             <div class="table-responsive">
-                <table class="table align-middle table-hover mb-0 small">
-                    <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="bg-light text-muted text-uppercase fw-bold border-0" style="font-size: 0.85rem;">
                         <tr>
-                            <th class="ps-4 py-3">Thời gian</th>
-                            <th class="py-3">Quản trị viên</th>
-                            <th class="py-3">Loại hành động</th>
-                            <th class="py-3">Tóm tắt hoạt động</th>
-                            <th class="text-end pe-4 py-3">Thao tác</th>
+                            <th class="ps-4 py-4">Thời gian</th>
+                            <th class="py-4">Người thực hiện</th>
+                            <th class="py-4">Loại hành động</th>
+                            <th class="py-4">Tóm tắt hoạt động</th>
                         </tr>
                     </thead>
                     <tbody id="audit-list-body">
                         <tr>
-                            <td colspan="5" class="text-center py-5">
+                            <td colspan="4" class="text-center py-5">
                                 <div class="spinner-border text-accent spinner-border-sm" role="status"></div>
                                 <span class="ms-2 text-muted">Đang truy xuất nhật ký...</span>
                             </td>
@@ -102,3 +101,9 @@
     .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
     .hvr-float:hover { transform: translateY(-3px); }
 </style>
+
+<script>
+    $(document).ready(function() {
+        auditlog.init();
+    });
+</script>

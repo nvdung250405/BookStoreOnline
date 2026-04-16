@@ -12,12 +12,10 @@ const auth = {
                 const loginData = result.data;
                 api.setToken(loginData.token);
                 
-                // Save user info for use across the site
                 api.setUser({
                     username: loginData.username,
                     role:     loginData.role,
                     fullName: loginData.fullName || loginData.name || loginData.username,
-                    email:    loginData.email    || loginData.emailAddress || '',
                     phone:    loginData.phone    || loginData.phoneNumber || loginData.mobilePhone || '',
                     address:  loginData.address  || loginData.shippingAddress || loginData.street || ''
                 });
@@ -88,7 +86,6 @@ function initAuthForms() {
 
         const data = {
             username: $("#reg-username").val(),
-            email: $("#reg-email").val(),
             password: pass
         };
         auth.register(data);
