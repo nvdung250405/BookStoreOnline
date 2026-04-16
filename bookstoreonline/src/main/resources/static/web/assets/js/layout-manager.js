@@ -21,6 +21,7 @@ const layout = {
         if (isAdmin) {
             $("#header-area, #footer-area").hide();
             sidebar.show();
+            $("body").addClass("admin-view");
             // Load sidebar only once if empty
             if (sidebar.is(':empty')) {
                 await sidebar.load("Shared/AdminSidebar.html", () => {
@@ -32,6 +33,7 @@ const layout = {
         } else {
             $("#header-area, #footer-area").show();
             sidebar.hide();
+            $("body").removeClass("admin-view");
         }
 
         // 2. Load Header/Footer (Customer only)
@@ -285,6 +287,12 @@ const layout = {
                 break;
             case "Support/Index":
                 support.loadUserTickets();
+                break;
+            case "Support/Admin/Index":
+                support.loadAdminTickets();
+                break;
+            case "Support/Admin/Details":
+                if (id) support.loadTicketDetails(id);
                 break;
             case "Users/Admin/Index":
                 users.loadAdminList();

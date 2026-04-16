@@ -136,6 +136,25 @@ public class AiSearchService {
         BigDecimal maxPrice = null;
         String categoryName = null;
         String publisherName = null;
+        boolean sortByPriceAsc = false;
+        boolean sortByPriceDesc = false;
+        Integer limit = null;
+
+        // ── 0. Detect Sorting & Limit ────────────────────────────────────────
+        if (containsAny(lowerQuery, "rẻ nhất", "giá thấp nhất", "rẻ nhất", "giá hời nhất")) {
+            sortByPriceAsc = true;
+        } else if (containsAny(lowerQuery, "đắt nhất", "giá cao nhất", "cao nhất", "đắt tiền nhất")) {
+            sortByPriceDesc = true;
+        }
+
+        // Detect number for limit: "2 quyển", "3 cuốn"
+        Pattern limitPattern = Pattern.compile("(\\d+)\\s*(?:quyển|cuốn|bản|sách)");
+        Matcher limitMatcher = limitPattern.matcher(lowerQuery);
+        if (limitMatcher.find()) {
+            try {
+                limit = Integer.parseInt(limitMatcher.group(1));
+            } catch (NumberFormatException ignored) {}
+        }
 
         // ── 1. Semantic mapping (Vietnamese & English) ──────────────────────
         for (Map.Entry<String, String> entry : SEMANTIC_MAP.entrySet()) {
@@ -248,10 +267,28 @@ public class AiSearchService {
             books = bookService.searchAndFilterBooks(keyword, null, null, null, null);
         }
 
+        // ── 8. Sorting & Limiting ───────────────────────────────────────────
+        if (sortByPriceAsc) {
+            books.sort((a, b) -> a.getPrice().compareTo(b.getPrice()));
+        } else if (sortByPriceDesc) {
+            books.sort((a, b) -> b.getPrice().compareTo(a.getPrice()));
+        }
+
+        if (limit != null && limit > 0 && books.size() > limit) {
+            books = books.subList(0, limit);
+        }
+
         return AiSearchResult.builder()
                 .books(books)
                 .extractedContext(newContext)
                 .build();
+    }
+
+    private boolean containsAny(String text, String... keywords) {
+        for (String kw : keywords) {
+            if (text.contains(kw)) return true;
+        }
+        return false;
     }
 
     private BigDecimal parsePrice(String numberStr, String unit) {

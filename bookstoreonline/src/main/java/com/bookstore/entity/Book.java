@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "books")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Book {
     @Id
     @Column(length = 13)
@@ -39,9 +40,9 @@ public class Book {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "book_authors",
-        joinColumns = @JoinColumn(name = "isbn"),
-        inverseJoinColumns = @JoinColumn(name = "author_id")
+            name = "book_authors",
+            joinColumns = @JoinColumn(name = "isbn"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private Set<Author> authors;
 
@@ -75,8 +76,6 @@ public class Book {
     public void setDescription(String description) { this.description = description; }
     public String getCoverImage() { return coverImage; }
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
-    public String getCoverAlt() { return coverAlt; }
-    public void setCoverAlt(String coverAlt) { this.coverAlt = coverAlt; }
     public Set<Author> getAuthors() { return authors; }
     public void setAuthors(Set<Author> authors) { this.authors = authors; }
     public Boolean getIsDeleted() { return isDeleted; }
@@ -87,4 +86,13 @@ public class Book {
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     public LocalDateTime getDeletedAt() { return deletedAt; }
     public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
+    public String getCoverAlt() {
+        return coverAlt;
+    }
+    public void setCoverAlt(String coverAlt) {
+        this.coverAlt = coverAlt;
+    }
+
+    public void setBook(Book savedBook) {
+    }
 }

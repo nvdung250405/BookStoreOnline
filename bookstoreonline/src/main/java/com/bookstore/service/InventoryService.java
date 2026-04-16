@@ -125,33 +125,28 @@ public class InventoryService {
 
         for (PurchaseOrderDetailRequest item : request.getDetails()) {
             if (item.getIsbn() == null) continue;
-            
-            Book book = bookRepository.findById(java.util.Objects.requireNonNull(item.getIsbn()))
+            Book book = bookRepository.findById(item.getIsbn())
                     .orElseGet(() -> {
-                        // 1. Tạo bản ghi Book mới
-                        Book newBook = new Book();
+                        // Nếu không tìm thấy, hệ thống sẽ tự động tạo một bản ghi PhysicalBook mới
+                        PhysicalBook newBook = new PhysicalBook();
                         newBook.setIsbn(item.getIsbn());
-                        newBook.setTitle(item.getTitle() != null ? item.getTitle() : "Sách mới");
-                        // Giá bán mặc định = giá nhập * 1.2
+                        newBook.setTitle(item.getTitle() != null ? item.getTitle() : "Sách mới"); // Tên tạm thời
+
+                        // Fix vụ Ref Price = 0: Lấy giá nhập nhân 1.2 làm giá bán mặc định
                         newBook.setPrice(item.getUnitPrice().multiply(new BigDecimal("1.2")));
-                        Book savedBook = bookRepository.save(newBook);
 
-                        // 2. Tạo bản ghi PhysicalBook tương ứng (composition)
-                        PhysicalBook pb = new PhysicalBook();
-                        pb.setBook(savedBook);
-                        pb.setIsbn(savedBook.getIsbn());
-                        physicalBookRepository.save(pb);
-
-                        return savedBook;
+                        // Lưu sách mới vào database trước khi tiếp tục
+                        return bookRepository.save(newBook);
                     });
 
-            // Chặn đứng nhập kho nếu là sách điện tử (Phải có bản ghi trong physical_books)
-            if (!physicalBookRepository.existsById(java.util.Objects.requireNonNull(book.getIsbn()))) {
+            // Chặn đứng nhập kho nếu là sách điện tử (E-Book không có kho vật lý)
+            if (!(book instanceof PhysicalBook)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Logic Error: Sách " + book.getTitle() + " là E-Book, không thể nhập kho vật lý!");
             }
 
             // 2. CẬP NHẬT GIÁ THAM CHIẾU (Ref Price)
+            // Nếu giá bằng 0, tự động đặt giá bán = giá nhập * 1.2
             if (book.getPrice() == null || book.getPrice().compareTo(BigDecimal.ZERO) == 0) {
                 book.setPrice(item.getUnitPrice().multiply(new BigDecimal("1.2")));
                 bookRepository.save(book);
@@ -167,11 +162,13 @@ public class InventoryService {
                         return newInv;
                     });
 
+            // Cộng dồn số lượng và cập nhật vị trí kệ mới nhất từ DTO
             inv.setStockQuantity((inv.getStockQuantity() == null ? 0 : inv.getStockQuantity()) + item.getQuantity());
             inv.setShelfLocation(item.getShelfLocation());
-            inventoryRepository.save(inv);
+            inventoryRepository.save(inv); // Lưu thông tin kho thực tế
 
-            // 4. LƯU CHI TIẾT PHIẾU NHẬP
+            // 4. LƯU CHI TIẾT PHIẾU NHẬP (History)
+            // Tạo ID phức hợp cho chi tiết đơn nhập
             PurchaseOrderDetailId detailId = new PurchaseOrderDetailId(purchaseOrderId, item.getIsbn());
 
             PurchaseOrderDetail detail = new PurchaseOrderDetail();
@@ -181,9 +178,7 @@ public class InventoryService {
             detail.setQuantity(item.getQuantity());
             detail.setUnitPrice(item.getUnitPrice());
 
-            purchaseOrderDetailRepository.save(detail);
-            
-            logInventoryChange(book, staff, "IMPORT", item.getQuantity(), "Purchased via " + purchaseOrderId);
+            purchaseOrderDetailRepository.save(detail); // Lưu vào bảng lịch sử nhập hàng
         }
 
         return new PurchaseOrderResponseDTO(purchaseOrderId, totalAmount, "Stock imported successfully!");

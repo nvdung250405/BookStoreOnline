@@ -14,7 +14,6 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                     <tr>
-<<<<<<< HEAD
                         <th class="ps-4 py-3">Tên Đối tác / NCC</th>
                         <th class="py-3">Thông tin liên hệ</th>
                         <th class="py-3 text-end pe-4">Thao tác</th>
@@ -22,20 +21,12 @@
                 </thead>
                 <tbody id="suppliers-list">
                     <tr>
-                         <td colspan="3" class="text-center py-5 text-muted">
-                            <div class="spinner-border spinner-border-sm text-accent mb-2"></div><br>Đang đồng bộ danh mục đối tác...
-                         </td>
+                        <td colspan="3" class="text-center py-5 text-muted">
+                            <div class="spinner-border spinner-border-sm text-accent mb-2"></div><br>Đang đồng bộ danh
+                            mục đối tác...
+                        </td>
                     </tr>
                 </tbody>
-=======
-                        <th class="ps-4 py-3">Partner Name</th>
-                        <th class="py-3">Contact Info</th>
-                        <th class="py-3 text-end pe-4">Operations</th>
-                    </tr>
-                </thead>
-                <tbody id="suppliers-list">
-                    </tbody>
->>>>>>> 43d7b556367dbc7b2e94acdcb42e9e943f7ee1ef
             </table>
         </div>
     </div>
@@ -52,18 +43,21 @@
                 <form id="supplierForm">
                     <input type="hidden" id="supplierId">
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">Partner Name <span class="text-danger">*</span></label>
+                        <label class="form-label text-muted small fw-bold">Partner Name <span
+                                class="text-danger">*</span></label>
                         <input type="text" class="form-control rounded-3" id="supplierName" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-bold">Contact Info</label>
-                        <input type="text" class="form-control rounded-3" id="supplierContactInfo" placeholder="Phone, Email or Address">
+                        <input type="text" class="form-control rounded-3" id="supplierContactInfo"
+                            placeholder="Phone, Email or Address">
                     </div>
                 </form>
             </div>
             <div class="modal-footer border-top-0 pt-0">
                 <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-accent rounded-pill px-4" onclick="suppliers.saveSupplier()">Save Partner</button>
+                <button type="button" class="btn btn-accent rounded-pill px-4" onclick="suppliers.saveSupplier()">Save
+                    Partner</button>
             </div>
         </div>
     </div>

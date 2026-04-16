@@ -6,64 +6,70 @@ const inventory = {
     currentRawData: [],
 
     // 1. Load Inventory List with Low-Stock highlights
+    // 1. Load Inventory List with Low-Stock highlights
     loadList: async () => {
         try {
-            // Lấy danh sách cảnh báo sắp hết
             const lowStockRes = await api.get('/inventory/low-stock');
             const lowStockData = lowStockRes.data?.data || lowStockRes.data || [];
             $("#low-stock-count").text(lowStockData.length);
 
-            // LẤY DỮ LIỆU KHO
             const invRes = await api.get('/inventory/all'); 
             const inventoryData = invRes.data?.data || invRes.data || [];
 
-            // LẤY DỮ LIỆU SÁCH (Chứa giá tiền từ BookDTO)
             const booksRes = await api.get('/books');
             const booksData = booksRes.data?.data || booksRes.data || [];
 
-            // GỘP (MERGE) DỮ LIỆU THEO ISBN
+            let totalValue = 0; // Khởi tạo biến tính tổng
+
+            // CHỈ DÙNG 1 VÒNG LẶP DUY NHẤT
             inventory.currentRawData = inventoryData.map(invItem => {
                 const bookInfo = booksData.find(b => b.isbn === invItem.isbn) || {};
                 const isLow = lowStockData.find(l => l.isbn === invItem.isbn);
                 
+                const tenSach = invItem.tenSach || invItem.title || bookInfo.title || bookInfo.tenSach || (invItem.book ? invItem.book.title : 'N/A');
+                const tonKho = invItem.tonKho || invItem.stockQuantity || 0;
+                const viTriKe = invItem.viTriKe || invItem.shelfLocation || 'Chưa xếp kệ';
+                const giaBan = bookInfo.price || bookInfo.giaBan || 0;
+
+                // Cộng dồn tiền kho thực tế
+                totalValue += (tonKho * giaBan);
+                
                 return {
                     isbn: invItem.isbn,
-                    tenSach: invItem.tenSach || invItem.title || bookInfo.title || bookInfo.tenSach || (invItem.book ? invItem.book.title : 'N/A'),
-                    tonKho: invItem.tonKho || 0,
-                    viTriKe: invItem.viTriKe || 'Chưa xếp kệ',
-                    giaBan: bookInfo.price || bookInfo.giaBan || 0,
+                    tenSach: tenSach,
+                    tonKho: tonKho,
+                    viTriKe: viTriKe,
+                    giaBan: giaBan,
                     isLowStock: !!isLow
                 };
             });
 
             $("#total-inventory-items").text(inventory.currentRawData.length);
-            
-            // Tính lại tổng giá trị kho
-            let totalValue = inventory.currentRawData.reduce((acc, curr) => acc + (curr.tonKho * curr.giaBan), 0);
-            $("#total-inventory-value").text(api.formatCurrency(totalValue));
+            $("#total-inventory-value").text(api.formatCurrency(totalValue)); // Render tổng tiền
 
             inventory.renderTable(inventory.currentRawData);
         } catch (e) {
             console.error("Inventory load error:", e);
-            api.showToast("Lỗi kết nối hoặc chưa có API GET /api/inventory/all", "warning");
+            api.showToast("Lỗi tải dữ liệu kho", "warning");
         }
-    },
-
-    filterStock: (searchValue) => {
-        const query = searchValue.toLowerCase();
-        let filtered = inventory.currentRawData;
-        if(query) {
-             filtered = filtered.filter(row => 
-                 row.tenSach.toLowerCase().includes(query) || 
-                 row.isbn.toLowerCase().includes(query)
-             );
-        }
-        const status = $("#inventory-filter").val();
-        inventory.renderFiltered(filtered, status);
     },
 
     filterStatus: (status) => {
         inventory.filterStock($("#inventory-search").val());
+    },
+
+    // THÊM HÀM BỊ MẤT NÀY VÀO:
+    filterStock: (searchTerm) => {
+        const term = (searchTerm || "").toLowerCase().trim();
+        const status = $("#inventory-filter").val() || 'ALL';
+
+        // Lọc theo từ khóa (Tìm theo ISBN hoặc Tên sách)
+        let filtered = inventory.currentRawData.filter(item => {
+            return item.isbn.toLowerCase().includes(term) || item.tenSach.toLowerCase().includes(term);
+        });
+
+        // Đẩy kết quả đã lọc từ khóa sang hàm renderFiltered để lọc tiếp theo Trạng thái (status)
+        inventory.renderFiltered(filtered, status);
     },
 
     renderFiltered: (dataList, status) => {
@@ -241,6 +247,81 @@ const inventory = {
              console.error("Lỗi tải NCC:", e);
         }
     },
+
+    importScanner: null, // Biến lưu trữ phiên bản scanner của phần Nhập kho
+
+    startImportScanner: () => {
+        // Tránh trường hợp bật nhiều camera cùng lúc
+        if (inventory.importScanner) {
+            inventory.importScanner.clear().catch(e => console.log(e));
+        }
+
+        // Khởi tạo thư viện quét mã vạch cho thẻ div id="import-reader"
+        inventory.importScanner = new Html5QrcodeScanner(
+            "import-reader",
+            { fps: 10, qrbox: { width: 250, height: 120 } },
+            false
+        );
+
+        inventory.importScanner.render(
+            (decodedText) => {
+                // XỬ LÝ KHI QUÉT THÀNH CÔNG:
+                api.showToast(`Đã quét mã: ${decodedText}`, "success");
+                
+                // 1. Tự động thêm một dòng mới vào bảng
+                inventory.addImportRow();
+                
+                // 2. Tìm dòng cuối cùng vừa thêm và điền mã ISBN vào
+                const lastRow = $("#import-items-table tbody tr").last();
+                const inputEl = lastRow.find('.d-isbn');
+                inputEl.val(decodedText);
+                
+                // 3. Gọi hàm tự động tìm tên sách
+                const rowId = lastRow.attr('id').split('-')[1];
+                inventory.fetchBookInfo(inputEl[0], rowId);
+                
+                // 4. Quét xong thì tự động tắt cam và chuyển về tab "Thêm thủ công" để nhập số lượng
+                inventory.switchImportTab('manual');
+            },
+            (error) => {
+                // Bỏ qua các lỗi quét khung hình trống (vì nó chạy liên tục)
+            }
+        );
+    },
+
+    switchImportTab: (tabName) => {
+        // 1. Ẩn tất cả các khu vực
+        $("#import-manual-area, #import-camera-area, #import-ocr-area").addClass("d-none");
+        
+        // 2. Đổi màu nút bấm về trạng thái chưa chọn (outline)
+        $("#btn-tab-manual, #btn-tab-camera, #btn-tab-ocr")
+            .removeClass("btn-accent")
+            .addClass("btn-outline-accent");
+
+        // TẮT CAMERA NẾU ĐANG BẬT MÀ CHUYỂN TAB KHÁC
+        if (tabName !== 'camera' && inventory.importScanner) {
+            inventory.importScanner.clear().catch(e => console.log(e));
+            inventory.importScanner = null;
+        }
+
+        // 3. Hiện khu vực được chọn và xử lý
+        if (tabName === 'manual') {
+            $("#import-manual-area").removeClass("d-none");
+            $("#btn-tab-manual").removeClass("btn-outline-accent").addClass("btn-accent");
+            
+        } else if (tabName === 'camera') {
+            $("#import-camera-area").removeClass("d-none");
+            $("#btn-tab-camera").removeClass("btn-outline-accent").addClass("btn-accent");
+            
+            // GỌI HÀM BẬT CAMERA Ở ĐÂY!
+            inventory.startImportScanner();
+            
+        } else if (tabName === 'ocr') {
+            $("#import-ocr-area").removeClass("d-none");
+            $("#btn-tab-ocr").removeClass("btn-outline-accent").addClass("btn-accent");
+        }
+    },
+
 
     processImport: async () => {
         const supplierId = $("#supplier-select").val();

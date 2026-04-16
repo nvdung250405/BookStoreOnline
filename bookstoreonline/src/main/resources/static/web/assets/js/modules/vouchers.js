@@ -42,7 +42,7 @@ const vouchers = {
             const isExpired = expiry < now;
             const statusBadge = isExpired
                 ? '<span class="badge bg-danger bg-opacity-15 text-danger rounded-pill px-3">Hết hạn</span>'
-                : '<span class="badge bg-success bg-opacity-15 text-success rounded-pill px-3">Hoạt động</span>';
+                : '<span class="badge bg-success bg-opacity-15 rounded-pill px-3">Hoạt động</span>';
 
             tbody.append(`
                 <tr>
@@ -74,7 +74,7 @@ const vouchers = {
             discountValue: parseInt(discount),
             minCondition: parseFloat(minCond) || 0,
             // Thêm giờ 23:59:59 để voucher có hạn đến cuối ngày
-            expiryDate: expiry + "T23:59:59" 
+            expiryDate: expiry + "T23:59:59"
         };
 
         try {
@@ -94,12 +94,12 @@ const vouchers = {
         $("#v-code").val(v.voucherCode).attr('readonly', true);
         $("#v-discount").val(v.discountValue);
         $("#v-min").val(v.minCondition);
-        
+
         // FIX LỖI GIỜ UTC: Cộng bù múi giờ Việt Nam trước khi cắt chuỗi lấy ngày
         const d = new Date(v.expiryDate);
         d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
         const date = d.toISOString().split('T')[0];
-        
+
         $("#v-expiry").val(date);
 
         $("#voucher-modal-title").text("Chỉnh sửa Voucher");
@@ -143,10 +143,10 @@ const vouchers = {
     deleteVoucher: (code) => {
         // Gắn mã code vào text để hiển thị cho người dùng biết đang xóa mã nào
         $("#del-voucher-code").text(code);
-        
+
         // Gắn sự kiện click cho nút "Xóa ngay" trong modal
         $("#btn-confirm-delete-voucher").attr('onclick', `vouchers.performDelete('${code}')`);
-        
+
         // Hiển thị modal
         vouchers._getDeleteModal().show();
     },
@@ -159,7 +159,7 @@ const vouchers = {
         btn.html('<span class="spinner-border spinner-border-sm me-1"></span> Đang xóa...').prop('disabled', true);
 
         try {
-            await api.delete(`/admin/vouchers/${code}`);
+            await api.delete(`/vouchers/${code}`);
             api.showToast("Đã xóa mã giảm giá thành công");
             vouchers._getDeleteModal().hide(); // Đóng modal
             vouchers.loadAdminList();          // Tải lại bảng

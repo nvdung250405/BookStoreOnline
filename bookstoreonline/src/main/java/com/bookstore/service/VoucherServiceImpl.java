@@ -26,6 +26,13 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<VoucherDTO> getActiveVouchers() {
+        return voucherRepository.findByExpiryDateAfter(java.time.LocalDateTime.now()).stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public VoucherDTO getVoucherByCode(String code) {
         return voucherRepository.findById(code)
                 .map(this::toDTO)

@@ -27,4 +27,6 @@ public interface BookRepository extends JpaRepository<Book, String> {
                                     @Param("publisherName") String publisherName,
                                     @Param("minPrice") BigDecimal minPrice,
                                     @Param("maxPrice") BigDecimal maxPrice);
+
+    List<Book> findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
 }

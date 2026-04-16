@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +24,7 @@ public class BookService {
     private final PhysicalBookRepository physicalBookRepository;
     private final EBookRepository eBookRepository;
     private final AuditLogService auditLogService;
+    private final OrderDetailRepository orderDetailRepository;
 
     public BookService(BookRepository bookRepository,
             CategoryRepository categoryRepository,
@@ -30,7 +32,8 @@ public class BookService {
             AuthorRepository authorRepository,
             PhysicalBookRepository physicalBookRepository,
             EBookRepository eBookRepository,
-            AuditLogService auditLogService) {
+            AuditLogService auditLogService,
+            OrderDetailRepository orderDetailRepository) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
@@ -38,6 +41,7 @@ public class BookService {
         this.physicalBookRepository = physicalBookRepository;
         this.eBookRepository = eBookRepository;
         this.auditLogService = auditLogService;
+        this.orderDetailRepository = orderDetailRepository;
     }
 
     @Transactional(readOnly = true)
@@ -58,6 +62,29 @@ public class BookService {
         return bookRepository.searchAndFilterBooks(keyword, categoryNames, publisherName, minPrice, maxPrice)
                 .stream()
                 .map(BookDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookDTO> getLatestBooks() {
+        return bookRepository.findTop5ByIsDeletedFalseOrderByCreatedAtDesc()
+                .stream()
+                .map(BookDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookDTO> getBestSellers() {
+        return orderDetailRepository.findTopSellingProjected().stream()
+                .limit(5)
+                .map(row -> {
+                    String isbn = (String) row[0];
+                    return bookRepository.findById(isbn)
+                            .filter(b -> !Boolean.TRUE.equals(b.getIsDeleted()))
+                            .map(BookDTO::fromEntity)
+                            .orElse(null);
+                })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 

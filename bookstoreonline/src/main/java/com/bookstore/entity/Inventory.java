@@ -10,7 +10,7 @@ public class Inventory {
     @Column(name = "inventory_id")
     private Integer inventoryId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "isbn", unique = true, nullable = false)
     private Book book;
 
