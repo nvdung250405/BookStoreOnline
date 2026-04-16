@@ -26,9 +26,27 @@ public class BookCreateRequest {
 
     private String description;
 
+    @NotBlank(message = "Book type cannot be empty")
+    private String bookType; // PHYSICAL | EBOOK
+
+    private java.math.BigDecimal weight;
+
+    private java.math.BigDecimal fileSize;
+
+    private String downloadUrl;
+
     private String coverImage;
 
     private Set<Integer> authorIds;
+
+    public String getBookType() { return bookType; }
+    public void setBookType(String bookType) { this.bookType = bookType; }
+    public java.math.BigDecimal getWeight() { return weight; }
+    public void setWeight(java.math.BigDecimal weight) { this.weight = weight; }
+    public java.math.BigDecimal getFileSize() { return fileSize; }
+    public void setFileSize(java.math.BigDecimal fileSize) { this.fileSize = fileSize; }
+    public String getDownloadUrl() { return downloadUrl; }
+    public void setDownloadUrl(String downloadUrl) { this.downloadUrl = downloadUrl; }
 
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }

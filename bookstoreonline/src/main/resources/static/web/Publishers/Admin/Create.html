@@ -1,0 +1,30 @@
+<div class="p-4 p-md-5 w-100">
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="mb-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Publishers/Admin', 'Index')" class="text-decoration-none text-muted">Publishers</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">New Publisher</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0">Create New Publisher</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Publisher Name <span class="text-danger">*</span></label>
+                        <input type="text" id="publisher-name" class="form-control rounded-pill px-4 border-light bg-light py-2" placeholder="e.g. Penguin Random House">
+                    </div>
+
+                    <div class="d-flex gap-3 justify-content-end mt-4">
+                        <button onclick="layout.render('Publishers/Admin', 'Index')" class="btn btn-light rounded-pill px-4 fw-bold">Cancel</button>
+                        <button onclick="publishers.create()" class="btn btn-accent rounded-pill px-5 fw-bold shadow-sm">Save Publisher</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

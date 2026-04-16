@@ -1,16 +1,10 @@
 package com.bookstore.service;
 
 import com.bookstore.dto.BookDTO;
-import com.bookstore.repository.BookRepository;
+import com.bookstore.repository.*;
 import com.bookstore.dto.BookCreateRequest;
 import com.bookstore.dto.BookUpdateRequest;
-import com.bookstore.repository.CategoryRepository;
-import com.bookstore.repository.PublisherRepository;
-import com.bookstore.repository.AuthorRepository;
-import com.bookstore.entity.Book;
-import com.bookstore.entity.Category;
-import com.bookstore.entity.Publisher;
-import com.bookstore.entity.Author;
+import com.bookstore.entity.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,22 +13,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@SuppressWarnings("null")
 public class BookService {
 
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
     private final PublisherRepository publisherRepository;
     private final AuthorRepository authorRepository;
+    private final PhysicalBookRepository physicalBookRepository;
+    private final EBookRepository eBookRepository;
 
     public BookService(BookRepository bookRepository,
             CategoryRepository categoryRepository,
             PublisherRepository publisherRepository,
-            AuthorRepository authorRepository) {
+            AuthorRepository authorRepository,
+            PhysicalBookRepository physicalBookRepository,
+            EBookRepository eBookRepository) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
         this.authorRepository = authorRepository;
+        this.physicalBookRepository = physicalBookRepository;
+        this.eBookRepository = eBookRepository;
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +47,7 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public BookDTO getBookByIsbn(String isbn) {
-        Book book = bookRepository.findById(isbn)
+        Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
                 .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
         
         if (Boolean.TRUE.equals(book.getIsDeleted())) {
@@ -59,7 +58,7 @@ public class BookService {
 
     @Transactional
     public BookDTO createBook(BookCreateRequest request) {
-        if (bookRepository.existsById(request.getIsbn())) {
+        if (bookRepository.existsById(java.util.Objects.requireNonNull(request.getIsbn()))) {
             throw new IllegalArgumentException("Book with this ISBN already exists: " + request.getIsbn());
         }
 
@@ -70,30 +69,48 @@ public class BookService {
         book.setDescription(request.getDescription());
         book.setCoverImage(request.getCoverImage());
 
-        Category category = categoryRepository.findById(request.getCategoryId())
+        Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Category not found with ID: " + request.getCategoryId()));
         book.setCategory(category);
 
-        Publisher publisher = publisherRepository.findById(request.getPublisherId())
+        Publisher publisher = publisherRepository.findById(java.util.Objects.requireNonNull(request.getPublisherId()))
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Publisher not found with ID: " + request.getPublisherId()));
         book.setPublisher(publisher);
 
         if (request.getAuthorIds() != null && !request.getAuthorIds().isEmpty()) {
-            List<Author> authors = authorRepository.findAllById(request.getAuthorIds());
+            List<Author> authors = authorRepository.findAllById(java.util.Objects.requireNonNull(request.getAuthorIds()));
             if (authors.size() != request.getAuthorIds().size()) {
                 throw new IllegalArgumentException("One or more author IDs are invalid");
             }
             book.setAuthors(new java.util.HashSet<>(authors));
         }
 
-        return BookDTO.fromEntity(bookRepository.save(book));
+        Book savedBook = bookRepository.save(book);
+
+        // Core Book + Subtype composition
+        if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
+            PhysicalBook physical = new PhysicalBook();
+            physical.setIsbn(savedBook.getIsbn());
+            physical.setWeight(request.getWeight());
+            physical.setBook(savedBook);
+            physicalBookRepository.save(physical);
+        } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
+            EBook ebook = new EBook();
+            ebook.setIsbn(savedBook.getIsbn());
+            ebook.setFileSize(request.getFileSize());
+            ebook.setDownloadUrl(request.getDownloadUrl());
+            ebook.setBook(savedBook);
+            eBookRepository.save(ebook);
+        }
+
+        return BookDTO.fromEntity(savedBook);
     }
 
     @Transactional
     public BookDTO updateBook(String isbn, BookUpdateRequest request) {
-        Book book = bookRepository.findById(isbn)
+        Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
                 .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
 
         if (Boolean.TRUE.equals(book.getIsDeleted())) {
@@ -105,18 +122,18 @@ public class BookService {
         book.setDescription(request.getDescription());
         book.setCoverImage(request.getCoverImage());
 
-        Category category = categoryRepository.findById(request.getCategoryId())
+        Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Category not found with ID: " + request.getCategoryId()));
         book.setCategory(category);
 
-        Publisher publisher = publisherRepository.findById(request.getPublisherId())
+        Publisher publisher = publisherRepository.findById(java.util.Objects.requireNonNull(request.getPublisherId()))
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Publisher not found with ID: " + request.getPublisherId()));
         book.setPublisher(publisher);
 
         if (request.getAuthorIds() != null && !request.getAuthorIds().isEmpty()) {
-            List<Author> authors = authorRepository.findAllById(request.getAuthorIds());
+            List<Author> authors = authorRepository.findAllById(java.util.Objects.requireNonNull(request.getAuthorIds()));
             if (authors.size() != request.getAuthorIds().size()) {
                 throw new IllegalArgumentException("One or more author IDs are invalid");
             }
@@ -125,12 +142,35 @@ public class BookService {
             book.setAuthors(new java.util.HashSet<>());
         }
 
-        return BookDTO.fromEntity(bookRepository.save(book));
+        Book savedBook = bookRepository.save(book);
+
+        // TYPE SWITCHING / UPDATE LOGIC
+        // 1. Remove old subtypes
+        physicalBookRepository.deleteById(java.util.Objects.requireNonNull(isbn));
+        eBookRepository.deleteById(java.util.Objects.requireNonNull(isbn));
+
+        // 2. Add new subtype
+        if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
+            PhysicalBook physical = new PhysicalBook();
+            physical.setIsbn(isbn);
+            physical.setWeight(request.getWeight());
+            physical.setBook(savedBook);
+            physicalBookRepository.save(physical);
+        } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
+            EBook ebook = new EBook();
+            ebook.setIsbn(isbn);
+            ebook.setFileSize(request.getFileSize());
+            ebook.setDownloadUrl(request.getDownloadUrl());
+            ebook.setBook(savedBook);
+            eBookRepository.save(ebook);
+        }
+
+        return BookDTO.fromEntity(savedBook);
     }
 
     @Transactional
     public void softDeleteBook(String isbn) {
-        Book book = bookRepository.findById(isbn)
+        Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
                 .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
         
         if (Boolean.TRUE.equals(book.getIsDeleted())) {
@@ -138,6 +178,7 @@ public class BookService {
         }
         
         book.setIsDeleted(true);
+        book.setDeletedAt(java.time.LocalDateTime.now());
         bookRepository.save(book);
     }
 }

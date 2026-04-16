@@ -26,6 +26,37 @@ public class AuthorService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public AuthorDTO saveAuthor(AuthorDTO dto) {
+        Author author = new Author();
+        author.setAuthorName(dto.getAuthorName());
+        author.setBiography(dto.getBiography());
+        Author saved = authorRepository.save(author);
+        return convertToDTO(saved);
+    }
+
+    @Transactional
+    public AuthorDTO updateAuthor(int id, AuthorDTO dto) {
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Author not found with ID: " + id));
+        author.setAuthorName(dto.getAuthorName());
+        author.setBiography(dto.getBiography());
+        return convertToDTO(authorRepository.save(author));
+    }
+
+    @Transactional
+    public void deleteAuthor(int id) {
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Author not found with ID: " + id));
+        
+        // Check if author has books (Many-to-Many check)
+        if (author.getBooks() != null && !author.getBooks().isEmpty()) {
+            throw new RuntimeException("Cannot delete author with associated books. Please remove books first.");
+        }
+        
+        authorRepository.delete(author);
+    }
+
     private AuthorDTO convertToDTO(Author entity) {
         AuthorDTO dto = new AuthorDTO();
         dto.setAuthorId(entity.getAuthorId());

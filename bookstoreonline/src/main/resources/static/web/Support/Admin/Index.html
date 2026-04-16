@@ -5,39 +5,39 @@
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
-                        <li class="breadcrumb-item small active fw-bold text-accent">Customer Support</li>
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">Hỗ trợ Khách hàng</li>
                     </ol>
                 </nav>
-                <h2 class="fw-bold font-serif mb-0">Support Tickets Management</h2>
-                <small class="text-muted">Review and resolve customer inquiries and support requests</small>
+                <h2 class="fw-bold font-serif mb-0">Quản lý Phiếu hỗ trợ</h2>
+                <small class="text-muted">Xem xét và phản hồi các yêu cầu hỗ trợ cũng như khiếu nại từ khách hàng</small>
             </div>
         </div>
 
         <!-- Filter & Search -->
         <div class="row mb-4 gap-3 bg-white p-3 rounded-4 shadow-sm mx-0">
             <div class="col-md-3">
-                <input type="text" class="form-control rounded-3 border-0 bg-light" id="support-search" placeholder="Search by title or customer...">
+                <input type="text" class="form-control rounded-3 border-0 bg-light" id="support-search" placeholder="Tìm theo tiêu đề hoặc khách hàng...">
             </div>
             <div class="col-md-2">
                 <select class="form-select rounded-3 border-0 bg-light" id="support-status-filter">
-                    <option value="">-- All Statuses --</option>
-                    <option value="OPEN">Open</option>
-                    <option value="PROCESSING">Processing</option>
-                    <option value="CLOSED">Closed</option>
+                    <option value="">-- Tất cả Trạng thái --</option>
+                    <option value="OPEN">Mở (Mới)</option>
+                    <option value="PROCESSING">Đang xử lý</option>
+                    <option value="CLOSED">Đã hoàn thành/Đóng</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <select class="form-select rounded-3 border-0 bg-light" id="support-priority-filter">
-                    <option value="">-- Priority Level --</option>
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
+                    <option value="">-- Độ ưu tiên --</option>
+                    <option value="LOW">Thấp</option>
+                    <option value="MEDIUM">Trung bình</option>
+                    <option value="HIGH">Cao</option>
                 </select>
             </div>
             <div class="col-md-auto">
                 <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="support.loadAdminTickets()">
-                    <i class="icon icon-search me-2"></i>Filter Tickets
+                    <i class="icon icon-search me-2"></i> Lọc danh sách
                 </button>
             </div>
         </div>
@@ -48,20 +48,20 @@
                 <table class="table align-middle table-hover mb-0">
                     <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                         <tr>
-                            <th class="ps-4 py-3">ID</th>
-                            <th class="py-3">Customer</th>
-                            <th class="py-3">Subject / Title</th>
-                            <th class="py-3">Current Status</th>
-                            <th class="py-3">Priority</th>
-                            <th class="py-3">Created Date</th>
-                            <th class="text-end pe-4 py-3">Operations</th>
+                            <th class="ps-4 py-3">Mã phiếu</th>
+                            <th class="py-3">Khách hàng</th>
+                            <th class="py-3">Chủ đề / Tiêu đề</th>
+                            <th class="py-3">Trạng thái</th>
+                            <th class="py-3">Độ ưu tiên</th>
+                            <th class="py-3">Ngày tạo</th>
+                            <th class="text-end pe-4 py-3">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="support-list-body">
                         <tr>
                             <td colspan="7" class="text-center py-5">
                                 <div class="spinner-border text-accent spinner-border-sm" role="status"></div>
-                                <span class="ms-2 text-muted">Syncing support registry...</span>
+                                <span class="ms-2 text-muted">Đang truy xuất dữ liệu hỗ trợ...</span>
                             </td>
                         </tr>
                     </tbody>

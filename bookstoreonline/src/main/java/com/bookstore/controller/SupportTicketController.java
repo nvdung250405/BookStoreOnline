@@ -57,6 +57,17 @@ public class SupportTicketController {
         return ApiResponse.success("Đã cập nhật trạng thái hồ sơ", null);
     }
 
+    @PostMapping("/{id}/respond")
+    @Operation(summary = "Phản hồi/Ghi chú cho yêu cầu")
+    public ApiResponse<String> respondToTicket(
+            @PathVariable Long id,
+            @RequestParam(required = false) String reply,
+            @RequestParam(required = false) String internalNote,
+            @RequestParam(required = false) String statusCode) {
+        supportTicketService.respondToTicket(id, reply, internalNote, statusCode);
+        return ApiResponse.success("Đã tiếp nhận phản hồi/ghi chú", null);
+    }
+
     @PostMapping("/ai-chat")
     @Operation(summary = "Chatbot AI thông minh")
     public ApiResponse<Map<String, Object>> aiChat(@RequestParam String message) {

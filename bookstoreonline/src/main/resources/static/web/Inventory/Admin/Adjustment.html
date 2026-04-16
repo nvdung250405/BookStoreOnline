@@ -1,0 +1,81 @@
+<div class="p-4 p-md-5 w-100">
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="mb-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Inventory/Admin', 'Index')" class="text-decoration-none text-muted">Inventory</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">Stock Correction</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0">Warehouse Manual Correction</h2>
+            <p class="text-muted">Use this form to adjust stock levels due to damage, miscounts, or audit findings.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Scan or Enter ISBN <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="text" id="adj-isbn" class="form-control rounded-start-pill px-4 border-light bg-light py-2" placeholder="e.g. 9780123456789">
+                            <button class="btn btn-accent rounded-end-pill px-4" onclick="inventory.lookupForAdjustment()">
+                                <i class="icon icon-search"></i> Check
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="adj-book-info" class="alert alert-light border-0 bg-light rounded-4 p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small text-muted text-uppercase fw-bold">Current Status:</span>
+                            <span id="adj-book-title" class="text-muted italic">Chưa chọn sản phẩm</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small text-muted text-uppercase fw-bold">Stock on Hand:</span>
+                            <span id="adj-current-stock" class="fs-4 fw-bold text-dark">--</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">New Final Quantity <span class="text-danger">*</span></label>
+                            <input type="number" id="adj-new-qty" class="form-control rounded-pill px-4 border-light bg-light py-2" value="0" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase">Correction Reason <span class="text-danger">*</span></label>
+                            <select id="adj-reason" class="form-select rounded-pill px-4 border-light bg-light py-2" onchange="if(this.value==='Khác (Other)') $('#other-reason-box').removeClass('d-none'); else $('#other-reason-box').addClass('d-none');">
+                                <option value="">-- Select Reason --</option>
+                                <option value="Hư hỏng / Lỗi (Damaged)">Hư hỏng / Lỗi (Damaged)</option>
+                                <option value="Kiểm kho định kỳ (Periodic Audit)">Kiểm kho định kỳ (Periodic Audit)</option>
+                                <option value="Trả hàng NCC (Return to Supplier)">Trả hàng NCC (Return to Supplier)</option>
+                                <option value="Hao hụt / Mất mát (Loss)">Hao hụt / Mất mát (Loss)</option>
+                                <option value="Khác (Other)">Khác (Other)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="other-reason-box" class="mb-4 d-none">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Note / Explanation</label>
+                        <textarea id="adj-notes" class="form-control rounded-4 px-4 border-light bg-light py-3" rows="3" placeholder="Explain the discrepancy..."></textarea>
+                    </div>
+
+                    <div class="d-flex gap-3 justify-content-end mt-2">
+                        <button onclick="layout.render('Inventory/Admin', 'Index')" class="btn btn-light rounded-pill px-4 fw-bold">Cancel</button>
+                        <button onclick="inventory.submitAdjustment()" class="btn btn-danger rounded-pill px-5 fw-bold shadow-sm">Process Correction</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <h5 class="fw-bold mb-3">Auditing Notes</h5>
+                    <ul class="small text-muted ps-3 mb-0">
+                        <li class="mb-2">Mọi thay đổi số lượng tồn kho theo cách thủ công đều được ghi lại trong hệ thống <strong>Audit Logs</strong>.</li>
+                        <li class="mb-2">Vui lòng đảm bảo lý do điều chỉnh là chính xác để phục vụ cho các báo cáo quyết toán kho cuối tháng.</li>
+                        <li class="mb-2">Nếu sách bị hư hỏng, hãy xem xét chụp lại ảnh lỗi trước khi xử lý.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

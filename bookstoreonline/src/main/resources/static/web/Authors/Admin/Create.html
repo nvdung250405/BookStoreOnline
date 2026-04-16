@@ -1,71 +1,35 @@
-<!-- Admin Authors Area - Create View -->
-<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
-    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
-        <div class="mb-5 px-3">
-            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4>
-        </div>
-        <nav class="nav flex-column gap-2 mb-auto">
-            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
-            <a href="javascript:void(0)" onclick="layout.render('Authors/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-user me-2"></i> Tác giả</a>
-        </nav>
-    </aside>
-
+<div class="p-4 p-md-5 w-100">
     <main class="flex-grow-1 p-4 p-md-5">
         <div class="mb-5">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Authors/Admin', 'Index')" class="text-decoration-none text-muted">Tác giả</a></li>
-                    <li class="breadcrumb-item small active fw-bold text-accent">Thêm mới</li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Authors/Admin', 'Index')" class="text-decoration-none text-muted">Authors</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">New Author</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold font-serif mb-0">Hồ sơ tác giả mới</h2>
+            <h2 class="fw-bold font-serif mb-0">Create New Author</h2>
         </div>
 
-        <form id="author-create-form" class="row g-4">
+        <div class="row">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-5 p-4 p-md-5 bg-white">
-                    <div class="row g-4">
-                        <div class="col-md-8">
-                            <label class="form-label small fw-bold text-muted">Họ và tên tác giả</label>
-                            <input type="text" class="form-control form-control-lg border-light bg-light rounded-3 shadow-none" placeholder="Nhập tên..." required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold text-muted">Bút danh (nếu có)</label>
-                            <input type="text" class="form-control form-control-lg border-light bg-light rounded-3 shadow-none">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-bold text-muted">Lĩnh vực chuyên môn</label>
-                            <input type="text" class="form-control border-light bg-light rounded-3 shadow-none" placeholder="VD: Văn học hiện đại, Kinh tế học...">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label small fw-bold text-muted">Mô tả tiểu sử</label>
-                            <textarea class="form-control border-light bg-light rounded-3 shadow-none" rows="8" placeholder="Giới thiệu về cuộc đời và sự nghiệp..."></textarea>
-                        </div>
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Author Name <span class="text-danger">*</span></label>
+                        <input type="text" id="author-name" class="form-control rounded-pill px-4 border-light bg-light py-2" placeholder="e.g. Victor Hugo">
                     </div>
-                </div>
-            </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Biography</label>
+                        <textarea id="author-bio" class="form-control rounded-4 px-4 border-light bg-light py-3" rows="6" placeholder="Short biography of the author..."></textarea>
+                    </div>
 
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white mb-4">
-                    <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Ảnh chân dung</h5>
-                    <div class="avatar-upload text-center py-4">
-                        <div class="rounded-pill bg-light border-dashed border-2 mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
-                            <i class="icon icon-user fs-1 text-muted"></i>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-accent rounded-pill px-4">Tải ảnh lên</button>
+                    <div class="d-flex gap-3 justify-content-end mt-4">
+                        <button onclick="layout.render('Authors/Admin', 'Index')" class="btn btn-light rounded-pill px-4 fw-bold">Cancel</button>
+                        <button onclick="authors.create()" class="btn btn-accent rounded-pill px-5 fw-bold shadow-sm">Save Author</button>
                     </div>
                 </div>
-                
-                <div class="card border-0 shadow-sm rounded-5 p-4 bg-white">
-                    <button type="submit" class="btn btn-accent w-100 py-3 rounded-pill fw-bold shadow">
-                        Lưu hồ sơ
-                    </button>
-                    <button type="button" onclick="layout.render('Authors/Admin', 'Index')" class="btn btn-link link-dark w-100 mt-2 text-decoration-none small">Hủy bỏ</button>
-                </div>
             </div>
-        </form>
+        </div>
     </main>
 </div>
-<script>
-    $("#header-area, #footer-area").hide();
-</script>

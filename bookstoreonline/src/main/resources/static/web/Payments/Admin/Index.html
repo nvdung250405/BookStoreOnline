@@ -5,94 +5,63 @@
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
-                        <li class="breadcrumb-item small active fw-bold text-accent">Quản lý Thanh toán</li>
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">Giao dịch Thanh toán</li>
                     </ol>
                 </nav>
-                <h2 class="fw-bold font-serif mb-0">Quản lý Giao dịch Thanh toán</h2>
+                <h2 class="fw-bold font-serif mb-0">Giám sát Tài chính</h2>
+                <small class="text-muted text-uppercase fw-bold extra-small opacity-75">Theo dõi lịch sử và trạng thái giao dịch trên toàn hệ thống</small>
             </div>
         </div>
 
         <!-- Statistics Cards -->
-        <div class="row mb-4 g-3">
+        <div class="row mb-4 g-3 text-center">
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
-                    <small class="text-muted mb-2 d-block">Tổng doanh thu</small>
-                    <h3 class="fw-bold text-accent mb-1" id="payment-total-revenue">2,450,000₫</h3>
-                    <small class="text-success">+12% so với tháng trước</small>
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">Tổng doanh thu</small>
+                    <h3 class="fw-bold text-accent mb-0" id="payment-total-revenue">---</h3>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
-                    <small class="text-muted mb-2 d-block">Giao dịch thành công</small>
-                    <h3 class="fw-bold text-success mb-1" id="payment-success-count">185</h3>
-                    <small class="text-muted">Tỷ lệ thành công: 95%</small>
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-start border-success border-4">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">Thành công</small>
+                    <h3 class="fw-bold text-success mb-0" id="payment-success-count">---</h3>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
-                    <small class="text-muted mb-2 d-block">Chờ thanh toán</small>
-                    <h3 class="fw-bold text-warning mb-1" id="payment-pending-count">12</h3>
-                    <small class="text-muted">Cần xử lý</small>
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-start border-warning border-4">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">Đang chờ xử lý</small>
+                    <h3 class="fw-bold text-warning mb-0" id="payment-pending-count">---</h3>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
-                    <small class="text-muted mb-2 d-block">Thanh toán thất bại</small>
-                    <h3 class="fw-bold text-danger mb-1" id="payment-failed-count">5</h3>
-                    <small class="text-muted">Cần kiểm tra</small>
+                <div class="card border-0 shadow-sm rounded-4 p-4 border-start border-danger border-4">
+                    <small class="text-muted mb-2 d-block text-uppercase fw-bold extra-small opacity-75">Giao dịch thất bại</small>
+                    <h3 class="fw-bold text-danger mb-0" id="payment-failed-count">---</h3>
                 </div>
-            </div>
-        </div>
-
-        <!-- Filter & Search -->
-        <div class="row mb-4 gap-3">
-            <div class="col-md-3">
-                <input type="text" class="form-control rounded-3 border-0 bg-light" id="payment-search" placeholder="Tìm kiếm mã đơn hàng...">
-            </div>
-            <div class="col-md-2">
-                <select class="form-select rounded-3 border-0 bg-light" id="payment-status-filter">
-                    <option value="">-- Tất cả trạng thái --</option>
-                    <option value="PENDING">Chờ xác nhận</option>
-                    <option value="SUCCESS">Thành công</option>
-                    <option value="FAILED">Thất bại</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select class="form-select rounded-3 border-0 bg-light" id="payment-method-filter">
-                    <option value="">-- Phương thức thanh toán --</option>
-                    <option value="COD">Thanh toán khi nhận</option>
-                    <option value="VNPAY">VNPay</option>
-                    <option value="MOMO">Momo</option>
-                </select>
-            </div>
-            <div class="col-md-auto">
-                <button class="btn btn-accent rounded-3 px-4 py-2 fw-bold" onclick="loadPayments()">
-                    <i class="icon icon-search me-2"></i>Tìm kiếm
-                </button>
             </div>
         </div>
 
         <!-- Payments Table -->
-        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white mt-5">
             <div class="table-responsive">
                 <table class="table align-middle table-hover mb-0">
-                    <thead class="bg-light">
+                    <thead class="bg-light text-muted extra-small text-uppercase fw-bold">
                         <tr>
-                            <th class="ps-4">Mã đơn hàng</th>
-                            <th>Khách hàng</th>
-                            <th>Phương thức</th>
-                            <th>Số tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày thanh toán</th>
-                            <th class="text-end pe-4">Thao tác</th>
+                            <th class="ps-4 py-3">Mã Giao dịch</th>
+                            <th class="py-3">Mã Đơn hàng</th>
+                            <th class="py-3">Cổng thanh toán</th>
+                            <th class="py-3 text-end">Số tiền</th>
+                            <th class="py-3">Trạng thái</th>
+                            <th class="py-3">Ngày thanh toán</th>
+                            <th class="text-end pe-4 py-3">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="payment-list-body">
                         <tr>
                             <td colspan="7" class="text-center py-5">
                                 <div class="spinner-border text-accent spinner-border-sm" role="status"></div>
-                                <span class="ms-2 text-muted">Đang tải...</span>
+                                <span class="ms-2 text-muted">Đang tải dữ liệu tài chính...</span>
                             </td>
                         </tr>
                     </tbody>

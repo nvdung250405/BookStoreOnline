@@ -9,4 +9,5 @@ public interface CartService {
     void updateQuantity(String username, String isbn, Integer quantity);
     void removeFromCart(String username, String isbn);
     void clearCart(String username);
+    java.util.List<com.bookstore.entity.Cart> getAllActiveCarts();
 }

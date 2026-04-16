@@ -1,11 +1,11 @@
 <div class="admin-suppliers-page p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="fw-bold mb-1">Partners & Suppliers Management</h3>
-            <p class="text-muted small mb-0">Registry of publishers and distributors for inventory fulfillment</p>
+            <h3 class="fw-bold mb-1">Quản lý Đối tác & Nhà cung cấp</h3>
+            <p class="text-muted small mb-0">Danh mục các nhà xuất bản và đơn vị phân phối hàng hóa</p>
         </div>
         <button class="btn btn-accent rounded-pill px-4 shadow-sm" onclick="suppliers.addSupplier()">
-            <i class="icon icon-plus me-2"></i> Add New Partner
+            <i class="icon icon-plus me-2"></i> Thêm Đối tác mới
         </button>
     </div>
 
@@ -14,16 +14,16 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                     <tr>
-                        <th class="ps-4 py-3">Partner Name</th>
-                        <th class="py-3">Tax Code</th>
-                        <th class="py-3">Contact Number</th>
-                        <th class="py-3 text-end pe-4">Operations</th>
+                        <th class="ps-4 py-3">Tên Đối tác / NCC</th>
+                        <th class="py-3">Mã số thuế</th>
+                        <th class="py-3">Số điện thoại liên lạc</th>
+                        <th class="py-3 text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody id="suppliers-list">
                     <tr>
                          <td colspan="4" class="text-center py-5 text-muted">
-                            <div class="spinner-border spinner-border-sm text-accent mb-2"></div><br>Syncing partner registry...
+                            <div class="spinner-border spinner-border-sm text-accent mb-2"></div><br>Đang đồng bộ danh mục đối tác...
                          </td>
                     </tr>
                 </tbody>

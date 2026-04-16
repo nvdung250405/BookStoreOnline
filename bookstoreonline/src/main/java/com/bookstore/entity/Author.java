@@ -16,6 +16,9 @@ public class Author {
     @Column(name = "biography", columnDefinition = "NVARCHAR(MAX)")
     private String biography;
 
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
+    private java.util.Set<Book> books;
+
     public Author() {}
 
     public Integer getAuthorId() { return authorId; }
@@ -24,4 +27,6 @@ public class Author {
     public void setAuthorName(String authorName) { this.authorName = authorName; }
     public String getBiography() { return biography; }
     public void setBiography(String biography) { this.biography = biography; }
+    public java.util.Set<Book> getBooks() { return books; }
+    public void setBooks(java.util.Set<Book> books) { this.books = books; }
 }

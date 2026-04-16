@@ -56,6 +56,18 @@ public class SupportTicketServiceImpl implements SupportTicketService {
         supportTicketRepository.save(ticket);
     }
 
+    @Override
+    public void respondToTicket(Long id, String reply, String internalNote, String statusCode) {
+        SupportTicket ticket = supportTicketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        
+        if (reply != null) ticket.setAdminReply(reply);
+        if (internalNote != null) ticket.setInternalNote(internalNote);
+        if (statusCode != null) ticket.setStatusCode(statusCode);
+        
+        supportTicketRepository.save(ticket);
+    }
+
     private SupportTicketDTO toDTO(SupportTicket ticket) {
         SupportTicketDTO dto = new SupportTicketDTO();
         dto.setTicketId(ticket.getTicketId());
@@ -63,6 +75,8 @@ public class SupportTicketServiceImpl implements SupportTicketService {
         dto.setTitle(ticket.getTitle());
         dto.setContent(ticket.getContent());
         dto.setStatusCode(ticket.getStatusCode());
+        dto.setAdminReply(ticket.getAdminReply());
+        dto.setInternalNote(ticket.getInternalNote());
         dto.setCreatedAt(ticket.getCreatedAt());
         return dto;
     }

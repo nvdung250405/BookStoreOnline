@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "books")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Book {
     @Id
     @Column(length = 13)

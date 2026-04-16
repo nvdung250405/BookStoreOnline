@@ -5,16 +5,36 @@
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
-                        <li class="breadcrumb-item small active fw-bold text-accent">User Accounts</li>
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">Tài khoản Người dùng</li>
                     </ol>
                 </nav>
-                <h2 class="fw-bold font-serif mb-0">Member Management</h2>
-                <small class="text-muted">Manage system administrators, staff members and registered customers</small>
+                <h2 class="fw-bold font-serif mb-0">Quản lý Thành viên</h2>
+                <small class="text-muted">Quản trị viên hệ thống, nhân viên dịch vụ và khách hàng đã đăng ký</small>
             </div>
             <button onclick="layout.render('Users', 'Admin/Create')" class="btn btn-dark px-4 py-2 rounded-pill fw-bold shadow-sm">
-                <i class="icon icon-plus me-2"></i> Add New Member
+                <i class="icon icon-plus me-2"></i> Thêm Thành viên mới
             </button>
+        </div>
+
+        <div class="row mb-4 gap-3 bg-white p-3 rounded-4 shadow-sm mx-0 align-items-center">
+            <div class="col-md-5">
+                <input type="text" class="form-control rounded-3 border-0 bg-light" id="user-search" placeholder="Tìm theo tên, email hoặc tên đăng nhập...">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select rounded-3 border-0 bg-light" id="user-role-filter">
+                    <option value="">-- Tất cả Quyền hạn --</option>
+                    <option value="ADMIN">Quản trị viên (Admin)</option>
+                    <option value="STAFF">Nhân viên Dịch vụ</option>
+                    <option value="STOREKEEPER">Thủ kho</option>
+                    <option value="CUSTOMER">Khách hàng thành viên</option>
+                </select>
+            </div>
+            <div class="col-md-auto">
+                <button class="btn btn-accent rounded-pill px-4 fw-bold" onclick="users.loadAdminList()">
+                    <i class="icon icon-search me-2"></i> Áp dụng bộ lọc
+                </button>
+            </div>
         </div>
 
         <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
@@ -22,12 +42,12 @@
                 <table class="table align-middle table-hover mb-0">
                     <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                         <tr>
-                            <th class="ps-4 py-3">User Information</th>
-                            <th class="py-3">Email Address</th>
-                            <th class="py-3">Assigned Role</th>
-                            <th class="py-3">Joined Date</th>
-                            <th class="py-3">Account Status</th>
-                            <th class="text-end pe-4 py-3">Operations</th>
+                            <th class="ps-4 py-3">Thông tin Người dùng</th>
+                            <th class="py-3">Địa chỉ Email</th>
+                            <th class="py-3">Quyền hạn</th>
+                            <th class="py-3">Ngày tham gia</th>
+                            <th class="py-3">Trạng thái</th>
+                            <th class="text-end pe-4 py-3">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="users-admin-list">
@@ -35,7 +55,7 @@
                         <tr>
                             <td colspan="6" class="text-center py-5">
                                 <div class="spinner-border text-accent spinner-border-sm" role="status"></div>
-                                <span class="ms-2 text-muted">Syncing user database...</span>
+                                <span class="ms-2 text-muted">Đang truy xuất cơ sở dữ liệu người dùng...</span>
                             </td>
                         </tr>
                     </tbody>
@@ -48,3 +68,11 @@
 <style>
     .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }
 </style>
+
+<script>
+    (function() {
+        if (typeof users !== 'undefined') {
+            users.loadAdminList();
+        }
+    })();
+</script>

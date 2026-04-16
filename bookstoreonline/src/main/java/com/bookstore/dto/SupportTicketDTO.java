@@ -8,6 +8,8 @@ public class SupportTicketDTO {
     private String title;
     private String content;
     private String statusCode;
+    private String adminReply;
+    private String internalNote;
     private LocalDateTime createdAt;
 
     public SupportTicketDTO() {}
@@ -22,6 +24,10 @@ public class SupportTicketDTO {
     public void setContent(String content) { this.content = content; }
     public String getStatusCode() { return statusCode; }
     public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+    public String getAdminReply() { return adminReply; }
+    public void setAdminReply(String adminReply) { this.adminReply = adminReply; }
+    public String getInternalNote() { return internalNote; }
+    public void setInternalNote(String internalNote) { this.internalNote = internalNote; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

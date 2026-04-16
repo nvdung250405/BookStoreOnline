@@ -1,20 +1,20 @@
 <div class="admin-orders-page p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="fw-bold mb-1">Customer Orders Management</h3>
-            <p class="text-muted small mb-0">Monitor revenue streams and shipment fulfillment status</p>
+            <h3 class="fw-bold mb-1">Quản lý Đơn hàng Khách hàng</h3>
+            <p class="text-muted small mb-0">Theo dõi dòng doanh thu và trạng thái thực hiện vận chuyển</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-light rounded-pill px-3 shadow-sm" onclick="orders.loadAdminOrders()">
-                <i class="icon icon-refresh"></i> Refresh List
+                <i class="icon icon-refresh"></i> Làm mới danh sách
             </button>
             <div class="dropdown">
                 <button class="btn btn-accent rounded-pill px-3 shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    Export Report
+                    Xuất báo cáo
                 </button>
                 <ul class="dropdown-menu border-0 shadow-sm dropdown-menu-end">
-                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="orders.exportAdminOrders('excel')">Export to Excel (.xlsx)</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="orders.exportAdminOrders('json')">Export JSON Summary</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="orders.exportAdminOrders('excel')">Xuất ra Excel (.xlsx)</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="orders.exportAdminOrders('json')">Xuất tóm tắt JSON</a></li>
                 </ul>
             </div>
         </div>
@@ -24,27 +24,27 @@
     <div class="row g-4 mb-4">
         <div class="col-md-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="text-muted small mb-1">New Orders (Today)</div>
+                <div class="text-muted small mb-1">Đơn hàng mới (Hôm nay)</div>
                 <div class="h4 fw-bold mb-0">12</div>
                 <div class="text-success small"><i class="icon icon-arrow-up"></i> +15%</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="text-muted small mb-1">Pending Processing</div>
+                <div class="text-muted small mb-1">Chờ xử lý</div>
                 <div class="h4 fw-bold mb-0 text-warning">08</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="text-muted small mb-1">Fulfilled Orders</div>
+                <div class="text-muted small mb-1">Đã hoàn tất</div>
                 <div class="h4 fw-bold mb-0 text-success">145</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="text-muted small mb-1">Monthly Revenue</div>
-                <div class="h4 fw-bold mb-0 text-accent">12.5M</div>
+                <div class="text-muted small mb-1">Doanh thu tháng</div>
+                <div class="h4 fw-bold mb-0 text-accent">12.5 triệu</div>
             </div>
         </div>
     </div>
@@ -55,12 +55,12 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                     <tr>
-                        <th class="ps-4 py-3">Order ID</th>
-                        <th class="py-3">Customer Name</th>
-                        <th class="py-3">Created At</th>
-                        <th class="py-3">Total Amount</th>
-                        <th class="py-3">Current Status</th>
-                        <th class="py-3 text-end pe-4">Operations</th>
+                        <th class="ps-4 py-3">Mã Đơn hàng</th>
+                        <th class="py-3">Tên Khách hàng</th>
+                        <th class="py-3">Thời gian tạo</th>
+                        <th class="py-3">Tổng giá trị</th>
+                        <th class="py-3">Trạng thái hiện tại</th>
+                        <th class="py-3 text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody id="admin-orders-list">

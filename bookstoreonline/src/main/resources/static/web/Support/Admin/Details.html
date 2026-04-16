@@ -4,8 +4,12 @@
         <div class="mb-5">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin Hub</a></li>
-                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Support/Admin', 'Index')" class="text-decoration-none text-muted">Support Tickets</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)"
+                            onclick="layout.render('Dashboard/Admin', 'Index')"
+                            class="text-decoration-none text-muted">Admin Hub</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)"
+                            onclick="layout.render('Support/Admin', 'Index')"
+                            class="text-decoration-none text-muted">Support Tickets</a></li>
                     <li class="breadcrumb-item small active fw-bold text-accent">Ticket Details</li>
                 </ol>
             </nav>
@@ -24,7 +28,7 @@
                         </div>
                         <div id="ticket-status-badge" class="badge rounded-pill px-3 py-2">---</div>
                     </div>
-                    
+
                     <div class="alert alert-light border-0 bg-light rounded-3 p-3 mb-4">
                         <p class="mb-0 text-muted" id="ticket-detail-content">Loading content...</p>
                     </div>
@@ -32,11 +36,12 @@
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3">
                             <small class="text-uppercase text-muted extra-small fw-bold d-block mb-1">Customer</small>
-                            <strong id="ticket-customer-name">---</strong><br/>
+                            <strong id="ticket-customer-name">---</strong><br />
                             <small class="text-muted" id="ticket-customer-email">---</small>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <small class="text-uppercase text-muted extra-small fw-bold d-block mb-1">Date Created</small>
+                            <small class="text-uppercase text-muted extra-small fw-bold d-block mb-1">Date
+                                Created</small>
                             <strong id="ticket-created-date">---</strong>
                         </div>
                     </div>
@@ -49,16 +54,42 @@
                         <div class="text-center py-3 text-muted">No comments yet.</div>
                     </div>
 
-                    <!-- Add Comment Form -->
-                    <form onsubmit="support.addComment(event)">
-                        <div class="mb-3">
-                            <label class="form-label small text-muted fw-bold">Add Response</label>
-                            <textarea class="form-control rounded-3 border-0 bg-light p-3" id="comment-text" rows="3" placeholder="Type your response or internal note..." required></textarea>
+                    <!-- Response Form -->
+                    <div id="response-form-container" class="card border-0 bg-light rounded-4 p-4 mt-4">
+                        <h6 class="fw-bold mb-3"><i class="icon icon-reply me-2"></i>Handle Ticket</h6>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label small text-muted fw-bold">Trạng thái mới</label>
+                                <select class="form-select rounded-pill border-0 px-3" id="target-status">
+                                    <option value="OPEN">Mở (Open)</option>
+                                    <option value="PROCESSING">Đang xử lý (Processing)</option>
+                                    <option value="CLOSED">Đóng (Closed)</option>
+                                    <option value="RESOLVED">Đã giải quyết (Resolved)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label small text-muted fw-bold">Phản hồi khách hàng</label>
+                                <textarea class="form-control rounded-4 border-0 p-3" id="admin-reply" rows="3"
+                                    placeholder="Nội dung gửi cho khách hàng..."></textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label small text-muted fw-bold">Ghi chú nội bộ (Internal
+                                    Only)</label>
+                                <textarea class="form-control rounded-4 border-0 p-3" id="internal-note" rows="2"
+                                    placeholder="Ghi chú cho nhân viên khác..."></textarea>
+                            </div>
+
+                            <div class="col-12 text-end">
+                                <button onclick="support.submitResponse()"
+                                    class="btn btn-accent rounded-pill px-4 fw-bold">
+                                    Cập nhật hồ sơ
+                                </button>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-accent rounded-pill px-4 py-2 fw-bold">
-                            <i class="icon icon-paper-plane me-2"></i>Send Response
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
 
@@ -66,10 +97,11 @@
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
                     <h5 class="fw-bold mb-3">Status Control</h5>
-                    
+
                     <div class="mb-4">
                         <label class="form-label small text-muted fw-bold">Status</label>
-                        <select class="form-select rounded-3 border-0 bg-light" id="ticket-status-select" onchange="support.updateTicketStatus()">
+                        <select class="form-select rounded-3 border-0 bg-light" id="ticket-status-select"
+                            onchange="support.updateTicketStatus()">
                             <option value="OPEN">Open</option>
                             <option value="PROCESSING">Processing</option>
                             <option value="CLOSED">Closed</option>
@@ -78,7 +110,8 @@
 
                     <div class="mb-4">
                         <label class="form-label small text-muted fw-bold">Priority</label>
-                        <select class="form-select rounded-3 border-0 bg-light" id="ticket-priority-select" onchange="support.updateTicketPriority()">
+                        <select class="form-select rounded-3 border-0 bg-light" id="ticket-priority-select"
+                            onchange="support.updateTicketPriority()">
                             <option value="LOW">Low</option>
                             <option value="MEDIUM">Medium</option>
                             <option value="HIGH">High</option>
@@ -88,10 +121,12 @@
                     <hr class="my-3 opacity-50">
 
                     <div class="d-grid gap-2">
-                        <button class="btn btn-outline-danger rounded-pill py-2 fw-bold mb-2" onclick="support.confirmDelete()">
+                        <button class="btn btn-outline-danger rounded-pill py-2 fw-bold mb-2"
+                            onclick="support.confirmDelete()">
                             <i class="icon icon-trash me-2"></i>Delete Ticket
                         </button>
-                        <button class="btn btn-light rounded-pill py-2 fw-bold" onclick="layout.render('Support/Admin', 'Index')">
+                        <button class="btn btn-light rounded-pill py-2 fw-bold"
+                            onclick="layout.render('Support/Admin', 'Index')">
                             <i class="icon icon-arrow-left me-2"></i>Back to List
                         </button>
                     </div>
@@ -112,9 +147,10 @@
 </div>
 
 <script>
-    (function() {
+    (function () {
         const id = layout.current.id;
         if (id) {
             support.loadTicketDetails(id);
         }
+    })();
 </script>

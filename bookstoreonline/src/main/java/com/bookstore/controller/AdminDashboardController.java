@@ -1,7 +1,6 @@
 package com.bookstore.controller;
 
 import com.bookstore.dto.ApiResponse;
-import com.bookstore.dto.AuditLogDTO;
 import com.bookstore.dto.BookRankingDTO;
 import com.bookstore.dto.RevenueReportDTO;
 import com.bookstore.service.AdminDashboardService;
@@ -45,20 +44,6 @@ public class AdminDashboardController {
     public ResponseEntity<ApiResponse<List<BookRankingDTO>>> getBookRanking() {
         List<BookRankingDTO> ranking = dashboardService.getBookRanking();
         return ResponseEntity.ok(ApiResponse.success("Lấy danh sách xếp hạng thành công", ranking));
-    }
-
-    @GetMapping("/audit-logs")
-    @Operation(summary = "Nhật ký hệ thống", description = "Xem danh sách các hoạt động audit trên toàn hệ thống")
-    public ResponseEntity<ApiResponse<List<AuditLogDTO>>> getAuditLogs() {
-        List<AuditLogDTO> logs = dashboardService.getAuditLogs();
-        return ResponseEntity.ok(ApiResponse.success("Lấy nhật ký hệ thống thành công", logs));
-    }
-
-    @GetMapping("/audit-logs/{id}")
-    @Operation(summary = "Chi tiết nhật ký", description = "Xem chi tiết một bản ghi audit")
-    public ResponseEntity<ApiResponse<AuditLogDTO>> getAuditLogDetail(@PathVariable Long id) {
-        AuditLogDTO log = dashboardService.getAuditLogDetail(id);
-        return ResponseEntity.ok(ApiResponse.success("Lấy chi tiết nhật ký thành công", log));
     }
 
     @GetMapping("/audit-stats")

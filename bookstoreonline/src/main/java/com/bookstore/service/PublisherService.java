@@ -26,6 +26,34 @@ public class PublisherService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public PublisherDTO savePublisher(PublisherDTO dto) {
+        Publisher publisher = new Publisher();
+        publisher.setPublisherName(dto.getPublisherName());
+        return convertToDTO(publisherRepository.save(publisher));
+    }
+
+    @Transactional
+    public PublisherDTO updatePublisher(Integer id, PublisherDTO dto) {
+        Publisher publisher = publisherRepository.findById(java.util.Objects.requireNonNull(id))
+                .orElseThrow(() -> new RuntimeException("Publisher not found with ID: " + id));
+        publisher.setPublisherName(dto.getPublisherName());
+        return convertToDTO(publisherRepository.save(publisher));
+    }
+
+    @Transactional
+    public void deletePublisher(Integer id) {
+        Publisher publisher = publisherRepository.findById(java.util.Objects.requireNonNull(id))
+                .orElseThrow(() -> new RuntimeException("Publisher not found with ID: " + id));
+        
+        // Check if publisher has books
+        if (publisher.getBooks() != null && !publisher.getBooks().isEmpty()) {
+            throw new RuntimeException("Cannot delete publisher with associated books. Please remove or reassign books first.");
+        }
+        
+        publisherRepository.delete(publisher);
+    }
+
     private PublisherDTO convertToDTO(Publisher entity) {
         PublisherDTO dto = new PublisherDTO();
         dto.setPublisherId(entity.getPublisherId());

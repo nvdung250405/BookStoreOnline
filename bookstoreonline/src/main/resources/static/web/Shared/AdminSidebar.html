@@ -1,84 +1,159 @@
 <!-- AdminSidebar.html -->
 <aside class="admin-sidebar bg-white shadow-sm h-100 d-flex flex-column rounded-4 overflow-hidden border">
     <div class="sidebar-header p-4 text-center border-bottom bg-light">
-        <h4 class="fw-bold text-accent mb-0 font-serif">Admin <span class="text-dark">Hub</span></h4>
-        <small class="text-muted">Bookstore Management</small>
+        <h4 class="fw-bold text-accent mb-0 font-serif">Quản trị <span class="text-dark">Hệ thống</span></h4>
+        <small class="text-muted">Nhà Sách Online - Internal</small>
     </div>
 
     <div class="sidebar-content flex-grow-1 overflow-auto p-3">
+        <!-- 1. TỔNG QUAN -->
         <div class="nav-group mb-4">
-            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Analytics</small>
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">1. Tổng quan</small>
             <ul class="nav flex-column gap-1">
-                <li class="nav-item">
-                    <a href="javascript:void(0)" onclick="layout.render('Dashboard', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 active">
+                <li class="nav-item" data-roles="ADMIN,STAFF,STOREKEEPER">
+                    <a href="javascript:void(0)" onclick="layout.render('Dashboard', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
                         <i class="icon icon-ns-dashboard fs-5"></i>
-                        <span>Dashboard</span>
+                        <span>Bảng điều khiển</span>
                     </a>
                 </li>
             </ul>
         </div>
 
+        <!-- 2. QUẢN LÝ SÁCH -->
         <div class="nav-group mb-4">
-            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Catalog</small>
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">2. Quản lý Sản phẩm</small>
             <ul class="nav flex-column gap-1">
-                <li class="nav-item">
+                <li class="nav-item" data-roles="ADMIN,STAFF,STOREKEEPER">
                     <a href="javascript:void(0)" onclick="layout.render('Books', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
                         <i class="icon icon-ns-book fs-5"></i>
-                        <span>Products</span>
+                        <span>Tất cả Sách</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" data-roles="ADMIN">
                     <a href="javascript:void(0)" onclick="layout.render('Categories', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
                         <i class="icon icon-ns-category fs-5"></i>
-                        <span>Categories</span>
+                        <span>Danh mục Sách</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="javascript:void(0)" onclick="layout.render('Suppliers', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 text-muted">
-                        <i class="icon icon-ns-supplier fs-5"></i>
-                        <span>Suppliers</span>
+                <li class="nav-item" data-roles="ADMIN">
+                    <a href="javascript:void(0)" onclick="layout.render('Authors', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-author fs-5"></i>
+                        <span>Tác giả</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-roles="ADMIN">
+                    <a href="javascript:void(0)" onclick="layout.render('Publishers', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-publisher fs-5"></i>
+                        <span>Nhà xuất bản</span>
                     </a>
                 </li>
             </ul>
         </div>
 
+        <!-- 3. QUẢN LÝ BÁN HÀNG -->
         <div class="nav-group mb-4">
-            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Operations</small>
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">3. Hoạt động Bán hàng</small>
             <ul class="nav flex-column gap-1">
-                <li class="nav-item">
+                <li class="nav-item" data-roles="ADMIN,STAFF">
                     <a href="javascript:void(0)" onclick="layout.render('Orders', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
                         <i class="icon icon-ns-order fs-5"></i>
-                        <span>Customer Orders</span>
+                        <span>Đơn hàng Khách hàng</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="javascript:void(0)" onclick="layout.render('Inventory', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
-                        <i class="icon icon-ns-inventory fs-5"></i>
-                        <span>Inventory / Stock</span>
+                <li class="nav-item" data-roles="ADMIN,STAFF">
+                    <a href="javascript:void(0)" onclick="layout.render('Payments', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-payment fs-5"></i>
+                        <span>Lịch sử Thanh toán</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="javascript:void(0)" onclick="layout.render('Vouchers', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
-                        <i class="icon icon-ns-voucher fs-5"></i>
-                        <span>Promotions</span>
+                <li class="nav-item" data-roles="ADMIN">
+                    <a href="javascript:void(0)" onclick="layout.render('Carts', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-cart fs-5"></i>
+                        <span>Giỏ hàng đang hoạt động</span>
                     </a>
                 </li>
             </ul>
         </div>
 
+        <!-- 4. QUẢN LÝ KHO -->
         <div class="nav-group mb-4">
-            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">Administration</small>
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">4. Kho hàng & Logistics</small>
             <ul class="nav flex-column gap-1">
-                <li class="nav-item">
-                    <a href="javascript:void(0)" onclick="layout.render('AuditLogs', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
-                        <i class="icon icon-ns-audit fs-5 text-warning"></i>
-                        <span>Audit Logs</span>
+                <li class="nav-item" data-roles="ADMIN,STOREKEEPER">
+                    <a href="javascript:void(0)" onclick="layout.render('Inventory', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-inventory fs-5"></i>
+                        <span>Mức tồn kho</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" data-roles="ADMIN,STOREKEEPER">
+                    <a href="javascript:void(0)" onclick="layout.render('Inventory', 'Admin/Log')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3 opacity-75">
+                        <i class="icon icon-ns-audit fs-5"></i>
+                        <span>Nhật ký kho</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 5. NHÀ CUNG CẤP -->
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">5. Đối tác cung ứng</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item" data-roles="ADMIN,STOREKEEPER">
+                    <a href="javascript:void(0)" onclick="layout.render('Suppliers', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-supplier fs-5"></i>
+                        <span>Nhà cung cấp</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 6. KHUYẾN MÃI -->
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">6. Marketing & Ưu đãi</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item" data-roles="ADMIN">
+                    <a href="javascript:void(0)" onclick="layout.render('Vouchers', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-voucher fs-5"></i>
+                        <span>Mã giảm giá (Vouchers)</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 7. QUẢN LÝ NGƯỜI DÙNG -->
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">7. Tài khoản & Phân quyền</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item" data-roles="ADMIN">
+                    <a href="javascript:void(0)" onclick="layout.render('Users', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-users fs-5"></i>
+                        <span>Danh sách Nhân sự/Khách</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 8. HỖ TRỢ KHÁCH HÀNG -->
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">8. Trung tâm Hỗ trợ</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item" data-roles="ADMIN,STAFF">
                     <a href="javascript:void(0)" onclick="layout.render('Support', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
                         <i class="icon icon-ns-support fs-5"></i>
-                        <span>Support Tickets</span>
+                        <span>Khiếu nại & Hỗ trợ</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- 9. HỆ THỐNG -->
+        <div class="nav-group mb-4">
+            <small class="text-uppercase text-muted fw-bold extra-small px-3 mb-2 d-block opacity-50">9. Quản trị Hệ thống</small>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item" data-roles="ADMIN">
+                    <a href="javascript:void(0)" onclick="layout.render('AuditLogs', 'Admin/Index')" class="nav-link rounded-3 px-3 py-2 d-flex align-items-center gap-3">
+                        <i class="icon icon-ns-audit fs-5"></i>
+                        <span>Nhật ký hệ thống</span>
                     </a>
                 </li>
             </ul>
@@ -88,10 +163,43 @@
     <div class="sidebar-footer p-3 border-top bg-light">
         <a href="javascript:void(0)" onclick="auth.logout()" class="btn btn-outline-danger w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 py-2">
             <i class="icon icon-ns-logout"></i>
-            <span>Sign Out</span>
+            <span>Đăng xuất khỏi hệ thống</span>
         </a>
     </div>
 </aside>
+
+<script>
+    (function() {
+        const user = api.getUser();
+        const role = user ? user.role : 'CUSTOMER';
+        
+        $('[data-roles]').each(function() {
+            const allowed = $(this).data('roles').split(',');
+            if (!allowed.includes(role)) {
+                $(this).remove();
+            }
+        });
+
+        // Hide empty nav groups
+        $('.nav-group').each(function() {
+            if ($(this).find('li.nav-item').length === 0) {
+                $(this).hide();
+            }
+        });
+
+        // Highlight active
+        const curArea = layout.current.area;
+        const curView = layout.current.view;
+        $('.admin-sidebar .nav-link').each(function() {
+            const onclick = $(this).attr('onclick') || '';
+            if (onclick.includes(`'${curArea}', '${curView}'`)) {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+    })();
+</script>
 
 <style>
     .admin-sidebar .nav-link {
@@ -99,16 +207,7 @@
         font-weight: 500;
         transition: all 0.2s ease;
     }
-    .admin-sidebar .nav-link:hover {
-        background-color: #f3f4f6;
-        color: var(--accent-color);
-    }
-    .admin-sidebar .nav-link.active {
-        background-color: var(--accent-color);
-        color: white;
-    }
-    .extra-small {
-        font-size: 0.65rem;
-        letter-spacing: 0.05em;
-    }
+    .admin-sidebar .nav-link:hover { background-color: #f3f4f6; color: var(--accent-color); }
+    .admin-sidebar .nav-link.active { background-color: var(--accent-color) !important; color: white !important; }
+    .extra-small { font-size: 0.65rem; letter-spacing: 0.05em; }
 </style>

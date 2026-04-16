@@ -89,6 +89,12 @@ public class CartServiceImpl implements CartService {
         cartRepository.deleteByCustomer_Account_Username(username);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Cart> getAllActiveCarts() {
+        return cartRepository.findAll();
+    }
+
     private CartDTO toDTO(Cart entity) {
         CartDTO dto = new CartDTO();
         dto.setIsbn(entity.getBook().getIsbn());

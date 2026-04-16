@@ -24,6 +24,12 @@ public class SupportTicket {
     @Column(name = "status_code", length = 50)
     private String statusCode = "OPEN";
 
+    @Column(name = "admin_reply", columnDefinition = "NVARCHAR(MAX)")
+    private String adminReply;
+
+    @Column(name = "internal_note", columnDefinition = "NVARCHAR(MAX)")
+    private String internalNote;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -39,6 +45,10 @@ public class SupportTicket {
     public void setContent(String content) { this.content = content; }
     public String getStatusCode() { return statusCode; }
     public void setStatusCode(String statusCode) { this.statusCode = statusCode; }
+    public String getAdminReply() { return adminReply; }
+    public void setAdminReply(String adminReply) { this.adminReply = adminReply; }
+    public String getInternalNote() { return internalNote; }
+    public void setInternalNote(String internalNote) { this.internalNote = internalNote; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

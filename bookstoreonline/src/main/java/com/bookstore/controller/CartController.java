@@ -21,6 +21,13 @@ public class CartController {
         this.cartService = cartService;
     }
 
+    @GetMapping("/admin/all")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Lấy tất cả giỏ hàng (ADMIN)", description = "Admin theo dõi danh sách tất cả các giỏ hàng đang hoạt động trong hệ thống.")
+    public ApiResponse<java.util.List<com.bookstore.entity.Cart>> getAllCarts() {
+        return ApiResponse.success(cartService.getAllActiveCarts());
+    }
+
     @GetMapping("/{username}")
     @Operation(summary = "Lấy giỏ hàng", description = "Xem danh sách các sản phẩm đang có trong giỏ hàng của người dùng")
     public ApiResponse<List<CartDTO>> getCart(@PathVariable String username) {

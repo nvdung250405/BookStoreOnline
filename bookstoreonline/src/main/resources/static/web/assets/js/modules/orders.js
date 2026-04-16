@@ -44,7 +44,7 @@ const orders = {
         const discount = parseFloat(sessionStorage.getItem('applied_discount') || 0);
 
         $("#summary-subtotal").text(api.formatCurrency(total));
-        $("#summary-shipping").text(shipping === 0 ? "Free" : api.formatCurrency(shipping));
+        $("#summary-shipping").text(shipping === 0 ? "Miễn phí" : api.formatCurrency(shipping));
         $("#summary-discount").text(discount > 0 ? "-" + api.formatCurrency(discount) : "0đ");
         $("#summary-total").text(api.formatCurrency(total + shipping - discount));
     },
@@ -52,7 +52,7 @@ const orders = {
     applyVoucher: async () => {
         const voucherCode = $("#voucher-input").val().trim();
         if (!voucherCode) {
-            $("#voucher-message").text("Please enter a voucher code").addClass("text-danger").show();
+            $("#voucher-message").text("Vui lòng nhập mã giảm giá").addClass("text-danger").show();
             return;
         }
 
@@ -64,14 +64,14 @@ const orders = {
                 sessionStorage.setItem('applied_discount', voucher.discountValue);
                 
                 const msgDiv = $("#voucher-message");
-                msgDiv.html(`<i class="icon icon-check text-success me-2"></i><span class="text-success">Voucher applied! Discount: ${api.formatCurrency(voucher.discountValue)}</span>`)
+                msgDiv.html(`<i class="icon icon-check text-success me-2"></i><span class="text-success">Đã áp dụng mã! Giảm: ${api.formatCurrency(voucher.discountValue)}</span>`)
                     .removeClass("text-danger").addClass("text-success").show();
                 
                 orders.renderSummary(); 
             }
         } catch (e) {
             const msgDiv = $("#voucher-message");
-            msgDiv.text("Invalid or expired voucher code").addClass("text-danger").show();
+            msgDiv.text("Mã giảm giá không hợp lệ hoặc đã hết hạn").addClass("text-danger").show();
         }
     },
 
@@ -89,7 +89,7 @@ const orders = {
         const cartData = cartRes.data || [];
         
         if (cartData.length === 0) {
-            api.showToast("Your cart is empty!", "error");
+            api.showToast("Giỏ hàng của bạn đang trống!", "error");
             return;
         }
 
@@ -101,7 +101,7 @@ const orders = {
             paymentMethod: paymentMethod
         };
 
-        api.showToast("Creating order...", "info");
+        api.showToast("Đang tạo đơn hàng...", "info");
         try {
             const res = await api.post('/orders/checkout', orderData);
             const orderInfo = res.data;
@@ -115,11 +115,11 @@ const orders = {
                 const vnpayRes = await api.get(`/payments/vnpay/create?orderId=${orderId}`);
                 window.location.href = vnpayRes.data; 
             } else {
-                api.showToast("Order placed successfully!");
+                api.showToast("Đặt hàng thành công!");
                 layout.render('Orders', 'PaymentResult', orderId);
             }
         } catch (error) {
-            api.showToast("Failed to create order: " + error.message, "error");
+            api.showToast("Không thể tạo đơn hàng: " + error.message, "error");
         }
     },
 
@@ -168,7 +168,7 @@ const orders = {
             });
         } catch (e) {
             tbody.html('<tr><td colspan="5" class="text-center py-5 text-danger">Lỗi khi tải lịch sử đơn hàng.</td></tr>');
-            api.showToast("Error loading order history", "error");
+            api.showToast("Lỗi khi tải lịch sử đơn hàng", "error");
         }
     },
 
@@ -234,7 +234,7 @@ const orders = {
 
         } catch (e) {
             if (tbody.length) tbody.html('<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi khi tải chi tiết đơn hàng.</td></tr>');
-            api.showToast("Error loading order details", "error");
+            api.showToast("Lỗi khi tải chi tiết đơn hàng", "error");
         }
     },
 
@@ -267,17 +267,17 @@ const orders = {
                 `);
             });
         } catch (e) {
-            api.showToast("Error loading orders", "error");
+            api.showToast("Lỗi khi tải danh sách đơn hàng", "error");
         }
     },
 
     updateStatus: async (orderId, status) => {
         try {
             await api.put(`/orders/admin/${orderId}/status?status=${status}`);
-            api.showToast("Order status updated");
+            api.showToast("Đã cập nhật trạng thái đơn hàng");
             orders.loadAdminOrders();
         } catch (e) {
-            api.showToast("Failed to update status", "error");
+            api.showToast("Cập nhật trạng thái thất bại", "error");
         }
     },
 

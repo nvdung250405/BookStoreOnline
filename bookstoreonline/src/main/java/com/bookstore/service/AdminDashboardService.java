@@ -4,12 +4,7 @@ import com.bookstore.dto.AuditLogDTO;
 import com.bookstore.dto.BookRankingDTO;
 import com.bookstore.dto.RevenueReportDTO;
 import com.bookstore.entity.Book;
-import com.bookstore.repository.AuditLogRepository;
-import com.bookstore.repository.OrderDetailRepository;
-import com.bookstore.repository.OrderRepository;
-import com.bookstore.repository.BookRepository;
-import com.bookstore.repository.CustomerRepository;
-import com.bookstore.repository.InventoryRepository;
+import com.bookstore.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,31 +22,48 @@ public class AdminDashboardService {
     private final OrderDetailRepository orderDetailRepository;
     private final AuditLogRepository auditLogRepository;
     private final BookRepository bookRepository;
-    private final CustomerRepository customerRepository;
+    private final AccountRepository accountRepository;
     private final InventoryRepository inventoryRepository;
+    private final SupportTicketRepository supportTicketRepository;
 
     public AdminDashboardService(OrderRepository orderRepository,
                                  OrderDetailRepository orderDetailRepository,
                                  AuditLogRepository auditLogRepository,
                                  BookRepository bookRepository,
-                                 CustomerRepository customerRepository,
-                                 InventoryRepository inventoryRepository) {
+                                 AccountRepository accountRepository,
+                                 InventoryRepository inventoryRepository,
+                                 SupportTicketRepository supportTicketRepository) {
         this.orderRepository = orderRepository;
         this.orderDetailRepository = orderDetailRepository;
         this.auditLogRepository = auditLogRepository;
         this.bookRepository = bookRepository;
-        this.customerRepository = customerRepository;
+        this.accountRepository = accountRepository;
         this.inventoryRepository = inventoryRepository;
+        this.supportTicketRepository = supportTicketRepository;
     }
 
     @Transactional(readOnly = true)
     public Map<String, Object> getQuickStats() {
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalUsers", customerRepository.count());
+        
+        // Requirement: Active Customer Count (account.is_active = 1)
+        stats.put("customerCount", accountRepository.countByIsActiveTrue());
+        
+        // Total Books
         stats.put("totalBooks", bookRepository.count());
-        stats.put("pendingOrders", orderRepository.countByStatusCode("NEW"));
-        stats.put("lowStockCount", inventoryRepository.findAll().stream().filter(k -> k.getStockQuantity() < 5).count());
+        
+        // Low Stock Count (stock_quantity <= alert_threshold)
+        long lowStock = inventoryRepository.findAll().stream()
+                .filter(inv -> inv.getStockQuantity() <= inv.getAlertThreshold())
+                .count();
+        stats.put("lowStockCount", lowStock);
+        
+        // Total Revenue (status = COMPLETED)
         stats.put("totalRevenue", orderRepository.sumTotalAmountByStatusCode("COMPLETED"));
+        
+        // Open Tickets (status = OPEN)
+        stats.put("openTickets", supportTicketRepository.countByStatusCode("OPEN"));
+        
         return stats;
     }
 
@@ -74,7 +86,7 @@ public class AdminDashboardService {
             if (!isbn.isEmpty()) {
                 title = bookRepository.findById(isbn)
                     .map(Book::getTitle)
-                    .orElse("Unknown Book (Not found)");
+                    .orElse("Unknown Book");
             }
             
             return new BookRankingDTO(isbn, title, totalSold);

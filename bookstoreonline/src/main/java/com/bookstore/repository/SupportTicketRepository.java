@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface SupportTicketRepository extends JpaRepository<SupportTicket, Long> {
     List<SupportTicket> findByCustomer_Account_Username(String username);
+    long countByStatusCode(String statusCode);
 }

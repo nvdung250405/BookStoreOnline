@@ -8,4 +8,5 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, String> {
     Optional<Account> findByUsername(String username);
+    long countByIsActiveTrue();
 }

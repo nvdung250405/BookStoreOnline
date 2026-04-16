@@ -143,5 +143,49 @@ const cart = {
         } catch (e) {
             api.showToast("Error clearing cart", "error");
         }
+    },
+
+    loadAdminCarts: async () => {
+        try {
+            const res = await api.get(`/api/cart/admin/all`);
+            const carts = res.data || res;
+            const tbody = $("#cart-admin-list-body");
+            if (!tbody.length) return;
+            tbody.empty();
+
+            if (!carts || carts.length === 0) {
+                tbody.html('<tr><td colspan="5" class="text-center py-5 text-muted">No active shopping carts found.</td></tr>');
+                return;
+            }
+
+            carts.forEach(item => {
+                const username = item.customer?.account?.username || 'Guest';
+                const bookTitle = item.book?.title || 'Unknown Book';
+                const unitPrice = item.book?.price || 0;
+                const total = unitPrice * (item.quantity || 1);
+
+                tbody.append(`
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold">${username}</div>
+                            <div class="small text-muted">Customer ID: ${item.customer?.customerId}</div>
+                        </td>
+                        <td>
+                            <div class="fw-medium">${bookTitle}</div>
+                            <div class="extra-small text-muted">ISBN: ${item.book?.isbn}</div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border rounded-pill px-3">${item.quantity}</span>
+                        </td>
+                        <td class="text-end fw-bold text-accent">${api.formatCurrency(total)}</td>
+                        <td class="text-end pe-4">
+                             <span class="badge bg-info bg-opacity-10 text-info">Monitoring</span>
+                        </td>
+                    </tr>
+                `);
+            });
+        } catch (e) {
+            api.showToast("Failed to load active carts: " + e.message, "error");
+        }
     }
 };

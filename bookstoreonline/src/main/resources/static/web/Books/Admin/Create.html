@@ -56,35 +56,47 @@
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số kỹ thuật</h5>
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Phân loại sách</h5>
                     <div class="row g-3">
-                        <!-- soTrang field removed to match Database Schema -->
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Trọng lượng (g)</label>
-                            <input type="number" name="trongLuong" class="form-control rounded-pill" placeholder="VD: 350">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Loại sách <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bookType" id="type-physical" value="PHYSICAL" checked onchange="books.toggleTypeFields()">
+                                    <label class="form-check-label" for="type-physical">Sách vật lý</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bookType" id="type-ebook" value="EBOOK" onchange="books.toggleTypeFields()">
+                                    <label class="form-check-label" for="type-ebook">Ebook (Sách điện tử)</label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Năm xuất bản</label>
-                            <input type="number" name="namXuatBan" class="form-control rounded-pill" placeholder="VD: 2024">
+                    </div>
+                </div>
+
+                <!-- Physical Fields -->
+                <div id="physical-fields-section" class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số vật lý</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Trọng lượng (g) <span class="text-danger text-req">*</span></label>
+                            <input type="number" name="weight" class="form-control rounded-pill" placeholder="VD: 350" required>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Ngôn ngữ</label>
-                            <select name="ngonNgu" class="form-select rounded-pill">
-                                <option value="Tiếng Việt">Tiếng Việt</option>
-                                <option value="Tiếng Anh">Tiếng Anh</option>
-                            </select>
+                    </div>
+                </div>
+
+                <!-- Ebook Fields -->
+                <div id="ebook-fields-section" class="card border-0 shadow-sm rounded-4 p-4 mb-4 d-none">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Chi tiết Ebook</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Dung lượng file (MB) <span class="text-danger text-req">*</span></label>
+                            <input type="number" name="fileSize" class="form-control rounded-pill" placeholder="VD: 5.2" step="0.1">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Loại bìa</label>
-                            <select name="loaiBia" class="form-select rounded-pill">
-                                <option value="Bìa mềm">Bìa mềm</option>
-                                <option value="Bìa cứng">Bìa cứng</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Kích thước (cm)</label>
-                            <input type="text" name="kichThuoc" class="form-control rounded-pill" placeholder="13 x 20">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Link tải trực tiếp <span class="text-danger text-req">*</span></label>
+                            <input type="url" name="downloadUrl" class="form-control rounded-pill" placeholder="https://...">
                         </div>
                     </div>
                 </div>

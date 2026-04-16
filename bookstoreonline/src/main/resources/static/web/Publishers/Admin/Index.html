@@ -1,0 +1,41 @@
+<div class="p-4 p-md-5 w-100">
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
+                        <li class="breadcrumb-item small active fw-bold text-accent">Nhà xuất bản</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold font-serif mb-0">Nhà xuất bản Sách</h2>
+            </div>
+            <button onclick="layout.render('Publishers/Admin', 'Create')" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">
+                <i class="icon icon-plus me-2"></i> Thêm Nhà xuất bản mới
+            </button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 border-0 text-uppercase small fw-bold text-muted">ID</th>
+                            <th class="py-3 border-0 text-uppercase small fw-bold text-muted">Tên Nhà xuất bản</th>
+                            <th class="pe-4 py-3 border-0 text-uppercase small fw-bold text-muted text-end">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="publishers-admin-list">
+                        <tr><td colspan="3" class="text-center py-5"><div class="spinner-border text-accent spinner-border-sm me-2"></div>Đang tải danh sách nhà xuất bản...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    (function() {
+        publishers.loadAdminList();
+    })();
+</script>

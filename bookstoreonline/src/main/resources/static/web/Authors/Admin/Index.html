@@ -1,66 +1,41 @@
-<!-- Admin Authors Area - List View -->
-<div class="admin-wrapper d-flex flex-column flex-lg-row bg-light min-vh-100">
-    <aside class="admin-sidebar bg-dark text-white p-4 d-flex flex-column" style="min-width: 280px;">
-        <div class="mb-5 px-3">
-            <h4 class="fw-bold text-accent font-serif mb-0">QUẢN TRỊ VIÊN</h4>
-        </div>
-        <nav class="nav flex-column gap-2 mb-auto">
-            <a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-clipboard me-2"></i> Tổng quan</a>
-            <a href="javascript:void(0)" onclick="layout.render('Books/Admin', 'Index')" class="nav-link text-white-50 p-3 hvr-admin"><i class="icon icon-notes me-2"></i> Sản phẩm (Sách)</a>
-            <a href="javascript:void(0)" onclick="layout.render('Authors/Admin', 'Index')" class="nav-link text-white-50 active-admin bg-white bg-opacity-10 rounded-3 p-3"><i class="icon icon-user me-2"></i> Tác giả</a>
-        </nav>
-    </aside>
-
+<div class="p-4 p-md-5 w-100">
     <main class="flex-grow-1 p-4 p-md-5">
         <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-2">
-                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Admin</a></li>
+                        <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
                         <li class="breadcrumb-item small active fw-bold text-accent">Tác giả</li>
                     </ol>
                 </nav>
-                <h2 class="fw-bold font-serif mb-0">Quản lý Tác giả</h2>
+                <h2 class="fw-bold font-serif mb-0">Tác giả Sách</h2>
             </div>
-            <button onclick="layout.render('Authors/Admin', 'Create')" class="btn btn-accent px-4 py-2 rounded-pill fw-bold shadow-sm">
-                <i class="icon icon-plus me-2"></i> Thêm tác giả mới
+            <button onclick="layout.render('Authors/Admin', 'Create')" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">
+                <i class="icon icon-plus me-2"></i> Thêm Tác giả mới
             </button>
         </div>
 
-        <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="table-responsive">
-                <table class="table align-middle table-hover mb-0">
+                <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-4">Tác giả</th>
-                            <th>Lĩnh vực</th>
-                            <th>Số tác phẩm</th>
-                            <th class="text-end pe-4">Thao tác</th>
+                            <th class="ps-4 py-3 border-0 text-uppercase small fw-bold text-muted">ID</th>
+                            <th class="py-3 border-0 text-uppercase small fw-bold text-muted">Họ tên Tác giả</th>
+                            <th class="pe-4 py-3 border-0 text-uppercase small fw-bold text-muted text-end">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td class="ps-4 py-4">
-                                <div class="d-flex align-items-center gap-3">
-                                    <img src="assets/images/team-member2.jpg" class="rounded-circle shadow-sm" width="45" height="45" style="object-fit: cover;">
-                                    <span class="fw-bold">Armor Ramsey</span>
-                                </div>
-                            </td>
-                            <td>Tiểu thuyết, Văn học</td>
-                            <td><span class="badge bg-light text-dark border px-3">15</span></td>
-                            <td class="text-end pe-4">
-                                <div class="btn-group gap-2">
-                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm" title="Sửa"><i class="icon icon-notes"></i></button>
-                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm text-danger" title="Xóa"><i class="icon icon-close"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="authors-admin-list">
+                        <tr><td colspan="3" class="text-center py-5"><div class="spinner-border text-accent spinner-border-sm me-2"></div>Đang tải danh sách tác giả...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 </div>
+
 <script>
-    $("#header-area, #footer-area").hide();
+    (function() {
+        authors.loadAdminList();
+    })();
 </script>

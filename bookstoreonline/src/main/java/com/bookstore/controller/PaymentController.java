@@ -33,6 +33,13 @@ public class PaymentController {
         this.paymentRepository = paymentRepository;
     }
 
+    @GetMapping("/admin/all")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Lấy tất cả giao dịch thanh toán (ADMIN)", description = "Admin xem lịch sử toàn bộ các giao dịch thanh toán trong hệ thống.")
+    public ApiResponse<List<Payment>> getAllPayments() {
+        return ApiResponse.success(paymentRepository.findAll());
+    }
+
     @Value("${vnpay.tmn-code}")
     private String vnp_TmnCode;
 

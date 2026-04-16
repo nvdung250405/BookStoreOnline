@@ -22,7 +22,7 @@ const auth = {
                     address:  loginData.address  || loginData.shippingAddress || loginData.street || ''
                 });
                 
-                api.showToast("Login Successful!", "success");
+                api.showToast("Đăng nhập thành công!", "success");
 
                 // Update UI layout context
                 if (window.layout && layout.updateUserHeader) layout.updateUserHeader();
@@ -44,7 +44,7 @@ const auth = {
         try {
             const result = await api.post('/auth/register', userData);
             if (result.status === 200) {
-                api.showToast("Registration successful! Please login.", "success");
+                api.showToast("Đăng ký thành công! Vui lòng đăng nhập.", "success");
                 layout.render('Auth', 'Login');
             }
         } catch (error) {
@@ -60,7 +60,7 @@ const auth = {
         sessionStorage.removeItem('applied_discount');
 
         if (window.layout && layout.updateUserHeader) layout.updateUserHeader();
-        api.showToast("Logged out successfully");
+        api.showToast("Đã đăng xuất thành công");
         layout.render('Home', 'Index');
     }
 };
@@ -82,7 +82,7 @@ function initAuthForms() {
         const confirm = $("#reg-confirm-password").val();
         
         if (pass !== confirm) {
-            api.showToast("Password confirmation does not match", "error");
+            api.showToast("Mật khẩu xác nhận không khớp", "error");
             return;
         }
 

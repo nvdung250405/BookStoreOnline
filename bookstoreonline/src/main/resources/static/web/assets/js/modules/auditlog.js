@@ -8,41 +8,45 @@ const auditlog = {
      */
     loadLogs: async () => {
         try {
-            const search = $("#audit-search").val() || "";
+            const username = $("#audit-username").val() || "";
             const action = $("#audit-action-filter").val() || "";
-            // Adjusted params to match Backend expectations if any, often using QueryParams
-            const res = await api.get(`/admin/audit-logs`); 
+            
+            let url = `/api/admin/audit-logs?`;
+            if (username) url += `username=${encodeURIComponent(username)}&`;
+            if (action) url += `action=${encodeURIComponent(action)}&`;
+
+            const res = await api.get(url); 
             const logs = res.data || res;
             const tbody = $("#audit-list-body");
             if (!tbody.length) return;
             tbody.empty();
 
             if (!logs || logs.length === 0) {
-                tbody.html('<tr><td colspan="7" class="text-center py-5 text-muted">No system activities found.</td></tr>');
+                tbody.html('<tr><td colspan="5" class="text-center py-5 text-muted">Không tìm thấy hoạt động hệ thống nào.</td></tr>');
                 return;
             }
 
             logs.forEach(log => {
                 const actionBadge = auditlog.getActionBadge(log.action);
+                const displayUser = log.account ? log.account.username : 'System';
+                const timeStr = api.formatDate ? api.formatDate(log.timestamp, true) : log.timestamp;
+                
                 tbody.append(`
-                    <tr onclick="auditlog.viewDetail('${log.id}')">
-                        <td>${log.timestamp || '---'}</td>
-                        <td><strong>${log.username || '---'}</strong></td>
+                    <tr>
+                        <td class="ps-4">${timeStr}</td>
+                        <td><strong>${displayUser}</strong></td>
                         <td>${actionBadge}</td>
-                        <td title="${log.details}" class="text-truncate" style="max-width: 300px;">${log.details || '--'}</td>
+                        <td title="${log.details}" class="text-truncate" style="max-width: 400px;">${log.details || '--'}</td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-light rounded-circle" onclick="event.stopPropagation(); auditlog.viewDetail('${log.id}')">
-                                <i class="icon icon-arrow-right"></i>
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="auditlog.viewDetail('${log.logId}')">
+                                Chi tiết
                             </button>
                         </td>
                     </tr>
                 `);
             });
-
-            // Update statistics
-            auditlog.updateStatistics();
         } catch (e) {
-            api.showToast("Failed to load audit logs: " + e.message, "error");
+            api.showToast("Không thể tải nhật ký hệ thống: " + e.message, "error");
         }
     },
 
@@ -57,9 +61,9 @@ const auditlog = {
             console.log("Audit log detail:", log);
             
             // In a real scenario, this would populate a modal
-            api.showToast("Log details printed to console", "info");
+            api.showToast("Chi tiết nhật ký đã được in ra console", "info");
         } catch (e) {
-            api.showToast("Error loading detail: " + e.message, "error");
+            api.showToast("Lỗi tải chi tiết: " + e.message, "error");
         }
     },
 
@@ -84,17 +88,17 @@ const auditlog = {
      */
     getActionBadge: (action) => {
         const badges = {
-            'CREATE_BOOK':     '<span class="badge bg-success text-white">Create Book</span>',
-            'UPDATE_BOOK':     '<span class="badge bg-info text-white">Update Book</span>',
-            'DELETE_BOOK':     '<span class="badge bg-danger text-white">Delete Book</span>',
-            'CREATE_CATEGORY': '<span class="badge bg-success text-white">New Category</span>',
-            'UPDATE_ORDER_STATUS': '<span class="badge bg-primary text-white">Order Status</span>',
-            'LOGIN':           '<span class="badge bg-dark text-white">Login</span>',
-            'CHANGE_PASSWORD': '<span class="badge bg-warning text-dark">Password</span>',
-            'STOCK_UPDATE':    '<span class="badge bg-secondary text-white">Stock</span>'
+            'CREATE_BOOK':     '<span class="badge bg-success text-white">Tạo sách</span>',
+            'UPDATE_BOOK':     '<span class="badge bg-info text-white">Cập nhật sách</span>',
+            'DELETE_BOOK':     '<span class="badge bg-danger text-white">Xóa sách</span>',
+            'CREATE_CATEGORY': '<span class="badge bg-success text-white">Danh mục mới</span>',
+            'UPDATE_ORDER_STATUS': '<span class="badge bg-primary text-white">Trạng thái đơn</span>',
+            'LOGIN':           '<span class="badge bg-dark text-white">Đăng nhập</span>',
+            'CHANGE_PASSWORD': '<span class="badge bg-warning text-dark">Mật khẩu</span>',
+            'STOCK_UPDATE':    '<span class="badge bg-secondary text-white">Tồn kho</span>'
         };
         
-        return badges[action] || `<span class="badge bg-light text-dark border">${action || 'Activity'}</span>`;
+        return badges[action] || `<span class="badge bg-light text-dark border">${action || 'Hoạt động'}</span>`;
     }
 };
 

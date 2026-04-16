@@ -47,4 +47,11 @@ public class InventoryController {
         String message = inventoryService.exportStock(request);
         return ResponseEntity.ok(message);
     }
+
+    @PostMapping("/adjust")
+    @Operation(summary = "Điều chỉnh tồn kho", description = "Cập nhật số lượng tồn kho thủ phòng lý do cụ thể")
+    public ResponseEntity<String> adjustInventory(@RequestBody InventoryAdjustmentRequest request) {
+        inventoryService.adjustStock(request.getIsbn(), request.getNewQuantity(), request.getReason(), request.getStaffId());
+        return ResponseEntity.ok("Stock adjusted successfully!");
+    }
 }

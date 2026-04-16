@@ -8,41 +8,41 @@ const payments = {
      */
     loadAdminPayments: async () => {
         try {
-            const search = $("#payment-search").val() || "";
-            const status = $("#payment-status-filter").val() || "";
-            const method = $("#payment-method-filter").val() || "";
-
-            const res = await api.get(`/payments`, { search, status, method });
+            const res = await api.get(`/api/payments/admin/all`);
             const paymentsList = res.data || res;
             const tbody = $("#payment-list-body");
             if (!tbody.length) return;
             tbody.empty();
 
             if (!paymentsList || paymentsList.length === 0) {
-                tbody.html('<tr><td colspan="7" class="text-center py-5 text-muted">Không tìm thấy giao dịch nào.</td></tr>');
+                tbody.html('<tr><td colspan="6" class="text-center py-5 text-muted">Không tìm thấy giao dịch nào.</td></tr>');
                 return;
             }
 
             paymentsList.forEach(payment => {
-                const statusBadge = payments.getStatusBadge(payment.trangThai || payment.statusCode);
+                const statusBadge = payments.getStatusBadge(payment.statusCode);
+                const orderId = payment.order ? payment.order.orderId : 'N/A';
+                const amount = payment.order ? payment.order.totalPayment : 0;
+                const timeStr = api.formatDate ? api.formatDate(payment.paymentDate, true) : payment.paymentDate;
+
                 tbody.append(`
-                    <tr onclick="layout.render('Payments/Admin', 'Details')">
-                        <td class="ps-4 fw-bold">#${payment.maDonHang || payment.orderId}</td>
-                        <td>${payment.tenKhachHang || payment.customerName}</td>
-                        <td>${payment.phuongThucThanhToan || payment.paymentMethod}</td>
-                        <td class="text-end text-accent fw-bold">${formatCurrency(payment.soTien || payment.amount)}</td>
+                    <tr>
+                        <td class="ps-4 fw-bold">#${payment.paymentId}</td>
+                        <td>${orderId}</td>
+                        <td>${payment.paymentMethod}</td>
+                        <td class="text-end text-accent fw-bold">${api.formatCurrency(amount)}</td>
                         <td>${statusBadge}</td>
-                        <td>${new Date(payment.thoiGianThanhToan || payment.paymentDate).toLocaleString('vi-VN')}</td>
+                        <td>${timeStr || '---'}</td>
                         <td class="text-end pe-4">
-                            <button class="btn btn-sm btn-light rounded-circle" onclick="layout.render('Payments/Admin', 'Details')">
-                                <i class="icon icon-arrow-right"></i>
+                            <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="payments.loadPaymentDetails('${payment.paymentId}')">
+                                Chi tiết
                             </button>
                         </td>
                     </tr>
                 `);
             });
         } catch (e) {
-            api.showToast("Lỗi tải danh sách thanh toán: " + e.message, "error");
+            api.showToast("Không thể tải danh sách thanh toán: " + e.message, "error");
         }
     },
 

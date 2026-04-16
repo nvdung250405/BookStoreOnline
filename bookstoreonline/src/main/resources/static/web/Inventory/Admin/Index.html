@@ -1,15 +1,18 @@
 <div class="admin-inventory-page p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="fw-bold mb-1">Warehouse Management</h3>
-            <p class="text-muted small mb-0">Track stock levels, low-stock alerts, and material movements</p>
+            <h3 class="fw-bold mb-1">Quản lý Kho hàng</h3>
+            <p class="text-muted small mb-0">Theo dõi mức tồn kho, cảnh báo hàng sắp hết và biến động kho</p>
         </div>
         <div class="d-flex gap-2">
+             <button class="btn btn-outline-danger rounded-pill px-3 shadow-sm" onclick="layout.render('Inventory/Admin', 'Adjustment')">
+                <i class="icon icon-wrench-outline"></i> Điều chỉnh Tồn kho
+            </button>
              <button class="btn btn-outline-accent rounded-pill px-3 shadow-sm" onclick="layout.render('Inventory/Admin', 'Export')">
-                <i class="icon icon-outbox"></i> Export Stock
+                <i class="icon icon-outbox"></i> Xuất kho
             </button>
             <button class="btn btn-accent rounded-pill px-3 shadow-sm" onclick="layout.render('Inventory/Admin', 'Import')">
-                <i class="icon icon-inbox"></i> Import Shipment
+                <i class="icon icon-inbox"></i> Nhập kho hàng
             </button>
         </div>
     </div>
@@ -18,19 +21,19 @@
     <div class="row g-4 mb-4">
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="text-muted small mb-1">Total Stock Items</div>
+                <div class="text-muted small mb-1">Tổng cộng các đầu sách</div>
                 <div class="h4 fw-bold mb-0" id="total-inventory-items">---</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="text-muted small mb-1">Low-Stock Alerts</div>
+                <div class="text-muted small mb-1">Cảnh báo sắp hết hàng</div>
                 <div class="h4 fw-bold mb-0 text-danger" id="low-stock-count">0</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="text-muted small mb-1">Estimated Inventory Value</div>
+                <div class="text-muted small mb-1">Tổng giá trị tồn kho ước tính</div>
                 <div class="h4 fw-bold mb-0 text-accent" id="total-inventory-value">---</div>
             </div>
         </div>
@@ -40,14 +43,14 @@
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
         <div class="p-4 border-bottom bg-light d-flex justify-content-between align-items-center">
             <div class="position-relative" style="width: 300px;">
-                <input type="text" class="form-control rounded-pill pe-5 bg-white border-0 shadow-sm" placeholder="Quick lookup ISBN or Name..." id="inventory-search" oninput="inventory.filterStock(this.value)">
+                <input type="text" class="form-control rounded-pill pe-5 bg-white border-0 shadow-sm" placeholder="Tìm nhanh ISBN hoặc Tên sách..." id="inventory-search" oninput="inventory.filterStock(this.value)">
             </div>
             <div class="d-flex gap-2 align-items-center">
-               <span class="small fw-bold text-muted">Filter:</span>
+               <span class="small fw-bold text-muted">Lọc theo:</span>
                <select class="form-select form-select-sm border-0 bg-white shadow-sm rounded-pill w-auto" id="inventory-filter" onchange="inventory.filterStatus(this.value)">
-                   <option value="ALL">All Products</option>
-                   <option value="LOW_STOCK">Critical / Low Stock</option>
-                   <option value="IN_STOCK">Healthy Inventory</option>
+                   <option value="ALL">Tất cả sản phẩm</option>
+                   <option value="LOW_STOCK">Sắp hết hàng / Cần nhập</option>
+                   <option value="IN_STOCK">Tồn kho ổn định</option>
                </select>
             </div>
         </div>
@@ -55,18 +58,18 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
                     <tr>
-                        <th class="ps-4 py-3">Product</th>
-                        <th class="py-3 text-center">Current Stock</th>
-                        <th class="py-3">Shelf Location / Reference Price</th>
-                        <th class="py-3">Status</th>
-                        <th class="py-3 text-end pe-4">Actions</th>
+                        <th class="ps-4 py-3">Sản phẩm</th>
+                        <th class="py-3 text-center">Tồn thực tế</th>
+                        <th class="py-3">Vị trí kệ / Giá tham chiếu</th>
+                        <th class="py-3">Trạng thái</th>
+                        <th class="py-3 text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody id="inventory-admin-body">
                     <tr>
                         <td colspan="5" class="text-center py-5">
                             <div class="spinner-border spinner-border-sm text-accent"></div>
-                            <span class="ms-2">Syncing warehouse data...</span>
+                            <span class="ms-2">Đang đồng bộ dữ liệu kho...</span>
                         </td>
                     </tr>
                 </tbody>

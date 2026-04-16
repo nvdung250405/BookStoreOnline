@@ -102,7 +102,7 @@ const categories = {
 
         } catch (e) {
             console.error('loadAdminList error', e);
-            api.showToast('Failed to load categories', 'error');
+            api.showToast('Không thể tải danh sách danh mục', 'error');
         }
     },
 
@@ -133,7 +133,7 @@ const categories = {
             tbody.html(`
                 <tr><td colspan="4" class="text-center py-5">
                     <div style="color:#ccc; font-size:2rem;">📂</div>
-                    <div class="text-muted mt-2">No categories found.</div>
+                    <div class="text-muted mt-2">Không tìm thấy danh mục nào.</div>
                 </td></tr>`);
             return;
         }
@@ -150,12 +150,12 @@ const categories = {
 
             const indentPx = depth * 32;
             const levelBadge = isRoot
-                ? `<span class="cat-badge-root">Root</span>`
-                : `<span class="cat-badge-child">Level ${depth}</span>`;
+                ? `<span class="cat-badge-root">Gốc</span>`
+                : `<span class="cat-badge-child">Cấp ${depth}</span>`;
 
             const toggleBtn = hasChildren
                 ? `<button class="cat-expand-btn" id="toggle-${cat.categoryId}"
-                           onclick="categories._toggle(${cat.categoryId})" title="Toggle subcategories">
+                           onclick="categories._toggle(${cat.categoryId})" title="Thu gọn/Mở rộng danh mục con">
                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
                            <path d="M2 3l3 4 3-4H2z"/>
                        </svg>
@@ -176,7 +176,7 @@ const categories = {
                                 ${cat.categoryName}
                             </span>
                             ${levelBadge}
-                            ${hasChildren ? `<span class="cat-child-count">${childCount} units</span>` : ''}
+                            ${hasChildren ? `<span class="cat-child-count">${childCount} mục con</span>` : ''}
                         </div>
                     </td>
                     <td class="cat-cell-parent">
@@ -187,18 +187,18 @@ const categories = {
                     <td class="cat-cell-actions">
                         <button class="cat-btn-edit"
                                 onclick="categories._editById(${cat.categoryId})">
-                            Edit
+                            Sửa
                         </button>
                         <button class="cat-btn-delete"
                                 onclick="categories._deleteById(${cat.categoryId})">
-                            Delete
+                            Xóa
                         </button>
                     </td>
                 </tr>
             `);
         });
 
-        $('#cat-total-badge').text(`${categories._flatList.length} total · ${categories._flatList.filter(c => c._depth === 0).length} roots`);
+        $('#cat-total-badge').text(`${categories._flatList.length} tổng cộng · ${categories._flatList.filter(c => c._depth === 0).length} mục gốc`);
     },
 
     _toggle: (parentId) => {
@@ -239,7 +239,7 @@ const categories = {
             const el = $(sel);
             if (!el.length) return;
             const prev = el.val();
-            el.empty().append('<option value="">— Root Category —</option>');
+            el.empty().append('<option value="">— Danh mục gốc —</option>');
             categories._flatList.forEach(cat => {
                 if (excludeId && (cat.categoryId === excludeId || cat._parentId === excludeId)) return;
                 const prefix = '\u00a0\u00a0\u00a0\u00a0'.repeat(cat._depth);
@@ -253,20 +253,20 @@ const categories = {
         const categoryName = $('#cat-name').val().trim();
         const parentId = $('#cat-parent-select').val() || null;
 
-        if (!categoryName) { api.showToast('Please enter a name', 'warning'); return; }
+        if (!categoryName) { api.showToast('Vui lòng nhập tên danh mục', 'warning'); return; }
 
         try {
             await api.post('/admin/categories', {
                 categoryName,
                 parentId: parentId ? parseInt(parentId) : null
             });
-            api.showToast('Category created!');
+            api.showToast('Đã tạo danh mục thành công!');
             $('#cat-name').val('');
             $('#cat-parent-select').val('');
             $('#cat-create-section').slideUp();
             categories.loadAdminList();
         } catch (e) {
-            api.showToast('Error: ' + e.message, 'error');
+            api.showToast('Lỗi: ' + e.message, 'error');
         }
     },
 
@@ -285,30 +285,30 @@ const categories = {
         const categoryName = $('#cat-edit-name').val().trim();
         const parentId = $('#cat-edit-parent-select').val() || null;
 
-        if (!id || !categoryName) { api.showToast('Missing information', 'warning'); return; }
+        if (!id || !categoryName) { api.showToast('Thiếu thông tin bắt buộc', 'warning'); return; }
 
         try {
             await api.put(`/admin/categories/${id}`, {
                 categoryName,
                 parentId: parentId ? parseInt(parentId) : null
             });
-            api.showToast('Updated successfully!');
+            api.showToast('Cập nhật thành công!');
             $('#cat-edit-section').slideUp();
             categories.loadAdminList();
         } catch (e) {
-            api.showToast('Update failed: ' + e.message, 'error');
+            api.showToast('Cập nhật thất bại: ' + e.message, 'error');
         }
     },
 
     deleteCat: async (id, categoryName, childCount) => {
-        if (!confirm(`Are you sure you want to delete "${categoryName}"?${childCount > 0 ? '\nWarning: All subcategories will also be deleted.' : ''}`)) return;
+        if (!confirm(`Bạn có chắc chắn muốn xóa "${categoryName}" không?${childCount > 0 ? '\nCảnh báo: Tất cả danh mục con cũng sẽ bị xóa.' : ''}`)) return;
         
         try {
             await api.delete(`/admin/categories/${id}`);
-            api.showToast(`Deleted "${categoryName}"`);
+            api.showToast(`Đã xóa "${categoryName}"`);
             categories.loadAdminList();
         } catch (e) {
-            api.showToast('Delete failed: ' + e.message, 'error');
+            api.showToast('Xóa thất bại: ' + e.message, 'error');
         }
     }
 };

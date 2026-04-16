@@ -34,13 +34,23 @@ public class VoucherController {
     }
 
     @PostMapping
-    @Operation(summary = "Tạo mới Voucher", description = "Tạo một mã giảm giá mới (Dành cho Admin/Staff nạp dữ liệu)")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Tạo mới Voucher (ADMIN)", description = "Tạo một mã giảm giá mới.")
     public ApiResponse<VoucherDTO> createVoucher(@RequestBody VoucherDTO dto) {
         return ApiResponse.created(voucherService.saveVoucher(dto));
     }
 
+    @PutMapping("/{code}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Cập nhật Voucher (ADMIN)", description = "Cập nhật thông tin mã giảm giá.")
+    public ApiResponse<VoucherDTO> updateVoucher(@PathVariable String code, @RequestBody VoucherDTO dto) {
+        dto.setVoucherCode(code);
+        return ApiResponse.success(voucherService.saveVoucher(dto));
+    }
+
     @DeleteMapping("/{code}")
-    @Operation(summary = "Xóa Voucher", description = "Xóa mã giảm giá khỏi hệ thống")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Xóa Voucher (ADMIN)", description = "Xóa mã giảm giá khỏi hệ thống.")
     public ApiResponse<String> deleteVoucher(@PathVariable String code) {
         voucherService.deleteVoucher(code);
         return ApiResponse.success("Đã xóa mã giảm giá thành công", null);
