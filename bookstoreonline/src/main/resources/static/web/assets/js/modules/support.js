@@ -46,8 +46,8 @@ const support = {
         const typingId = "typing-" + Date.now();
         chatBox.append(`
             <div id="${typingId}" class="bsw-msg-ai">
-                <div class="bsw-avatar">📚</div>
-                <div class="bsw-bubble" style="color:#bbb; display:flex; align-items:center; gap:4px;">
+                <div class="bsw-avatar" style="background: linear-gradient(135deg, #1A73E8, #9B72CB, #D96570); box-shadow: 0 3px 8px rgba(155, 114, 203, 0.2);">✨</div>
+                <div class="bsw-bubble" style="color:#1A73E8; display:flex; align-items:center; gap:4px; border:none; background:transparent; box-shadow:none;">
                     <span style="animation:bsw-dot 1.2s infinite 0s">●</span>
                     <span style="animation:bsw-dot 1.2s infinite 0.2s">●</span>
                     <span style="animation:bsw-dot 1.2s infinite 0.4s">●</span>
@@ -70,30 +70,21 @@ const support = {
             const data = res.data;
             const text   = (typeof data === 'object' && data.message) ? data.message :
                            (typeof data === 'string' ? data : 'Xin lỗi, tôi chưa hiểu ý bạn.');
-            const qr     = (typeof data === 'object' && Array.isArray(data.quickReplies)) ? data.quickReplies : [];
 
-            // AI bubble
+            // AI bubble (Google Gemini Style with Fade In Effect)
             chatBox.append(`
-                <div class="bsw-msg-ai">
-                    <div class="bsw-avatar">📚</div>
-                    <div class="bsw-bubble">${support.renderMarkdown(text)}</div>
+                <div class="bsw-msg-ai" style="animation: bsw-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+                    <div class="bsw-avatar" style="background: linear-gradient(135deg, #1A73E8, #9B72CB, #D96570); box-shadow: 0 3px 8px rgba(155, 114, 203, 0.2);">✨</div>
+                    <div class="bsw-bubble" style="background: linear-gradient(135deg, rgba(26,115,232,0.05), rgba(155,114,203,0.05)); border: 1px solid rgba(155,114,203,0.1);">${support.renderMarkdown(text)}</div>
                 </div>
             `);
-
-            // Quick reply chips
-            if (qr.length) {
-                const chips = qr.map(q =>
-                    `<button class="bsw-chip" data-msg="${support.escapeHtml(q)}" onclick="support.sendChat(this.dataset.msg)">${support.escapeHtml(q)}</button>`
-                ).join('');
-                chatBox.append(`<div class="bsw-quick-replies">${chips}</div>`);
-            }
 
         } catch (e) {
             $(`#${typingId}`).remove();
             chatBox.append(`
-                <div class="bsw-msg-ai">
-                    <div class="bsw-avatar">📚</div>
-                    <div class="bsw-bubble" style="color:#e55;">
+                <div class="bsw-msg-ai" style="animation: bsw-fade-in 0.4s ease;">
+                    <div class="bsw-avatar" style="background: linear-gradient(135deg, #1A73E8, #9B72CB, #D96570); box-shadow: 0 3px 8px rgba(155, 114, 203, 0.2);">✨</div>
+                    <div class="bsw-bubble" style="color:#D96570; border: 1px solid rgba(217, 101, 112, 0.2);">
                         Hệ thống đang bận, vui lòng thử lại sau nhé!
                     </div>
                 </div>

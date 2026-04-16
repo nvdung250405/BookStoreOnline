@@ -1,18 +1,29 @@
 package com.bookstore.service;
 
+import com.bookstore.dto.BookDTO;
 import org.springframework.stereotype.Service;
+
+import java.text.NumberFormat;
 import java.util.*;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
- * ChatbotService - AI Chatbot for Booksaw
- * Rule-based NLP engine for book-related customer support
+ * ChatbotService - AI Chatbot cho Booksaw
+ * Tích hợp NLP cục bộ để tự động bóc tách ngôn ngữ tự nhiên và tìm sách thật trong DB.
  */
 @Service
 public class ChatbotService {
 
+    private final AiSearchService aiSearchService;
+
     // Quick replies to suggest after each response
     private static final List<String> DEFAULT_QUICK_REPLIES =
         List.of("Tìm sách hay 📚", "Kiểm tra đơn hàng 📦", "Mã giảm giá 🎁", "Thanh toán 💳");
+
+    public ChatbotService(AiSearchService aiSearchService) {
+        this.aiSearchService = aiSearchService;
+    }
 
     public Map<String, Object> getResponse(String message) {
         if (message == null || message.isBlank()) {
@@ -23,7 +34,7 @@ public class ChatbotService {
 
         // ── Greeting ─────────────────────────────────────────────────────────
         if (containsAny(msg, "chào", "hello", "hi", "xin chào", "hey", "good morning", "good afternoon")) {
-            return build("👋 Chào bạn! Tôi là trợ lý AI của **Booksaw**.\n\nTôi có thể giúp bạn:\n• Tìm kiếm và tư vấn sách\n• Kiểm tra đơn hàng\n• Hỗ trợ thanh toán & hoàn trả\n• Áp dụng mã giảm giá\n\nBạn cần hỗ trợ gì hôm nay?",
+            return build("👋 Chào bạn! Tôi là trợ lý AI siêu thông minh của **Booksaw**.\n\nTôi có thể nhạy bén hiểu được:\n• Tư vấn sách theo chủ đề, tầm giá tự nhiên\n• Kiểm tra các thông tin chính sách của cửa hàng\n• Giúp bạn đặt hàng nhanh chóng\n\nBạn muốn tìm sách gì hôm nay? (Ví dụ: \"tìm sách kinh tế dưới 200k\")",
                 List.of("Tư vấn sách 📚", "Đơn hàng của tôi 📦", "Mã giảm giá 🎁", "Chính sách đổi trả 🔄"));
         }
 
@@ -31,33 +42,6 @@ public class ChatbotService {
         if (containsAny(msg, "cảm ơn", "camon", "thanks", "thank you", "tạm biệt", "bye", "goodbye")) {
             return build("😊 Không có gì ạ! Rất vui được hỗ trợ bạn.\nNếu cần thêm gì, bạn cứ nhắn nhé. Chúc bạn đọc sách vui vẻ! 📖",
                 List.of("Tìm sách tiếp 📚", "Quay lại sau 👋"));
-        }
-
-        // ── Book recommendations ──────────────────────────────────────────────
-        if (containsAny(msg, "sách hay", "gợi ý sách", "tư vấn sách", "nên đọc", "recommend", "sách tốt", "sách nào", "sách gì")) {
-            if (containsAny(msg, "kinh doanh", "kinh tế", "startup", "khởi nghiệp", "làm giàu", "đầu tư")) {
-                return build("💼 **Sách Kinh doanh hay nhất**:\n\n📘 *Từ Tốt Đến Vĩ Đại* — Jim Collins\n📘 *Khởi Nghiệp Tinh Gọn* — Eric Ries\n📘 *Dạy Con Làm Giàu* — Robert Kiyosaki\n📘 *Tư Duy Nhanh Và Chậm* — Daniel Kahneman\n\nBạn muốn tôi tìm sách nào trong kho không?",
-                    List.of("Tìm sách kinh doanh 🔍", "Xem giá sách 💰", "Thêm vào giỏ 🛒"));
-            }
-            if (containsAny(msg, "kỹ năng", "phát triển bản thân", "tự học", "thành công", "tư duy", "leadership", "lãnh đạo")) {
-                return build("🧠 **Sách Phát triển bản thân hay nhất**:\n\n📗 *Đắc Nhân Tâm* — Dale Carnegie\n📗 *7 Thói Quen Hiệu Quả* — Stephen Covey\n📗 *Nghĩ Giàu Làm Giàu* — Napoleon Hill\n📗 *Atomic Habits* — James Clear\n\nTất cả đều có tại Booksaw!",
-                    List.of("Tìm sách kỹ năng 🔍", "Sách dưới 200k 💰", "Thêm vào giỏ 🛒"));
-            }
-            if (containsAny(msg, "văn học", "tiểu thuyết", "truyện", "fiction", "novel")) {
-                return build("📖 **Văn học hay được yêu thích**:\n\n📕 *Nhà Giả Kim* — Paulo Coelho\n📕 *Số Đỏ* — Vũ Trọng Phụng\n📕 *Mắt Biếc* — Nguyễn Nhật Ánh\n📕 *Tôi Thấy Hoa Vàng Trên Cỏ Xanh*\n\nBạn có muốn xem thêm không?",
-                    List.of("Xem văn học nước ngoài 📚", "Văn học Việt Nam 🇻🇳", "Đặt mua ngay 🛒"));
-            }
-            if (containsAny(msg, "lập trình", "công nghệ", "code", "python", "java", "it")) {
-                return build("💻 **Sách Lập trình & Công nghệ**:\n\n📙 *Clean Code* — Robert C. Martin\n📙 *Python Crash Course*\n📙 *The Pragmatic Programmer*\n📙 *Designing Data-Intensive Applications*\n\nBooksaw có đầy đủ sách IT tiếng Anh và dịch!",
-                    List.of("Tìm sách lập trình 🔍", "Sách IT dưới 300k 💰", "Xem tất cả sách 📚"));
-            }
-            if (containsAny(msg, "thiếu nhi", "trẻ em", "con", "bé", "kids", "children")) {
-                return build("👶 **Sách cho thiếu nhi**:\n\n📙 *Doraemon* (trọn bộ)\n📙 *Truyện Cổ Tích Việt Nam*\n📙 *Rèn Luyện Tư Duy — Toán IQ*\n📙 *Khoa Học Vui* cho bé\n\nPhù hợp theo độ tuổi từ 3-15 tuổi!",
-                    List.of("Sách 3-6 tuổi 👶", "Sách 6-12 tuổi 🧒", "Sách thiếu niên 👦"));
-            }
-            // Generic recommendation
-            return build("📚 **Top sách bán chạy tại Booksaw**:\n\n🥇 *Đắc Nhân Tâm* — Kỹ năng giao tiếp\n🥈 *Nhà Giả Kim* — Văn học triết lý\n🥉 *Atomic Habits* — Xây dựng thói quen\n4️⃣ *Khởi Nghiệp Tinh Gọn* — Kinh doanh\n5️⃣ *Tư Duy Nhanh Và Chậm* — Tâm lý học\n\nBạn muốn tìm theo thể loại nào?",
-                List.of("Kinh doanh 💼", "Tâm lý - Kỹ năng 🧠", "Văn học 📖", "Thiếu nhi 👶"));
         }
 
         // ── Order / Delivery ──────────────────────────────────────────────────
@@ -89,33 +73,52 @@ public class ChatbotService {
                 List.of("Yêu cầu đổi trả 📝", "Liên hệ CSKH 📞", "Xem điều khoản 📋"));
         }
 
-        // ── Account / Login ───────────────────────────────────────────────────
-        if (containsAny(msg, "tài khoản", "đăng nhập", "đăng ký", "mật khẩu", "quên mật khẩu", "login", "register", "account")) {
-            return build("👤 **Hỗ trợ tài khoản**:\n\n• **Quên mật khẩu**: Nhấn \"Quên mật khẩu\" tại trang đăng nhập\n• **Chưa có tài khoản**: Đăng ký miễn phí, nhận ngay mã **NEWMEMBER**\n• **Lỗi đăng nhập**: Thử xóa cache trình duyệt\n\nBạn đang gặp vấn đề cụ thể gì?",
-                List.of("Đăng nhập 🔐", "Đăng ký mới ✨", "Quên mật khẩu 🔑"));
-        }
-
-        // ── Price / Cost ──────────────────────────────────────────────────────
-        if (containsAny(msg, "giá", "bao nhiêu", "price", "cost", "phí", "tiền", "rẻ", "đắt")) {
-            return build("💰 **Giá sách tại Booksaw**:\n\n• Sách thiếu nhi: từ **30.000đ**\n• Văn học trong nước: từ **50.000đ**\n• Sách dịch: từ **80.000đ**\n• Sách IT / chuyên ngành: từ **150.000đ**\n\n🎁 Miễn phí ship đơn từ **300.000đ**!\n\nBạn muốn tìm sách trong tầm giá nào?",
-                List.of("Sách dưới 100k 💸", "Sách 100-300k 💰", "Xem tất cả 📚"));
-        }
-
-        // ── Search ────────────────────────────────────────────────────────────
-        if (containsAny(msg, "tìm sách", "tìm kiếm", "search", "có sách", "còn sách")) {
-            return build("🔍 **Tìm sách tại Booksaw**:\n\nBạn có thể:\n1. Dùng **AI Search** ở thanh tìm kiếm — nhập tự nhiên như \"sách kỹ năng dưới 200k\"\n2. Duyệt theo **Danh mục** từ menu\n3. Nhắn tên sách bạn muốn tìm cho tôi!\n\nBạn đang tìm sách về chủ đề gì?",
-                List.of("Nhập tên sách 📝", "Duyệt danh mục 📂", "AI Search 🤖"));
-        }
-
         // ── Contact / Human support ───────────────────────────────────────────
         if (containsAny(msg, "liên hệ", "gặp người thật", "nhân viên", "hotline", "phone", "email", "contact", "cskh", "tư vấn viên")) {
             return build("📞 **Liên hệ Booksaw**:\n\n• **Hotline**: 1800-xxxx (7h-22h, miễn phí)\n• **Email**: support@booksaw.vn\n• **Facebook**: fb.com/booksaw\n• **Zalo OA**: Booksaw Official\n\nHoặc gửi ticket hỗ trợ, chúng tôi phản hồi trong **2 giờ** làm việc!",
                 List.of("Gửi ticket hỗ trợ 📝", "Chat Facebook 💬", "Gọi ngay 📞"));
         }
 
-        // ── Default fallback ──────────────────────────────────────────────────
-        return build("🤔 Xin lỗi, tôi chưa hiểu rõ câu hỏi của bạn.\n\nTôi có thể hỗ trợ bạn về:\n• 📚 **Tư vấn & tìm sách**\n• 📦 **Đơn hàng & vận chuyển**\n• 💳 **Thanh toán**\n• 🎁 **Mã giảm giá**\n• 🔄 **Đổi trả & hoàn tiền**\n\nBạn muốn hỏi về chủ đề nào?",
-            DEFAULT_QUICK_REPLIES);
+        // ── AI Dynamic Book SEARCH ───────────────────────────────────────────
+        // Chạy qua thuật toán NLP thay vì hardcode
+        try {
+            // Giả lập cho AI "suy nghĩ chút" theo đúng mong muốn của người dùng
+            Thread.sleep(800); 
+            
+            List<BookDTO> foundBooks = aiSearchService.searchByNaturalLanguage(message);
+            
+            if (foundBooks != null && !foundBooks.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("💡 **Tôi đã lục tìm trong kho và suy nghĩ... Dưới đây là những sách cực kỳ phù hợp với ý bạn:**\n\n");
+                
+                int limit = Math.min(foundBooks.size(), 4);
+                Locale locale = new Locale("vi", "VN");
+                NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+                
+                for (int i = 0; i < limit; i++) {
+                    BookDTO b = foundBooks.get(i);
+                    sb.append(i == 0 ? "🥇" : i == 1 ? "🥈" : i == 2 ? "🥉" : "📚");
+                    sb.append(" **").append(b.getTitle()).append("**\n");
+                    sb.append("   ▸ *Tác giả:* ").append(String.join(", ", b.getAuthorNames())).append("\n");
+                    sb.append("   ▸ *Giá:* **").append(currencyFormatter.format(b.getPrice())).append("**\n\n");
+                }
+                
+                sb.append("👉 Bạn hãy nhấp vào phần Danh Mục hoặc tìm tên sách trên ô tìm kiếm để tậu ngay nhé!");
+                
+                // Trích xuất list category của sách để làm Quick reply
+                Set<String> catSet = foundBooks.stream().map(BookDTO::getCategoryName).collect(Collectors.toSet());
+                List<String> qr = catSet.stream().limit(3).map(c -> "Sách " + c + " 🔍").collect(Collectors.toList());
+                if (qr.isEmpty()) qr = DEFAULT_QUICK_REPLIES;
+                
+                return build(sb.toString(), qr);
+            }
+        } catch (Exception e) {
+            // Lỗi thì throw xuống dưới
+        }
+
+        // ── Default fallback / Nothing found ──────────────────────────────────────────────────
+        return build("🤔 Tôi đã lướt thư viện và suy nghĩ nhưng chưa tìm ra kết quả hợp với ý bạn lắm.\n\nTôi có thể hỗ trợ bạn về:\n• 📚 **Tư vấn sách theo thể loại (Kinh tế, Văn học...)**\n• 📦 **Đơn hàng & vận chuyển**\n• 💳 **Thanh toán**\n• 🎁 **Mã giảm giá**\n\nBạn có thể mô tả cụ thể hơn ví dụ: \"Tìm sách lịch sử dưới 150 nghìn\" được không?",
+            List.of("Sách kinh doanh 💼", "Sách thiếu nhi 👶", "Sách kỹ năng 🧠", "Gặp nhân viên 📞"));
     }
 
     private boolean containsAny(String text, String... keywords) {
