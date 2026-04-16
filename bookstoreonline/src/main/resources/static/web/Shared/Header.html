@@ -116,8 +116,7 @@
                         <!-- Search + Mobile Cart -->
                         <div class="d-flex align-items-center gap-3">
                             <!-- Search toggle -->
-                            <button class="btn btn-link text-dark p-1 shadow-none border-0" data-bs-toggle="collapse"
-                                data-bs-target="#searchBox">
+                            <button class="btn btn-link text-dark p-1 shadow-none border-0" id="searchToggleCustomBtn" onclick="window.toggleCustomSearch(event)">
                                 <i class="icon icon-search" style="font-size:1.1rem;"></i>
                             </button>
                             <!-- Mobile-only: cart + user -->
@@ -132,56 +131,79 @@
                 </div>
             </nav>
 
-            <!-- Search Box (collapsible) -->
-            <div class="collapse mt-2" id="searchBox">
-                <div class="card border-0 rounded-4 shadow-sm" style="background:#f9f7f5;">
-                    <div class="card-body py-3 px-3">
-                        <!-- Vùng chứa Form AI Search Thông minh -->
-                        <div class="position-relative">
-                            <form id="ai-search-form" class="d-flex gap-2 mb-2" autocomplete="off"
-                                onsubmit="event.preventDefault(); books.searchAI($('#ai-search-input').val()); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide(); $('#ai-search-suggestions').hide();">
-                                <input id="ai-search-input"
-                                    class="form-control border-0 bg-white rounded-pill px-4 shadow-none"
-                                    style="font-size:0.9rem;" type="search"
-                                    placeholder="VD: sách kinh doanh dưới 200k, lập trình Python...">
-                                <button class="btn rounded-pill fw-bold px-4"
-                                    style="background:#C5A992; color:white; font-size:0.85rem; white-space:nowrap;"
-                                    type="submit">
-                                    <i class="icon icon-search me-1"></i> AI Search
-                                </button>
-                            </form>
-                            <!-- Dropdown gợi ý sách thông minh (hiện kết quả live) -->
-                            <div id="ai-search-suggestions" class="list-group position-absolute w-100 shadow-lg border-0 rounded-4 overflow-hidden" 
-                                 style="display:none; top: 100%; z-index: 9999; background: white; max-height: 400px; overflow-y: auto; left: 0;">
-                            </div>
+            <!-- Search Box (Custom Smooth Overlay) -->
+            <div class="search-overlay-custom position-absolute w-100 start-0 z-3" id="searchBox" style="top: 100%; border-top: 1px solid rgba(0,0,0,0.03); background: linear-gradient(to bottom, #ffffff, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0)); padding-bottom: 35px; padding-top: 25px;">
+                <!-- Thiết kế Tối giản Hiện đại: Thanh Search Lơ lửng chính xác -->
+                <div class="mx-auto position-relative px-3" style="max-width: 680px;">
+                    <form id="ai-search-form" class="d-flex align-items-center bg-white rounded-pill shadow-lg border-0" autocomplete="off"
+                        onsubmit="event.preventDefault(); books.searchAI($('#ai-search-input').val()); window.closeCustomSearch(); $('#ai-search-suggestions').hide();"
+                        style="transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); height: 50px; padding: 5px; border: 1px solid rgba(0,0,0,0.08) !important;">
+                        
+                        <div class="flex-grow-1 d-flex align-items-center ps-4">
+                            <i class="icon icon-search text-muted me-2" style="font-size: 1rem; opacity: 0.5;"></i>
+                            <input id="ai-search-input"
+                                class="border-0 bg-transparent w-100 shadow-none p-0"
+                                style="font-size:0.9rem; outline: none; height: 100%; margin: 0 !important; color: #333;" 
+                                type="search"
+                                placeholder="Gõ cốt truyện, bài học hoặc nội dung cần tìm...">
                         </div>
-                        <!-- Quick suggestions -->
-                        <div class="d-flex gap-2 flex-wrap" style="font-size:0.75rem;">
-                            <span class="text-muted me-1">Gợi ý:</span>
-                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
-                                onclick="books.searchAI('sách kỹ năng phát triển bản thân'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
-                                🧠 Kỹ năng sống
-                            </button>
-                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
-                                onclick="books.searchAI('kinh doanh khởi nghiệp'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
-                                💼 Kinh doanh
-                            </button>
-                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
-                                onclick="books.searchAI('tiểu thuyết văn học'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
-                                📖 Văn học
-                            </button>
-                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
-                                onclick="books.searchAI('lập trình công nghệ AI'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
-                                💻 Công nghệ
-                            </button>
-                            <button type="button" class="btn btn-sm btn-light rounded-pill py-0 px-3 border"
-                                onclick="books.searchAI('sách dưới 100k'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
-                                💰 Dưới 100k
-                            </button>
-                        </div>
+
+                        <button class="btn rounded-pill fw-bold px-4 d-flex align-items-center justify-content-center h-100"
+                            style="background:#333; color:white; font-size:0.75rem; white-space:nowrap; border: none; letter-spacing: 1.5px; min-width: 120px; transition: all 0.3s;"
+                            type="submit">
+                            AI SEARCH
+                        </button>
+                    </form>
+                    
+                    <!-- Dropdown gợi ý sách thông minh chính xác bên dưới -->
+                    <div id="ai-search-suggestions" class="list-group position-absolute w-100 shadow-lg border-0 rounded-4 overflow-hidden" 
+                         style="display:none; top: calc(100% + 10px); z-index: 1060; background: white; max-height: 400px; overflow-y: auto; left: 0; border: 1px solid rgba(0,0,0,0.05) !important;">
                     </div>
                 </div>
             </div>
+            <style>
+                /* Loại bỏ hoàn toàn sự can thiệp của Bootstrap, tự làm Custom mượt mà 100% */
+                .search-overlay-custom {
+                    pointer-events: none;
+                    visibility: hidden;
+                }
+                .search-overlay-custom.active {
+                    pointer-events: auto;
+                    visibility: visible;
+                }
+                
+                /* Hiệu ứng bay ra từ icon kính lúp (góc bên phải) */
+                .search-overlay-custom #ai-search-form {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.85);
+                    transform-origin: 85% 0; /* Điểm góc bắt cháy: bên phải thanh menu */
+                    transition: opacity 0.2s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+                .search-overlay-custom.active #ai-search-form {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                    transition-delay: 0.05s;
+                }
+                
+                /* Fade siêu êm cho danh sách gợi ý */
+                #ai-search-suggestions {
+                    transition: opacity 0.25s ease, transform 0.25s ease;
+                }
+                
+                #ai-search-form:focus-within {
+                    transform: translateY(-2px);
+                    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+                    border-color: rgba(0,0,0,0.15) !important;
+                }
+                #ai-search-form button:hover {
+                    background: #b3937d !important;
+                    transform: scale(1.03);
+                }
+                #ai-search-input::placeholder {
+                    color: #adb5bd;
+                    font-weight: 400;
+                }
+            </style>
         </div>
     </header>
 </div>
@@ -271,6 +293,29 @@
 </style>
 
 <script>
+    // Custom Logic đóng/mở Search Box bỏ qua Bootstrap thô cứng
+    window.toggleCustomSearch = window.toggleCustomSearch || function(e) {
+        if (e) e.preventDefault();
+        const box = document.getElementById('searchBox');
+        if (box) {
+            if (box.classList.contains('active')) {
+                window.closeCustomSearch();
+            } else {
+                box.classList.add('active');
+                setTimeout(() => document.getElementById('ai-search-input')?.focus(), 100);
+            }
+        }
+    };
+    
+    window.closeCustomSearch = window.closeCustomSearch || function() {
+        const box = document.getElementById('searchBox');
+        if (box && box.classList.contains('active')) {
+            box.classList.remove('active');
+            const input = document.getElementById('ai-search-input');
+            if (input) input.blur(); // Tắt bàn phím ảo trên mobile khi ẩn
+        }
+    };
+
     (function () {
         const SCROLL_THRESHOLD = 40;  // px scroll để thu nav
         const HIDE_DELAY = 2000; // ms idle trước khi ẩn toàn bộ
@@ -336,14 +381,15 @@
             applyScrollState();
             resetHideTimer();
             
-            // Tự động gập khung AI Search (và gợi ý) khi lướt trang
+            // Tự động đóng mượt mà khung AI Search (và gợi ý) khi lướt trang
             const searchBox = document.getElementById('searchBox');
             const suggestBox = document.getElementById('ai-search-suggestions');
-            if (searchBox && searchBox.classList.contains('show')) {
-                bootstrap.Collapse.getInstance(searchBox)?.hide();
+            if (searchBox && searchBox.classList.contains('active')) {
+                window.closeCustomSearch();
             }
-            if (suggestBox) {
-                suggestBox.style.display = 'none';
+            if (suggestBox && suggestBox.style.display !== 'none') {
+                suggestBox.style.opacity = '0';
+                setTimeout(() => suggestBox.style.display = 'none', 250);
             }
         }, { passive: true });
 
@@ -371,12 +417,12 @@
         /* ── Thông minh hơn: Auto-hide Search Box và UI Logic ── */
         document.addEventListener('click', function(e) {
             const searchBox = document.getElementById('searchBox');
-            const toggleBtn = document.querySelector('[data-bs-target="#searchBox"]');
+            const toggleBtn = document.getElementById('searchToggleCustomBtn');
             
-            // Ẩn searchBox nếu click ra ngoài nó và ngoài nút toggle
-            if (searchBox && searchBox.classList.contains('show')) {
+            // Ẩn searchBox siêu mượt nếu click ra ngoài
+            if (searchBox && searchBox.classList.contains('active')) {
                 if (!searchBox.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
-                    bootstrap.Collapse.getInstance(searchBox)?.hide();
+                    window.closeCustomSearch();
                 }
             }
         });
@@ -385,11 +431,14 @@
         const searchInput = document.getElementById('ai-search-input');
         const suggestBox = document.getElementById('ai-search-suggestions');
         let searchDebounceTimer;
+        let currentSearchId = 0; // Biến đánh dấu token truy vấn hiện tại để chống lỗi đè dữ liệu (race conditions)
 
         if (searchInput && suggestBox) {
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchDebounceTimer);
                 const query = this.value.trim();
+                const searchId = ++currentSearchId; // Khóa truy vấn
+                
                 if (!query) {
                     suggestBox.style.display = 'none';
                     return;
@@ -399,9 +448,21 @@
                 suggestBox.innerHTML = '<div class="p-3 text-center text-muted small"><span class="spinner-border spinner-border-sm me-2 text-accent"></span>AI đang suy nghĩ...</div>';
 
                 searchDebounceTimer = setTimeout(async () => {
+                    // Nếu trong lúc chờ nửa giây mà có gõ thêm chữ -> Hủy lệnh này
+                    if (searchId !== currentSearchId) return; 
+
                     try {
                         const res = await api.post('/books/ai-search', { query });
+                        
+                        // Nếu trong lúc chờ mạng API gọi về mà có gõ nhánh khác -> Bỏ kết quả cũ đi
+                        if (searchId !== currentSearchId) return; 
+
                         const results = res.data || [];
+                        
+                        // Bật lên lại chắc chắn vì lỡ lúc chờ người dùng có cuộn chuột làm ẩn mất
+                        if (document.activeElement === searchInput || searchInput.value.trim() === query) {
+                            suggestBox.style.display = 'block';
+                        }
                         
                         if (results.length === 0) {
                             suggestBox.innerHTML = '<div class="p-3 text-center text-muted fw-bold" style="font-size: 0.85rem;">Không tìm thấy sách phù hợp.</div>';
@@ -410,20 +471,25 @@
 
                         // Render top 5 gợi ý
                         const html = results.slice(0, 5).map(b => `
-                            <a href="javascript:void(0)" onclick="layout.render('Books','Details','${b.isbn}'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();" 
-                               class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-2 border-0 border-bottom">
+                            <a href="javascript:void(0)" onclick="layout.render('Books','Details','${b.isbn}'); window.closeCustomSearch();" 
+                               class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-2 border-0 border-bottom text-decoration-none">
                                 <img src="${b.coverImage ? 'assets/images/'+b.coverImage : 'assets/images/product-item1.jpg'}" 
                                      style="width:35px; height:50px; object-fit:contain; border-radius:4px; flex-shrink:0;">
                                 <div class="overflow-hidden">
-                                    <h6 class="mb-0 fw-bold text-truncate" style="font-size:0.85rem;">${b.title}</h6>
+                                    <h6 class="mb-0 fw-bold text-truncate text-dark" style="font-size:0.85rem;">${b.title}</h6>
                                     <span class="text-accent fw-bold" style="font-size:0.8rem;">${api.formatCurrency(b.price)}</span>
                                 </div>
                             </a>
                         `).join('');
                         
-                        suggestBox.innerHTML = html + `<a href="javascript:void(0)" onclick="$('#ai-search-form').submit()" class="list-group-item list-group-item-action text-center small text-primary fw-bold py-2 bg-light">Xem thêm chi tiết (${results.length} kết quả) →</a>`;
+                        // Khôi phục mượt mà danh sách
+                        suggestBox.style.opacity = '1';
+                        suggestBox.innerHTML = html + `<a href="javascript:void(0)" onclick="$('#ai-search-form').submit()" class="list-group-item list-group-item-action text-center small text-primary fw-bold py-2 bg-light text-decoration-none">Xem thêm chi tiết (${results.length} kết quả) →</a>`;
                     } catch (e) {
-                        suggestBox.innerHTML = '<div class="p-3 text-center text-danger small">Lỗi kết nối bộ não AI.</div>';
+                        if (searchId === currentSearchId) {
+                            suggestBox.style.display = 'block';
+                            suggestBox.innerHTML = '<div class="p-3 text-center text-danger small">Lỗi kết nối bộ não AI. Vui lòng thử lại.</div>';
+                        }
                     }
                 }, 500); // Đợi 0.5s sau khi gõ xong
             });
