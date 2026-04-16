@@ -1,5 +1,6 @@
 package com.bookstore.repository;
 
+import com.bookstore.dto.InventoryDetailDTO;
 import com.bookstore.entity.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,6 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
 
     @Query("SELECT i FROM Inventory i JOIN FETCH i.book WHERE i.stockQuantity <= i.alertThreshold")
     List<Inventory> findLowStockItems();
+    @Query("SELECT new com.bookstore.dto.InventoryDetailDTO(i.book.isbn, i.book.title, i.stockQuantity, i.shelfLocation) FROM Inventory i JOIN i.book")
+    List<InventoryDetailDTO> findAllInventoryDetails();
 }

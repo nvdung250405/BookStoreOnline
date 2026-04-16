@@ -1,9 +1,16 @@
 package com.bookstore.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class InventoryDetailDTO {
     private String isbn;
+    @JsonProperty("tenSach")
     private String title;
+
+    @JsonProperty("tonKho")
     private int stockQuantity;
+
+    @JsonProperty("viTriKe")
     private String shelfLocation;
 
     public InventoryDetailDTO() {}

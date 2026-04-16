@@ -299,6 +299,7 @@ const layout = {
                 break;
             case 'Inventory/Admin/Index':
                 inventory.loadList();
+                inventory.initScannerEvent();
                 break;
             case "Inventory/Admin/Import":
                 inventory.initImportForm();

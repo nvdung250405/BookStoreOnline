@@ -1,32 +1,73 @@
 <div class="admin-export-page p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-light rounded-circle shadow-sm" style="width:40px; height:40px;" onclick="layout.render('Inventory/Admin', 'Index')">
-                <i class="icon icon-arrow-left"></i>
+            <button class="btn btn-light rounded-circle shadow-sm d-flex justify-content-center align-items-center" style="width:40px; height:40px;" onclick="layout.render('Inventory/Admin', 'Index')">
+                <i class="icon icon-arrow-left text-muted"></i>
             </button>
             <div>
-                <h3 class="fw-bold mb-1">Xuất Kho Hàng (Delivery)</h3>
-                <p class="text-muted small mb-0">Xuất hàng cho các đơn đặt hàng online, kiểm tra tính khả dụng trống kho</p>
+                <h3 class="fw-bold mb-1">Xuất Kho & Đóng Gói (Pick & Pack)</h3>
+                <p class="text-muted small mb-0">Đối soát mã vạch từng sản phẩm theo đơn hàng trước khi xuất kho</p>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 justify-content-center">
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm rounded-4 p-5 bg-white text-center">
-                <div class="icon-box bg-accent-subtle text-accent d-inline-flex p-4 rounded-circle mb-4">
-                    <i class="icon icon-outbox fs-1"></i>
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <h5 class="fw-bold mb-3 border-bottom pb-2">1. Tìm Đơn Hàng</h5>
+                <div class="input-group mb-4 shadow-sm rounded-pill overflow-hidden border">
+                    <input type="text" class="form-control border-0 bg-light px-4 py-2" id="export-order-id" placeholder="Nhập Order ID...">
+                    <button class="btn btn-dark px-4 fw-bold" onclick="inventory.loadOrderForExport()">TẢI ĐƠN</button>
                 </div>
-                <h4 class="fw-bold mb-3">Tạo lệnh xuất kho đối soát</h4>
-                <p class="text-muted mb-4">Hệ thống sẽ quét mã đơn hàng (Order ID), đối chiếu số lượng tồn kho từng ISBN và tự động trừ hàng nếu đủ điều kiện xuất kho hợp lệ.</p>
-                
-                <div class="input-group mb-4 mx-auto" style="max-width: 400px;">
-                    <input type="text" class="form-control form-control-lg rounded-start-pill bg-light border-0 px-4 shadow-none" placeholder="Nhập mã Đơn (VD: 3)" id="export-order-id">
-                    <button class="btn btn-accent rounded-end-pill px-4 fw-bold" type="button" onclick="inventory.processExport()">KIỂM TRA & XUẤT</button>
+
+                <h5 class="fw-bold mb-3 mt-2 border-bottom pb-2">2. Quét Đối Chiếu</h5>
+                <div id="export-camera-area" class="d-none">
+                    <div class="card border-accent border-2 rounded-4 overflow-hidden shadow-sm mx-auto">
+                        <div class="card-header bg-accent text-white text-center py-2 border-0 small fw-bold">
+                            Đang bật Camera quét Barcode...
+                        </div>
+                        <div class="card-body p-0 text-center bg-dark">
+                            <div id="export-reader" style="width: 100%;"></div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="text-start bg-light p-4 rounded-4 mt-4 text-muted small" id="export-result-log">
-                    <span>> Trạng thái kho: Đang chuẩn bị quét đơn...</span>
+                <div id="export-camera-placeholder" class="text-center py-5 bg-light rounded-4 border border-dashed border-2">
+                    <i class="icon icon-outbox fs-1 text-muted mb-3 opacity-50"></i>
+                    <p class="text-muted small mb-0">Vui lòng tải đơn hàng để bắt đầu quét</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <h5 class="fw-bold mb-0">Đơn hàng: <span id="export-display-orderId" class="text-accent">---</span></h5>
+                    <span class="badge bg-light text-dark border py-2 px-3 rounded-pill shadow-sm">
+                        Tiến độ: <span id="export-progress" class="text-accent fw-bold">0/0</span>
+                    </span>
+                </div>
+
+                <div class="table-responsive flex-grow-1" style="min-height: 350px;">
+                    <table class="table table-hover align-middle" id="export-verify-table">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-3 py-3 small fw-bold text-muted">Sách / ISBN</th>
+                                <th class="py-3 small fw-bold text-muted text-center">Cần giao</th>
+                                <th class="py-3 small fw-bold text-muted text-center">Đã quét</th>
+                                <th class="py-3 small fw-bold text-muted text-end pe-3">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" class="text-center py-5 text-muted small">Nhập ID đơn hàng để bắt đầu đối soát hàng hóa</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-auto pt-3 border-top d-flex justify-content-end">
+                    <button type="button" id="btn-confirm-export" class="btn btn-accent rounded-pill px-5 py-3 fw-bold shadow-sm" disabled onclick="inventory.processExport()">
+                        XÁC NHẬN XUẤT KHO
+                    </button>
                 </div>
             </div>
         </div>

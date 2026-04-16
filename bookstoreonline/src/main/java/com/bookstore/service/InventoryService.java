@@ -3,8 +3,10 @@ package com.bookstore.service;
 import com.bookstore.dto.*;
 import com.bookstore.entity.*;
 import com.bookstore.repository.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +15,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@SuppressWarnings("null")
 public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
@@ -28,15 +29,15 @@ public class InventoryService {
     private final ExportOrderDetailRepository exportOrderDetailRepository;
 
     public InventoryService(InventoryRepository inventoryRepository,
-                         PurchaseOrderRepository purchaseOrderRepository,
-                         PurchaseOrderDetailRepository purchaseOrderDetailRepository,
-                         SupplierRepository supplierRepository,
-                         StaffRepository staffRepository,
-                         BookRepository bookRepository,
-                         ExportOrderRepository exportOrderRepository,
-                         OrderRepository orderRepository,
-                         OrderDetailRepository orderDetailRepository,
-                         ExportOrderDetailRepository exportOrderDetailRepository) {
+                            PurchaseOrderRepository purchaseOrderRepository,
+                            PurchaseOrderDetailRepository purchaseOrderDetailRepository,
+                            SupplierRepository supplierRepository,
+                            StaffRepository staffRepository,
+                            BookRepository bookRepository,
+                            ExportOrderRepository exportOrderRepository,
+                            OrderRepository orderRepository,
+                            OrderDetailRepository orderDetailRepository,
+                            ExportOrderDetailRepository exportOrderDetailRepository) {
         this.inventoryRepository = inventoryRepository;
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.purchaseOrderDetailRepository = purchaseOrderDetailRepository;
@@ -52,10 +53,11 @@ public class InventoryService {
     @Transactional(readOnly = true)
     public InventoryDetailDTO scanBarcode(String isbn) {
         Inventory inventory = inventoryRepository.findByBook_Isbn(isbn)
-                .orElseThrow(() -> new RuntimeException("Item not found in inventory with ISBN: " + isbn));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy sản phẩm trong kho với mã ISBN: " + isbn));
 
         if (!(inventory.getBook() instanceof PhysicalBook)) {
-            throw new RuntimeException("Warning: ISBN " + isbn + " belongs to an E-Book. E-books do not exist in physical inventory!");
+            // FIX LỖI 500: Trả về 400 Bad Request thay vì 500
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Warning: ISBN " + isbn + " belongs to an E-Book. E-books do not exist in physical inventory!");
         }
 
         PhysicalBook physicalBook = (PhysicalBook) inventory.getBook();
@@ -85,13 +87,17 @@ public class InventoryService {
     @Transactional
     public PurchaseOrderResponseDTO importStock(PurchaseOrderRequestDTO request) {
 
-        if (request.getSupplierId() == null) throw new IllegalArgumentException("Supplier ID cannot be empty");
+        if (request.getSupplierId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Supplier ID cannot be empty");
+        }
         Supplier supplier = supplierRepository.findById(request.getSupplierId())
-                .orElseThrow(() -> new RuntimeException("Supplier not found with ID: " + request.getSupplierId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Supplier not found with ID: " + request.getSupplierId()));
 
-        if (request.getStaffId() == null) throw new IllegalArgumentException("Staff ID cannot be empty");
+        if (request.getStaffId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Staff ID cannot be empty");
+        }
         Staff staff = staffRepository.findById(request.getStaffId())
-                .orElseThrow(() -> new RuntimeException("Staff not found with ID: " + request.getStaffId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found with ID: " + request.getStaffId()));
 
         BigDecimal totalAmount = request.getDetails().stream()
                 .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
@@ -111,12 +117,49 @@ public class InventoryService {
         for (PurchaseOrderDetailRequest item : request.getDetails()) {
             if (item.getIsbn() == null) continue;
             Book book = bookRepository.findById(item.getIsbn())
-                    .orElseThrow(() -> new RuntimeException("Book not found with ISBN: " + item.getIsbn()));
+                    .orElseGet(() -> {
+                        // Nếu không tìm thấy, hệ thống sẽ tự động tạo một bản ghi PhysicalBook mới
+                        PhysicalBook newBook = new PhysicalBook();
+                        newBook.setIsbn(item.getIsbn());
+                        newBook.setTitle(item.getTitle() != null ? item.getTitle() : "Sách mới"); // Tên tạm thời
 
+                        // Fix vụ Ref Price = 0: Lấy giá nhập nhân 1.2 làm giá bán mặc định
+                        newBook.setPrice(item.getUnitPrice().multiply(new BigDecimal("1.2")));
+
+                        // Lưu sách mới vào database trước khi tiếp tục
+                        return bookRepository.save(newBook);
+                    });
+
+            // Chặn đứng nhập kho nếu là sách điện tử (E-Book không có kho vật lý)
             if (!(book instanceof PhysicalBook)) {
-                throw new RuntimeException("Logic Error: Book " + item.getIsbn() + " (" + book.getTitle() + ") is an E-Book, cannot be imported into physical inventory!");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Logic Error: Sách " + book.getTitle() + " là E-Book, không thể nhập kho vật lý!");
             }
 
+            // 2. CẬP NHẬT GIÁ THAM CHIẾU (Ref Price)
+            // Nếu giá bằng 0, tự động đặt giá bán = giá nhập * 1.2
+            if (book.getPrice() == null || book.getPrice().compareTo(BigDecimal.ZERO) == 0) {
+                book.setPrice(item.getUnitPrice().multiply(new BigDecimal("1.2")));
+                bookRepository.save(book);
+            }
+
+            // 3. CẬP NHẬT TỒN KHO THỰC TẾ (Inventory)
+            Inventory inv = inventoryRepository.findByBook_Isbn(item.getIsbn())
+                    .orElseGet(() -> {
+                        Inventory newInv = new Inventory();
+                        newInv.setBook(book);
+                        newInv.setStockQuantity(0);
+                        newInv.setAlertThreshold(5);
+                        return newInv;
+                    });
+
+            // Cộng dồn số lượng và cập nhật vị trí kệ mới nhất từ DTO
+            inv.setStockQuantity((inv.getStockQuantity() == null ? 0 : inv.getStockQuantity()) + item.getQuantity());
+            inv.setShelfLocation(item.getShelfLocation());
+            inventoryRepository.save(inv); // Lưu thông tin kho thực tế
+
+            // 4. LƯU CHI TIẾT PHIẾU NHẬP (History)
+            // Tạo ID phức hợp cho chi tiết đơn nhập
             PurchaseOrderDetailId detailId = new PurchaseOrderDetailId(purchaseOrderId, item.getIsbn());
 
             PurchaseOrderDetail detail = new PurchaseOrderDetail();
@@ -126,9 +169,7 @@ public class InventoryService {
             detail.setQuantity(item.getQuantity());
             detail.setUnitPrice(item.getUnitPrice());
 
-            purchaseOrderDetailRepository.save(detail);
-
-            // Note: The trg_update_inventory_on_import trigger in DB handles the stock quantity update
+            purchaseOrderDetailRepository.save(detail); // Lưu vào bảng lịch sử nhập hàng
         }
 
         return new PurchaseOrderResponseDTO(purchaseOrderId, totalAmount, "Stock imported successfully! Inventory updated.");
@@ -137,18 +178,21 @@ public class InventoryService {
     @Transactional
     public String exportStock(ExportOrderRequestDTO request) {
         String orderId = request.getOrderId();
-        if (orderId == null) throw new IllegalArgumentException("Order ID cannot be empty");
+        if (orderId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order ID cannot be empty");
+        }
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + orderId));
 
         if (exportOrderRepository.existsByOrder(order)) {
-            throw new RuntimeException("This order has already been exported!");
+            // Mã 409 Conflict dùng cho trường hợp dữ liệu đã tồn tại hoặc đã được xử lý rồi
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This order has already been exported!");
         }
 
         List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(order);
         if (orderDetails.isEmpty()) {
-            throw new RuntimeException("Error: Order has no products!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: Order has no products!");
         }
 
         ExportOrder exportOrder = new ExportOrder();
@@ -163,7 +207,6 @@ public class InventoryService {
                 ExportOrderDetailId detailId = new ExportOrderDetailId(exportOrderId, detail.getBook().getIsbn());
                 ExportOrderDetail exportDetail = new ExportOrderDetail(detailId, detail.getQuantity());
                 exportOrderDetailRepository.save(exportDetail);
-                // Note: The trg_update_inventory_on_export trigger in DB handles the stock quantity update
             }
         }
 
@@ -171,5 +214,8 @@ public class InventoryService {
         orderRepository.save(order);
 
         return "Stock exported successfully for order " + orderId + ". Export ID: " + exportOrderId;
+    }
+    public List<InventoryDetailDTO> getAllInventory() {
+        return inventoryRepository.findAllInventoryDetails();
     }
 }

@@ -1,0 +1,18 @@
+<div id="mobile-scanner" class="p-3 text-center">
+    <h4 class="fw-bold">Hệ thống Quét Cầm Tay</h4>
+    <div id="reader" style="width: 100%; border-radius: 20px; overflow: hidden;"></div>
+    <div id="status" class="mt-3 text-muted small">Đang chờ kết nối...</div>
+</div>
+
+<script>
+    const socket = new WebSocket("ws://" + window.location.hostname + ":8080/ws-barcode");
+    const scanner = new Html5QrcodeScanner("reader", { fps: 20, qrbox: 250 });
+
+    scanner.render((decodedText) => {
+        // QUAN TRỌNG: Gửi mã quét được lên Server
+        socket.send(decodedText);
+        document.getElementById('status').innerText = "Vừa gửi mã: " + decodedText;
+        // Rung một cái cho giống máy quét thật (chỉ Android/iOS hỗ trợ)
+        if(navigator.vibrate) navigator.vibrate(200); 
+    });
+</script>

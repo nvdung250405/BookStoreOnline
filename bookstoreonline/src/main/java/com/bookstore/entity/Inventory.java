@@ -25,6 +25,14 @@ public class Inventory {
 
     public Inventory() {}
 
+    // 2. THÊM MỚI: Constructor 3 tham số để bạn gọi ở Service
+    public Inventory(Book book, Integer stockQuantity, String shelfLocation) {
+        this.book = book;
+        this.stockQuantity = stockQuantity;
+        this.shelfLocation = shelfLocation;
+        this.alertThreshold = 5;
+    }
+
     public Integer getInventoryId() { return inventoryId; }
     public void setInventoryId(Integer inventoryId) { this.inventoryId = inventoryId; }
     public Book getBook() { return book; }

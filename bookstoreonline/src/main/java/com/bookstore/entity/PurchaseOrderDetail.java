@@ -22,7 +22,7 @@ public class PurchaseOrderDetail {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "unit_price", precision = 12, scale = 2, nullable = false)
+    @Column(name = "purchase_price", precision = 12, scale = 2, nullable = false)
     private BigDecimal unitPrice;
 
     public PurchaseOrderDetail() {}
