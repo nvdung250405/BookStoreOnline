@@ -76,8 +76,71 @@ public class SupportTicketController {
 
     @PostMapping("/ai-chat")
     @Operation(summary = "Chatbot AI thông minh")
-    public ApiResponse<Map<String, Object>> aiChat(@RequestParam String message) {
-        Map<String, Object> response = chatbotService.getResponse(message);
+    public ApiResponse<Map<String, Object>> aiChat(
+            @RequestParam String message,
+            @RequestParam(required = false) String sessionId) {
+        Map<String, Object> response = chatbotService.getResponse(message, sessionId);
         return ApiResponse.success(response);
+    }
+
+    @GetMapping("/{id}/messages")
+    @Operation(summary = "Lấy lịch sử tin nhắn của yêu cầu")
+    public ApiResponse<List<com.bookstore.dto.SupportMessageDTO>> getTicketMessages(@PathVariable Long id) {
+        return ApiResponse.success(supportTicketService.getMessages(id));
+    }
+
+    @PostMapping("/{id}/messages")
+    @Operation(summary = "Gửi tin nhắn mới cho yêu cầu")
+    public ApiResponse<String> sendTicketMessage(
+            @PathVariable Long id,
+            @RequestParam String senderName,
+            @RequestParam boolean isStaff,
+            @RequestParam String content) {
+        supportTicketService.addMessage(id, senderName, isStaff, content);
+        return ApiResponse.success("Đã gửi tin nhắn", null);
+    }
+
+    @GetMapping("/notifications")
+    @Operation(summary = "Kiểm tra thông báo tin nhắn mới (Cho nhân viên)")
+    public ApiResponse<List<com.bookstore.dto.SupportMessageDTO>> getNotifications(
+            @RequestParam String since) {
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.parse(since);
+        return ApiResponse.success(supportTicketService.getRecentCustomerMessages(timestamp));
+    }
+
+    @GetMapping("/user-notifications")
+    @Operation(summary = "Kiểm tra thông báo tin nhắn mới (Cho khách hàng)")
+    public ApiResponse<List<com.bookstore.dto.SupportMessageDTO>> getUserNotifications(
+            @RequestParam String username,
+            @RequestParam String since) {
+        java.time.LocalDateTime timestamp = java.time.LocalDateTime.parse(since);
+        return ApiResponse.success(supportTicketService.getRecentStaffMessagesForUser(timestamp, username));
+    }
+
+    @GetMapping("/active-sessions")
+    @Operation(summary = "Lấy danh sách các phiên chat đang hoạt động (Cho nhân viên)")
+    public ApiResponse<List<SupportTicketDTO>> getActiveSessions() {
+        return ApiResponse.success(supportTicketService.getActiveSessions());
+    }
+
+    @GetMapping("/unread-count")
+    @Operation(summary = "Lấy tổng số tin nhắn chưa đọc của khách hàng")
+    public ApiResponse<Long> getUnreadCount(@RequestParam String username) {
+        return ApiResponse.success(supportTicketService.getUnreadCountForUser(username));
+    }
+
+    @GetMapping("/staff/unread-count")
+    @Operation(summary = "Lấy tổng số tin nhắn chưa đọc từ khách hàng (Cho nhân viên)")
+    public ApiResponse<Long> getStaffUnreadCount() {
+        return ApiResponse.success(supportTicketService.getTotalUnreadCountForStaff());
+    }
+
+    @PostMapping("/{id}/mark-read")
+    @Operation(summary = "Đánh dấu tin nhắn là đã đọc")
+    public ApiResponse<String> markAsRead(
+            @PathVariable Long id,
+            @RequestParam boolean isStaff) {
+        supportTicketService.markMessagesAsRead(id, isStaff);
+        return ApiResponse.success("Đã đánh dấu là đã đọc", null);
     }
 }

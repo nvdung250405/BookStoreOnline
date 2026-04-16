@@ -46,7 +46,7 @@ const review = {
         }
 
         const diem = $("#review-rating").val();
-        const noidung = $("#review-content").val();
+        const noidung = $("#review-comment").val();
 
         if (!noidung) {
             api.showToast("Vui lòng nhập nội dung đánh giá", "warning");
@@ -58,7 +58,7 @@ const review = {
 
             if (res.status === 200) {
                 api.showToast("Cảm ơn đánh giá của bạn!");
-                $("#review-form").trigger("reset");
+                $("#review-comment").val('');
                 review.loadForBook(isbn);
             }
         } catch (e) {
@@ -110,3 +110,12 @@ const review = {
         } catch (e) { api.showToast("Lỗi khi xóa: " + e.message, "error"); }
     }
 };
+
+$(document).on('click', '#btn-submit-review', function() {
+    const isbn = $('#book-isbn').text();
+    if (isbn && isbn !== '---') {
+        review.submit(isbn);
+    } else {
+        api.showToast("Lỗi: Không xác định được mã sách", "error");
+    }
+});

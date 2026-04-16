@@ -1,5 +1,6 @@
 package com.bookstore.service;
 
+import com.bookstore.dto.SupportMessageDTO;
 import com.bookstore.dto.SupportTicketDTO;
 import java.util.List;
 

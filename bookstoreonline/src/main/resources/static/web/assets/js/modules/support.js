@@ -1,14 +1,62 @@
 /**
- * support.js - Support Ticket & CRM Logic
- * Standardized for simplified Admin handling
+ * support.js - AI Chat Support & Customer Tickets Logic
+ * Standardized for Full English Backend synchronization
  */
 let currentTicketId = null;
 let customUpdatedTime = null; // Biến toàn cục để lưu thời gian Admin vừa cập nhật
 
 const support = {
-    // 1. AI Chatbot Logic
+    sessionId: null,
+
+    // Initialize Chat Widget — gắn event vào input trong widget mới
     initChat: () => {
+        support.initSessionId();
         setTimeout(() => $("#chat-user-msg").focus(), 200);
+    },
+
+    initSessionId: () => {
+        if (!support.sessionId) {
+            support.sessionId = 'sess-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+        }
+    },
+
+    // Send from input field
+    sendChatFromInput: () => {
+        const input = $("#chat-user-msg");
+        const msg = input.val().trim();
+        if (!msg) return;
+        input.val("");
+
+        if (support.isHumanMode) {
+            // User bubble (immediate UI feedback)
+            $("#chat-box").append(`
+                <div class="bsw-msg-user">
+                    <div class="bsw-bubble">${support.escapeHtml(msg)}</div>
+                </div>
+            `);
+            support.scrollToBottom();
+            support.sendHumanMessage(msg);
+        } else {
+            support.sendChat(msg);
+        }
+    },
+
+    // Escape HTML to prevent XSS
+    escapeHtml: (text) => $('<div>').text(text).html(),
+
+    // Render markdown-lite: **bold**, newlines, bullet points
+    renderMarkdown: (text) => {
+        if (!text) return "";
+        let html = support.escapeHtml(text)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/^\s*•\s*(.*)/gm, '<li>$1</li>')
+            .replace(/\n/g, '<br>');
+
+        if (html.includes('<li>')) {
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+        }
+        return html;
     },
 
     sendChat: async (message) => {
@@ -43,7 +91,8 @@ const support = {
         support.scrollToBottom();
 
         try {
-            const res = await api.post(`/support/ai-chat?message=${encodeURIComponent(message)}`);
+            const url = `/support/ai-chat?message=${encodeURIComponent(message)}&sessionId=${support.sessionId}`;
+            const res = await api.post(url);
             $(`#${typingId}`).remove();
 
             const data = res.data;
@@ -56,6 +105,10 @@ const support = {
                     <div class="bsw-bubble" style="background: linear-gradient(135deg, rgba(26,115,232,0.05), rgba(155,114,203,0.05)); border: 1px solid rgba(155,114,203,0.1);">${support.renderMarkdown(text)}</div>
                 </div>
             `);
+
+            if (data.quickReplies && data.quickReplies.length > 0) {
+                support.appendQuickReplies(data.quickReplies);
+            }
 
         } catch (e) {
             $(`#${typingId}`).remove();
@@ -128,7 +181,9 @@ const support = {
         }
     },
 
-    // 3. Admin Ticket Details
+    /**
+     * Load ticket details (Admin)
+     */
     loadTicketDetails: async (id) => {
         currentTicketId = id;
         try {
@@ -172,7 +227,9 @@ const support = {
                         </div>
                         <div class="fw-medium text-dark">${support.escapeHtml(t.content)}</div>
                     </div>
-                `);
+                </div>
+            `);
+        });
 
                 if (t.adminReply) {
                     $("#comments-list").append(`
@@ -210,8 +267,16 @@ const support = {
         const reply = $("#admin-reply").val().trim();
         const note = $("#internal-note").val().trim();
         const status = $("#target-status").val();
+        try {
+            await api.post(`/api/support/${support.activeTicketId}/respond?statusCode=${status}`);
+            api.showToast("Đã cập nhật trạng thái", "success");
+            const badge = $("#ticket-status-badge");
+            badge.text(status).removeClass().addClass(`badge rounded-pill px-3 py-2 ${support.getStatusClass(status)}`);
+        } catch (e) { api.showToast("Cập nhật thất bại", "error"); }
+    },
 
-        api.showToast("Đang cập nhật...", "info");
+    updateInternalNote: async () => {
+        const note = $("#internal-note").val();
         try {
             await api.post(`/support/${id}/respond?reply=${encodeURIComponent(reply)}&internalNote=${encodeURIComponent(note)}&statusCode=${status}`);
             
@@ -232,7 +297,9 @@ const support = {
         }
     },
 
-    // Utilities
+    /**
+     * Get status badge HTML
+     */
     getStatusBadge: (status) => {
         const cls = support.getStatusClass(status);
         const text = status === 'OPEN' ? 'Mở' : 
@@ -242,12 +309,15 @@ const support = {
         return `<span class="badge rounded-pill px-3 ${cls}">${text}</span>`;
     },
 
+    /**
+     * Get status CSS class
+     */
     getStatusClass: (status) => {
         switch (status) {
-            case 'OPEN': return 'bg-danger';      // Mở
-            case 'PROCESSING': return 'bg-warning text-dark'; // Đang xử lý
-            case 'RESOLVED': return 'bg-success';   // Đã giải quyết
-            case 'CLOSED': return 'bg-secondary';   // Đã đóng
+            case 'OPEN': return 'bg-danger';
+            case 'PROCESSING': return 'bg-warning text-dark';
+            case 'RESOLVED': return 'bg-success';
+            case 'CLOSED': return 'bg-secondary';
             default: return 'bg-dark';
         }
     },
@@ -258,30 +328,85 @@ const support = {
         return $('<div>').text(text).html();
     },
 
-    scrollToBottom: () => {
-        const chatBox = $("#chat-box");
-        if (chatBox.length) chatBox.scrollTop(chatBox[0].scrollHeight);
-    },
+    checkStaffNotifications: async () => {
+        try {
+            const user = api.getUser();
+            if (!user || (user.role !== 'STAFF' && user.role !== 'ADMIN')) {
+                clearInterval(support.staffNotifyTimer);
+                support.staffNotifyTimer = null;
+                return;
+            }
 
-    renderMarkdown: (text) => {
-        if (!text) return "";
-        let html = text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/^\s*•\s*(.*)/gm, '<li>$1</li>')
-            .replace(/\n/g, '<br>');
-        
-        if (html.includes('<li>')) {
-            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            const res = await api.get('/support/staff/unread-count');
+            const count = parseInt(res.data) || 0;
+
+            // Update badge always
+            if (count > 0) {
+                $("#staff-notif-dot").text(count).show();
+            } else {
+                $("#staff-notif-dot").hide().text("");
+            }
+
+            // Toast + sound only when count genuinely increased AFTER first load
+            if (support._staffLastCount >= 0 && count > support._staffLastCount) {
+                const newMsgs = count - support._staffLastCount;
+                api.showToast(`💬 ${newMsgs} tin nhắn mới từ khách hàng!`, "warning");
+                try {
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+                    audio.volume = 0.4;
+                    audio.play();
+                } catch (e) { }
+            }
+
+            support._staffLastCount = count;
+        } catch (e) {
+            console.error("Staff notification check failed:", e);
         }
-        return html;
     },
 
-    toggleChat: () => {
-        $("#chatbot-container").toggleClass("active");
-        if ($("#chatbot-container").hasClass("active")) {
-            setTimeout(() => $("#chat-user-msg").focus(), 300);
-            support.scrollToBottom();
+    // ========== NOTIFICATIONS: CUSTOMER ==========
+    customerNotifyTimer: null,
+    _customerLastCount: -1, // -1 = not yet initialized
+
+    startGlobalCustomerNotifications: () => {
+        if (support.customerNotifyTimer) return;
+        support._customerLastCount = -1; // Reset on start
+        support.customerNotifyTimer = setInterval(support.checkCustomerNotifications, 5000);
+    },
+
+    checkCustomerNotifications: async () => {
+        try {
+            const user = api.getUser();
+            if (!user || user.role === 'STAFF' || user.role === 'ADMIN') {
+                clearInterval(support.customerNotifyTimer);
+                support.customerNotifyTimer = null;
+                return;
+            }
+
+            const res = await api.get(`/support/unread-count?username=${encodeURIComponent(user.username)}`);
+            const count = parseInt(res.data) || 0;
+
+            // Update badge always
+            if (count > 0) {
+                $("#staff-notif-dot").text(count).show();
+            } else {
+                $("#staff-notif-dot").hide().text("");
+            }
+
+            // Toast + sound only when count genuinely increased AFTER first load
+            if (support._customerLastCount >= 0 && count > support._customerLastCount) {
+                const newMsgs = count - support._customerLastCount;
+                api.showToast(`💬 ${newMsgs} tin nhắn mới từ nhân viên!`, "info");
+                try {
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+                    audio.volume = 0.4;
+                    audio.play();
+                } catch (e) { }
+            }
+
+            support._customerLastCount = count;
+        } catch (e) {
+            console.error("Customer notification check failed:", e);
         }
     }
 };

@@ -41,16 +41,100 @@
     <div id="footer-area"></div>
 
     <!-- AI Chat Support Widget (Person 5) -->
-    <div id="chat-widget-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 1050;">
-        <button onclick="support.toggleChat()"
+    <div id="chat-widget-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 1050; display: flex; flex-direction: column; align-items: center;">
+        
+        <!-- Selection Bubbles -->
+        <div id="chat-options-menu" style="display: none; flex-direction: column; gap: 12px; margin-bottom: 15px; align-items: center;">
+            <div class="chat-bubble-opt" onclick="support.startStaffChat()" title="Gặp Nhân Viên" style="
+                width: 50px; height: 50px; border-radius: 50%; background: #27ae60; color: white;
+                display: flex; align-items: center; justify-content: center; cursor: pointer;
+                box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                transform: translateY(20px); opacity: 0;
+            " onmouseover="this.style.transform='translateY(0) scale(1.1)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
+                <span style="font-size: 1.2rem;">👨‍💼</span>
+            </div>
+            <div class="chat-bubble-opt" onclick="support.startAiChat()" title="Trò chuyện AI" style="
+                width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #1A73E8, #9B72CB); color: white;
+                display: flex; align-items: center; justify-content: center; cursor: pointer;
+                box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                transform: translateY(20px); opacity: 0;
+            " onmouseover="this.style.transform='translateY(0) scale(1.1)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
+                <span style="font-size: 1.2rem;">🤖</span>
+            </div>
+        </div>
+
+        <!-- Main Button -->
+        <button id="btn-main-chat" onclick="support.toggleChatMenu()"
             class="btn btn-accent rounded-circle shadow-lg p-0 d-flex align-items-center justify-content-center"
-            style="width: 60px; height: 60px; border: none;">
-            <i class="icon icon-paper-plane fs-4 text-white"></i>
+            style="width: 60px; height: 60px; border: none; position: relative; transition: all 0.3s ease;">
+            <i class="icon icon-paper-plane fs-4 text-white" id="main-chat-icon"></i>
+            <span id="close-chat-icon" style="display: none; font-size: 1.5rem; color: white;">✕</span>
+            
+            <!-- Global Notification Badge -->
+            <span id="staff-notif-dot" style="
+                display: none;
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                min-width: 20px;
+                height: 20px;
+                padding: 0 5px;
+                background: #e74c3c;
+                color: white;
+                border: 2px solid #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(231,76,60,0.4);
+                z-index: 5;
+                font-size: 11px;
+                font-weight: 800;
+                line-height: 16px;
+                text-align: center;
+            "></span>
         </button>
+
         <div id="chat-box-holder" style="display: none; position: absolute; bottom: 75px; right: 0; width: 350px;">
             <!-- Content will be loaded dynamically -->
         </div>
     </div>
+
+    <style>
+        /* Premium Floating & Entry Animations */
+        .chat-bubble-show {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+        }
+
+        @keyframes bsw-float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes bsw-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(26, 115, 232, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0); }
+        }
+
+        .chat-bubble-opt {
+            animation: bsw-float 4s ease-in-out infinite;
+        }
+
+        #btn-main-chat:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 25px rgba(197, 169, 146, 0.4) !important;
+        }
+
+        #btn-main-chat:active {
+            transform: scale(0.95);
+        }
+
+        /* Active bubble pulsing for new messages */
+        .has-new-pulse {
+            animation: bsw-float 3s ease-in-out infinite, bsw-pulse 2s infinite !important;
+            border-color: #e74c3c !important;
+        }
+    </style>
 
     <!-- Global Toast Notification -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">

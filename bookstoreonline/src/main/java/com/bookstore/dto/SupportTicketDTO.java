@@ -11,9 +11,10 @@ public class SupportTicketDTO {
     private String adminReply;
     private String internalNote;
     private LocalDateTime createdAt;
+    private boolean hasUnreadMessages;
 
     public SupportTicketDTO() {}
-
+ 
     public Long getTicketId() { return ticketId; }
     public void setTicketId(Long ticketId) { this.ticketId = ticketId; }
     public String getCustomerName() { return customerName; }
@@ -30,4 +31,6 @@ public class SupportTicketDTO {
     public void setInternalNote(String internalNote) { this.internalNote = internalNote; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public boolean isHasUnreadMessages() { return hasUnreadMessages; }
+    public void setHasUnreadMessages(boolean hasUnreadMessages) { this.hasUnreadMessages = hasUnreadMessages; }
 }

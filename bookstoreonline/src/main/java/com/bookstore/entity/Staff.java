@@ -21,7 +21,7 @@ public class Staff {
     @Column(length = 15)
     private String phone;
 
-    @Column(name = "department", nullable = false)
+    @Column(name = "department", nullable = false, length = 100)
     private String department;
 
     public Staff() {}

@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.bookstore.dto.AiSearchResult;
+import com.bookstore.dto.UserContext;
+
 @Service
 public class AiSearchService {
 
@@ -33,6 +36,9 @@ public class AiSearchService {
         Map.entry("làm giàu", "kinh tế"),
         Map.entry("marketing", "kinh tế"),
         Map.entry("quản trị", "kinh tế"),
+        Map.entry("tiền", "kinh tế"),
+        Map.entry("tỉ phú", "kinh tế"),
+        Map.entry("mã chứng khoán", "kinh tế"),
         // Technology / IT
         Map.entry("programming", "công nghệ"),
         Map.entry("coding", "công nghệ"),
@@ -44,6 +50,8 @@ public class AiSearchService {
         Map.entry("ai ", "công nghệ"),
         Map.entry("data science", "công nghệ"),
         Map.entry("công nghệ thông tin", "công nghệ"),
+        Map.entry("it ", "công nghệ"),
+        Map.entry("máy tính", "công nghệ"),
         // Literature / Fiction
         Map.entry("novel", "văn học"),
         Map.entry("fiction", "văn học"),
@@ -53,6 +61,9 @@ public class AiSearchService {
         Map.entry("văn học", "văn học"),
         Map.entry("thơ", "văn học"),
         Map.entry("truyện ngắn", "văn học"),
+        Map.entry("tình cảm", "văn học"),
+        Map.entry("ngôn tình", "văn học"),
+        Map.entry("trinh thám", "văn học"),
         // Self help / Personal development
         Map.entry("self help", "kỹ năng sống"),
         Map.entry("self-help", "kỹ năng sống"),
@@ -63,6 +74,8 @@ public class AiSearchService {
         Map.entry("thành công", "kỹ năng sống"),
         Map.entry("leadership", "kỹ năng sống"),
         Map.entry("lãnh đạo", "kỹ năng sống"),
+        Map.entry("động lực", "kỹ năng sống"),
+        Map.entry("thói quen", "kỹ năng sống"),
         // Children / Education
         Map.entry("children", "thiếu nhi"),
         Map.entry("kids", "thiếu nhi"),
@@ -71,6 +84,7 @@ public class AiSearchService {
         Map.entry("giáo dục", "giáo trình"),
         Map.entry("textbook", "giáo trình"),
         Map.entry("học", "giáo trình"),
+        Map.entry("ôn thi", "giáo trình"),
         // History / Culture
         Map.entry("history", "lịch sử"),
         Map.entry("lịch sử", "lịch sử"),
@@ -93,7 +107,7 @@ public class AiSearchService {
         "nxb", "nhà", "xuất", "bản", "quyển", "cuốn", "thể", "loại",
         "tìm", "kiếm", "mua", "sách", "cho", "tôi", "giúp", "hay", "tốt",
         "những", "các", "loại sách", "về", "theo", "thuộc", "chủ đề",
-        "gợi ý", "recommend", "muốn", "cần", "đọc", "tìm kiếm"
+        "gợi ý", "recommend", "muốn", "cần", "đọc", "tìm kiếm", "hộ", "giùm"
     };
 
     public AiSearchService(BookService bookService,
@@ -105,8 +119,15 @@ public class AiSearchService {
     }
 
     public List<BookDTO> searchByNaturalLanguage(String query) {
+        return searchWithContext(query, null).getBooks();
+    }
+
+    public AiSearchResult searchWithContext(String query, UserContext context) {
         if (query == null || query.isBlank()) {
-            return bookService.searchAndFilterBooks(null, null, null, null, null);
+            return AiSearchResult.builder()
+                    .books(bookService.searchAndFilterBooks(null, null, null, null, null))
+                    .extractedContext(new UserContext())
+                    .build();
         }
 
         String lowerQuery = query.toLowerCase().trim();
@@ -142,9 +163,19 @@ public class AiSearchService {
         }
 
         // ── 3. Extract price range (Vietnamese + English) ────────────────────
+        // Price range: "100k - 300k", "100000 đến 300000"
+        Pattern rangePattern = Pattern.compile(
+            "(\\d+[.,]?\\d*)\\s*(k|nghìn)?\\s*(?:-|đến|đối|to|đến)\\s*(\\d+[.,]?\\d*)\\s*(k|nghìn)?");
+        Matcher rangeMatcher = rangePattern.matcher(lowerQuery);
+        if (rangeMatcher.find()) {
+            minPrice = parsePrice(rangeMatcher.group(1), rangeMatcher.group(2));
+            maxPrice = parsePrice(rangeMatcher.group(3), rangeMatcher.group(4));
+            lowerQuery = lowerQuery.replace(rangeMatcher.group(0), " ");
+        }
+
         // Max price: "under 100k", "dưới 100k", "rẻ hơn 200000đ"
         Pattern maxPricePattern = Pattern.compile(
-            "(?:under|below|cheaper|max|dưới|rẻ hơn|tối đa|không quá|dưới)\\s*(\\d+[.,]?\\d*)\\s*(k|thousand|nghìn|000|đ|vnd|vnđ)?");
+            "(?:under|below|cheaper|max|dưới|rẻ hơn|tối đa|không quá|nhỏ hơn)\\s*(\\d+[.,]?\\d*)\\s*(k|thousand|nghìn|000|đ|vnd|vnđ)?");
         Matcher maxMatcher = maxPricePattern.matcher(lowerQuery);
         if (maxMatcher.find()) {
             maxPrice = parsePrice(maxMatcher.group(1), maxMatcher.group(2));
@@ -153,21 +184,11 @@ public class AiSearchService {
 
         // Min price: "trên 100k", "from 200k", "above 50000"
         Pattern minPricePattern = Pattern.compile(
-            "(?:above|over|from|min|at least|trên|lớn hơn|từ|tối thiểu|ít nhất)\\s*(\\d+[.,]?\\d*)\\s*(k|thousand|nghìn|000|đ|vnd|vnđ)?");
+            "(?:above|over|from|min|at least|trên|lớn hơn|từ|tối thiểu|ít nhất|hơn)\\s*(\\d+[.,]?\\d*)\\s*(k|thousand|nghìn|000|đ|vnd|vnđ)?");
         Matcher minMatcher = minPricePattern.matcher(lowerQuery);
         if (minMatcher.find()) {
             minPrice = parsePrice(minMatcher.group(1), minMatcher.group(2));
             lowerQuery = lowerQuery.replace(minMatcher.group(0), " ");
-        }
-
-        // Price range: "100k - 300k", "100000 đến 300000"
-        Pattern rangePattern = Pattern.compile(
-            "(\\d+)\\s*(k|nghìn)?\\s*(?:-|đến|to)\\s*(\\d+)\\s*(k|nghìn)?");
-        Matcher rangeMatcher = rangePattern.matcher(lowerQuery);
-        if (rangeMatcher.find() && minPrice == null && maxPrice == null) {
-            minPrice = parsePrice(rangeMatcher.group(1), rangeMatcher.group(2));
-            maxPrice = parsePrice(rangeMatcher.group(3), rangeMatcher.group(4));
-            lowerQuery = lowerQuery.replace(rangeMatcher.group(0), " ");
         }
 
         // ── 4. Publisher detection from DB ───────────────────────────────────
@@ -195,7 +216,42 @@ public class AiSearchService {
                                    .trim();
         if (keyword.length() < 2) keyword = null;
 
-        return bookService.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice);
+        // ── 7. MEMORY: Merge with existing context if necessary ──────────────
+        // If the user says "dưới 200k" after asking for "kinh tế", we should remember "kinh tế"
+        if (context != null) {
+            if (categoryName == null) categoryName = context.getCategoryName();
+            if (publisherName == null) publisherName = context.getPublisherName();
+            if (minPrice == null && maxPrice == null && keyword == null) {
+                // If query is just about something else, maybe keep price?
+                // But usually price is specific to current query unless it's a follow up
+            }
+            if (keyword == null && (categoryName != null || publisherName != null || minPrice != null || maxPrice != null)) {
+                // This is likely a refinement query
+            } else if (keyword != null && categoryName == null) {
+                 // Might be a new topic, but let's keep category if it's a follow-up
+            }
+        }
+
+        UserContext newContext = UserContext.builder()
+                .categoryName(categoryName)
+                .publisherName(publisherName)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .lastKeyword(keyword)
+                .build();
+
+        List<BookDTO> books = bookService.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice);
+
+        // Fuzzy fallback if no books found and we have a keyword
+        if (books.isEmpty() && keyword != null) {
+            // Try searching only by keyword without other filters
+            books = bookService.searchAndFilterBooks(keyword, null, null, null, null);
+        }
+
+        return AiSearchResult.builder()
+                .books(books)
+                .extractedContext(newContext)
+                .build();
     }
 
     private BigDecimal parsePrice(String numberStr, String unit) {

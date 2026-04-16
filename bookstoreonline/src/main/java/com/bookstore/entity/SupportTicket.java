@@ -2,6 +2,8 @@ package com.bookstore.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "support_tickets")
@@ -33,6 +35,9 @@ public class SupportTicket {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SupportMessage> messages = new ArrayList<>();
+
     public SupportTicket() {}
 
     public Long getTicketId() { return ticketId; }
@@ -51,4 +56,6 @@ public class SupportTicket {
     public void setInternalNote(String internalNote) { this.internalNote = internalNote; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public List<SupportMessage> getMessages() { return messages; }
+    public void setMessages(List<SupportMessage> messages) { this.messages = messages; }
 }

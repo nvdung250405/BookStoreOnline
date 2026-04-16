@@ -234,6 +234,115 @@ const books = {
         }
     },
 
+    // 4. Load specialized detail view
+    loadDetail: async (isbn) => {
+        try {
+            const res = await api.get(`/books/${isbn}`);
+            const book = res.data || res;
+            if (!book) {
+                api.showToast("Không tìm thấy thông tin sách", "error");
+                return;
+            }
+
+            currentBookIsbn = book.isbn;
+            
+            // Populate DOM
+            $('#book-title').text(book.title);
+            $('#book-author').text(book.authorNames ? Array.from(book.authorNames).join(', ') : 'Chưa cập nhật');
+            $('#book-isbn').text(book.isbn);
+            $('#book-price').text(api.formatCurrency(book.price));
+            $('#book-price-old').text(api.formatCurrency(book.price * 1.2)); // Fake old price for UI
+            $('#book-description').text(book.description || 'Không có mô tả cho sản phẩm này.');
+            $('#breadcrumb-category').text(book.categoryName || 'Sách');
+            
+            const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/main-banner2.jpg';
+            $('#book-image').attr('src', imagePath);
+
+            // Load related books based on category
+            if (book.categoryName) {
+                books.loadRelated(book.categoryName, book.isbn);
+            }
+        } catch (error) {
+            console.error("Failed to load book details", error);
+            api.showToast("Lỗi khi tải chi tiết sách", "error");
+        }
+    },
+
+    // 5. Load all books (Store Index)
+    loadAll: async () => {
+        try {
+            const res = await api.get('/books');
+            const data = res.data || res;
+            books.renderGrid("#books-grid", data);
+        } catch (error) {
+            api.showToast("Không thể tải danh sách sản phẩm", "error");
+        }
+    },
+
+    // 6. Load related products
+    loadRelated: async (categoryName, excludeIsbn) => {
+        try {
+            const res = await api.get(`/books?categoryName=${encodeURIComponent(categoryName)}`);
+            const data = res.data || res;
+            const filtered = data.filter(b => b.isbn !== excludeIsbn).slice(0, 4);
+            
+            const container = $("#related-books-grid");
+            if (!container.length) return;
+            container.empty();
+            
+            if (filtered.length === 0) {
+                container.html('<div class="col-12 text-center py-4 text-muted">Không có sản phẩm liên quan.</div>');
+                return;
+            }
+
+            filtered.forEach(book => {
+                const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
+                container.append(`
+                    <div class="col-md-3">
+                        <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
+                            <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="d-block image-holder mb-3 overflow-hidden rounded-3 bg-light p-2">
+                                <img src="${imagePath}" class="img-fluid" style="height:180px;object-fit:contain;">
+                            </a>
+                            <h6 class="fw-bold mb-1 small">${book.title}</h6>
+                            <div class="text-accent fw-bold mb-2">${api.formatCurrency(book.price)}</div>
+                            <button class="btn btn-outline-dark btn-sm rounded-pill px-3" style="font-size: 0.7rem;" onclick="cart.add('${book.isbn}',1)">Thêm vào giỏ</button>
+                        </div>
+                    </div>
+                `);
+            });
+        } catch (e) { console.error("Load related books failed", e); }
+    },
+
+    // 7. Filtering and Sorting
+    handleSort: (criteria) => {
+        const grid = $("#books-grid");
+        const items = grid.children('.col-xl-3').get();
+        if (items.length === 0) return;
+
+        items.sort((a, b) => {
+            const priceA = parseFloat($(a).find('.text-accent').first().text().replace(/\D/g,'')) || 0;
+            const priceB = parseFloat($(b).find('.text-accent').first().text().replace(/\D/g,'')) || 0;
+            
+            if (criteria === 'price-asc') return priceA - priceB;
+            if (criteria === 'price-desc') return priceB - priceA;
+            return 0;
+        });
+        
+        grid.empty().append(items);
+    },
+
+    loadByPriceRange: async (min, max) => {
+        try {
+            const res = await api.get(`/books?minPrice=${min}&maxPrice=${max}`);
+            const data = res.data || res;
+            books.renderGrid("#books-grid", data);
+            $("#category-title").text(`Sách giá từ ${api.formatCurrency(min)} đến ${api.formatCurrency(max)}`);
+        } catch (e) { 
+            console.error("Price filter error:", e);
+            api.showToast("Không thể lọc sản phẩm theo giá", "error"); 
+        }
+    },
+
     toggleTypeFields: () => {
         const type = $('input[name="bookType"]:checked').val();
         if (type === 'PHYSICAL') {
