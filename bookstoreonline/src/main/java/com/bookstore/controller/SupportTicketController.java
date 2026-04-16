@@ -59,8 +59,10 @@ public class SupportTicketController {
 
     @PostMapping("/ai-chat")
     @Operation(summary = "Chatbot AI thông minh")
-    public ApiResponse<Map<String, Object>> aiChat(@RequestParam String message) {
-        Map<String, Object> response = chatbotService.getResponse(message);
+    public ApiResponse<Map<String, Object>> aiChat(
+            @RequestParam String message,
+            @RequestParam(required = false) String sessionId) {
+        Map<String, Object> response = chatbotService.getResponse(message, sessionId);
         return ApiResponse.success(response);
     }
 }

@@ -1,11 +1,16 @@
-/**
- * support.js - AI Chat Support & Customer Tickets Logic
- * Standardized for Full English Backend synchronization
- */
 const support = {
+    sessionId: null,
+
     // Initialize Chat Widget — gắn event vào input trong widget mới
     initChat: () => {
+        support.initSessionId();
         setTimeout(() => $("#chat-user-msg").focus(), 200);
+    },
+
+    initSessionId: () => {
+        if (!support.sessionId) {
+            support.sessionId = 'sess-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+        }
     },
 
     // Send from input field
@@ -22,6 +27,7 @@ const support = {
 
     // Render markdown-lite: **bold**, newlines
     renderMarkdown: (text) => {
+        if (!text) return "";
         return support.escapeHtml(text)
             .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
             .replace(/\n/g, '<br>');
@@ -30,6 +36,8 @@ const support = {
     sendChat: async (message) => {
         const chatBox = $("#chat-box");
         if (!chatBox.length) return;
+
+        support.initSessionId();
 
         // Remove quick replies (they become stale after user picks one)
         chatBox.find('.bsw-quick-replies').remove();
@@ -63,10 +71,11 @@ const support = {
         support.scrollToBottom();
 
         try {
-            const res = await api.post(`/support/ai-chat?message=${encodeURIComponent(message)}`);
+            const url = `/support/ai-chat?message=${encodeURIComponent(message)}&sessionId=${support.sessionId}`;
+            const res = await api.post(url);
             $(`#${typingId}`).remove();
 
-            // Parse response: {message, quickReplies} hoặc string fallback
+            // Parse response: {message, quickReplies, sessionId}
             const data = res.data;
             const text   = (typeof data === 'object' && data.message) ? data.message :
                            (typeof data === 'string' ? data : 'Xin lỗi, tôi chưa hiểu ý bạn.');
@@ -78,6 +87,10 @@ const support = {
                     <div class="bsw-bubble" style="background: linear-gradient(135deg, rgba(26,115,232,0.05), rgba(155,114,203,0.05)); border: 1px solid rgba(155,114,203,0.1);">${support.renderMarkdown(text)}</div>
                 </div>
             `);
+
+            if (data.quickReplies && data.quickReplies.length > 0) {
+                support.appendQuickReplies(data.quickReplies);
+            }
 
         } catch (e) {
             $(`#${typingId}`).remove();
@@ -91,6 +104,16 @@ const support = {
             `);
         }
         support.scrollToBottom();
+    },
+
+    appendQuickReplies: (replies) => {
+        const chatBox = $("#chat-box");
+        let html = '<div class="bsw-quick-replies d-flex flex-wrap gap-2 mt-2 px-5" style="animation: bsw-fade-in 0.6s ease;">';
+        replies.forEach(r => {
+            html += `<button class="btn btn-sm btn-outline-primary rounded-pill bg-white" onclick="support.sendChat('${r.replace(/'/g, "\\'")}')" style="font-size: 0.85rem; border-color: rgba(26,115,232,0.3); color: #1A73E8;">${r}</button>`;
+        });
+        html += '</div>';
+        chatBox.append(html);
     },
 
     scrollToBottom: () => {
