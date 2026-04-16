@@ -613,7 +613,7 @@ const support = {
      */
     loadAdminTickets: async () => {
         try {
-            const res = await api.get('/api/support');
+            const res = await api.get('/support');
             const data = Array.isArray(res) ? res : (res.data || []);
             const tbody = $("#support-list-body");
             if (!tbody.length) return;
@@ -643,7 +643,7 @@ const support = {
     loadTicketDetails: async (id) => {
         currentTicketId = id;
         try {
-            const res = await api.get('/api/support');
+            const res = await api.get('/support');
             const list = Array.isArray(res) ? res : (res.data || []);
             const t = list.find(x => (x.ticketId || x.id) == id);
 
@@ -654,24 +654,53 @@ const support = {
 
                 $("#ticket-detail-title").text(title);
                 $("#ticket-detail-id").text(`ID: #${ticketId}`);
-                $("#ticket-detail-content").text(t.content);
-                $("#ticket-customer-name").text(t.customerName || 'Customer');
-                $("#ticket-customer-initial").text((t.customerName || 'C').charAt(0).toUpperCase());
-                $("#ticket-created-date").text(new Date(t.createdAt).toLocaleString());
+                $("#ticket-detail-content").text(t.content || "Không có nội dung.");
+                $("#ticket-customer-name").text(t.customerName || 'Khách hàng');
+                $("#ticket-created-date").text(common.formatDate(t.createdAt, true));
+                $("#ticket-updated-date").text(t.updatedAt ? common.formatDate(t.updatedAt, true) : "Chưa cập nhật");
 
-                const badge = $("#ticket-status-badge");
-                badge.text(statusCode).removeClass().addClass(`badge rounded-pill px-3 py-2 ${support.getStatusClass(statusCode)}`);
-
+                // Set status dropdown
                 $("#target-status").val(statusCode);
                 $("#admin-reply").val('');
                 $("#internal-note").val(t.internalNote || '');
 
-                // Start polling for this ticket's messages in Admin view
-                support.isHumanMode = true; // reusing variable for context
+                // Start polling for messages
                 support.activeTicketId = ticketId;
+                support.adminLastMsgCount = 0; // Reset count
                 support.startAdminPolling();
             }
-        } catch (e) { api.showToast("Lỗi khi tải chi tiết phiếu hỗ trợ", "error"); }
+        } catch (e) { 
+            console.error(e);
+            api.showToast("Lỗi khi tải chi tiết phiếu hỗ trợ", "error"); 
+        }
+    },
+
+    /**
+     * Submit response and status update (Admin)
+     */
+    submitResponse: async () => {
+        const ticketId = support.activeTicketId;
+        const reply = $("#admin-reply").val().trim();
+        const note = $("#internal-note").val().trim();
+        const status = $("#target-status").val();
+
+        if (!reply && !note && !status) {
+            api.showToast("Vui lòng nhập phản hồi hoặc thay đổi trạng thái", "warning");
+            return;
+        }
+
+        try {
+            const url = `/support/${ticketId}/respond?reply=${encodeURIComponent(reply)}&internalNote=${encodeURIComponent(note)}&statusCode=${status}`;
+            await api.post(url);
+            
+            api.showToast("Đã cập nhật phiếu hỗ trợ thành công!", "success");
+            $("#admin-reply").val(''); // Clear reply after success
+            
+            // Re-load details to refresh the view
+            support.loadTicketDetails(ticketId);
+        } catch (e) {
+            api.showToast("Cập nhật thất bại: " + e.message, "error");
+        }
     },
 
     startAdminPolling: () => {
@@ -685,7 +714,7 @@ const support = {
 
     adminLastMsgCount: 0,
     renderAdminChat: (messages) => {
-        const chatBox = $("#admin-chat-box");
+        const chatBox = $("#comments-list");
         if (messages.length === 0) {
             chatBox.html('<div class="text-center py-5 text-muted">Chưa có tin nhắn nào.</div>');
             return;
@@ -712,47 +741,7 @@ const support = {
         chatBox.scrollTop(chatBox[0].scrollHeight);
     },
 
-    submitAdminChatMessage: async () => {
-        const msg = $("#admin-reply").val().trim();
-        if (!msg) return;
 
-        const ticketId = support.activeTicketId;
-        const autoClose = $("#change-status-check").is(":checked");
-
-        try {
-            await api.post(`/api/support/${ticketId}/messages?senderName=Admin&isStaff=true&content=${encodeURIComponent(msg)}`);
-            $("#admin-reply").val("");
-
-            if (autoClose) {
-                await api.post(`/api/support/${ticketId}/respond?reply=&statusCode=RESOLVED`);
-                $("#target-status").val("RESOLVED");
-                const badge = $("#ticket-status-badge");
-                badge.text("RESOLVED").removeClass().addClass(`badge rounded-pill px-3 py-2 bg-success`);
-            }
-
-            // Re-fetch immediately for smooth UI
-            const res = await api.get(`/support/${ticketId}/messages`);
-            support.renderAdminChat(res.data);
-        } catch (e) { api.showToast("Không thể gửi tin nhắn", "error"); }
-    },
-
-    updateTicketStatusFromSelect: async () => {
-        const status = $("#target-status").val();
-        try {
-            await api.post(`/api/support/${support.activeTicketId}/respond?statusCode=${status}`);
-            api.showToast("Đã cập nhật trạng thái", "success");
-            const badge = $("#ticket-status-badge");
-            badge.text(status).removeClass().addClass(`badge rounded-pill px-3 py-2 ${support.getStatusClass(status)}`);
-        } catch (e) { api.showToast("Cập nhật thất bại", "error"); }
-    },
-
-    updateInternalNote: async () => {
-        const note = $("#internal-note").val();
-        try {
-            await api.post(`/api/support/${support.activeTicketId}/respond?internalNote=${encodeURIComponent(note)}`);
-            api.showToast("Đã lưu ghi chú", "success");
-        } catch (e) { api.showToast("Lưu ghi chú thất bại", "error"); }
-    },
 
     /**
      * Get status badge HTML
