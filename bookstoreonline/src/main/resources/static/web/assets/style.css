@@ -79,7 +79,13 @@ a:hover {
 
 /* Push content below fixed header */
 body {
-    /* padding-top: 90px; */
+    padding-top: 90px;
+    transition: padding-top 0.3s ease;
+}
+
+/* No padding-top for Admin views since header is hidden */
+body.admin-view {
+    padding-top: 0 !important;
 }
 
 .top-content {
