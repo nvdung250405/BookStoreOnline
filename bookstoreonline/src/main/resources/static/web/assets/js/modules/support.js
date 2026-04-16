@@ -215,7 +215,7 @@ const support = {
 
                 // Show bubble dot if there's a global notification
                 if ($("#staff-notif-dot").is(":visible")) {
-                   setTimeout(() => $("#staff-bubble-dot").fadeIn(300), 200);
+                    setTimeout(() => $("#staff-bubble-dot").fadeIn(300), 200);
                 }
                 menu.show().css('display', 'flex');
                 setTimeout(() => {
@@ -286,7 +286,7 @@ const support = {
             $("#chat-user-msg").attr("placeholder", "Gửi phản hồi cho khách hàng...");
 
             // Mark customer messages as read immediately when staff opens ticket
-            api.post(`/support/${ticketId}/mark-read?isStaff=true`).catch(() => {});
+            api.post(`/support/${ticketId}/mark-read?isStaff=true`).catch(() => { });
             // Re-baseline staff badge
             support._staffLastCount = -1;
 
@@ -422,7 +422,7 @@ const support = {
             if (!support.activeTicketId) throw new Error("No ticket ID available");
 
             // Mark staff messages as read immediately when customer opens chat
-            api.post(`/support/${support.activeTicketId}/mark-read?isStaff=false`).catch(() => {});
+            api.post(`/support/${support.activeTicketId}/mark-read?isStaff=false`).catch(() => { });
             // Re-baseline customer badge
             support._customerLastCount = -1;
 
@@ -465,7 +465,7 @@ const support = {
                 const user = api.getUser();
                 const isStaff = user && (user.role === 'STAFF' || user.role === 'ADMIN');
                 // Fire-and-forget — mark opposite side's messages as read
-                api.post(`/support/${support.activeTicketId}/mark-read?isStaff=${isStaff}`).catch(() => {});
+                api.post(`/support/${support.activeTicketId}/mark-read?isStaff=${isStaff}`).catch(() => { });
                 // Optimistically clear badge immediately
                 $("#staff-notif-dot").hide().text("");
                 if (isStaff) support._staffLastCount = -1;
@@ -816,7 +816,7 @@ const support = {
                     const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
                     audio.volume = 0.4;
                     audio.play();
-                } catch(e) {}
+                } catch (e) { }
             }
 
             support._staffLastCount = count;
@@ -862,7 +862,7 @@ const support = {
                     const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
                     audio.volume = 0.4;
                     audio.play();
-                } catch(e) {}
+                } catch (e) { }
             }
 
             support._customerLastCount = count;
