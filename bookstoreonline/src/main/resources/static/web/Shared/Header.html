@@ -136,18 +136,25 @@
             <div class="collapse mt-2" id="searchBox">
                 <div class="card border-0 rounded-4 shadow-sm" style="background:#f9f7f5;">
                     <div class="card-body py-3 px-3">
-                        <form class="d-flex gap-2 mb-2"
-                            onsubmit="event.preventDefault(); books.searchAI($('#ai-search-input').val()); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();">
-                            <input id="ai-search-input"
-                                class="form-control border-0 bg-white rounded-pill px-4 shadow-none"
-                                style="font-size:0.9rem;" type="search"
-                                placeholder="VD: sách kinh doanh dưới 200k, lập trình Python...">
-                            <button class="btn rounded-pill fw-bold px-4"
-                                style="background:#C5A992; color:white; font-size:0.85rem; white-space:nowrap;"
-                                type="submit">
-                                <i class="icon icon-search me-1"></i> AI Search
-                            </button>
-                        </form>
+                        <!-- Vùng chứa Form AI Search Thông minh -->
+                        <div class="position-relative">
+                            <form id="ai-search-form" class="d-flex gap-2 mb-2" autocomplete="off"
+                                onsubmit="event.preventDefault(); books.searchAI($('#ai-search-input').val()); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide(); $('#ai-search-suggestions').hide();">
+                                <input id="ai-search-input"
+                                    class="form-control border-0 bg-white rounded-pill px-4 shadow-none"
+                                    style="font-size:0.9rem;" type="search"
+                                    placeholder="VD: sách kinh doanh dưới 200k, lập trình Python...">
+                                <button class="btn rounded-pill fw-bold px-4"
+                                    style="background:#C5A992; color:white; font-size:0.85rem; white-space:nowrap;"
+                                    type="submit">
+                                    <i class="icon icon-search me-1"></i> AI Search
+                                </button>
+                            </form>
+                            <!-- Dropdown gợi ý sách thông minh (hiện kết quả live) -->
+                            <div id="ai-search-suggestions" class="list-group position-absolute w-100 shadow-lg border-0 rounded-4 overflow-hidden" 
+                                 style="display:none; top: 100%; z-index: 9999; background: white; max-height: 400px; overflow-y: auto; left: 0;">
+                            </div>
+                        </div>
                         <!-- Quick suggestions -->
                         <div class="d-flex gap-2 flex-wrap" style="font-size:0.75rem;">
                             <span class="text-muted me-1">Gợi ý:</span>
@@ -328,6 +335,16 @@
         window.addEventListener('scroll', function () {
             applyScrollState();
             resetHideTimer();
+            
+            // Tự động gập khung AI Search (và gợi ý) khi lướt trang
+            const searchBox = document.getElementById('searchBox');
+            const suggestBox = document.getElementById('ai-search-suggestions');
+            if (searchBox && searchBox.classList.contains('show')) {
+                bootstrap.Collapse.getInstance(searchBox)?.hide();
+            }
+            if (suggestBox) {
+                suggestBox.style.display = 'none';
+            }
         }, { passive: true });
 
         /* ── Event: mouse move ── */
@@ -351,7 +368,82 @@
             }
         });
 
-        /* ── Khởi chạy ── */
+        /* ── Thông minh hơn: Auto-hide Search Box và UI Logic ── */
+        document.addEventListener('click', function(e) {
+            const searchBox = document.getElementById('searchBox');
+            const toggleBtn = document.querySelector('[data-bs-target="#searchBox"]');
+            
+            // Ẩn searchBox nếu click ra ngoài nó và ngoài nút toggle
+            if (searchBox && searchBox.classList.contains('show')) {
+                if (!searchBox.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+                    bootstrap.Collapse.getInstance(searchBox)?.hide();
+                }
+            }
+        });
+
+        /* ── Tính năng Live AI Search (Gợi ý trực tiếp) ── */
+        const searchInput = document.getElementById('ai-search-input');
+        const suggestBox = document.getElementById('ai-search-suggestions');
+        let searchDebounceTimer;
+
+        if (searchInput && suggestBox) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchDebounceTimer);
+                const query = this.value.trim();
+                if (!query) {
+                    suggestBox.style.display = 'none';
+                    return;
+                }
+                
+                suggestBox.style.display = 'block';
+                suggestBox.innerHTML = '<div class="p-3 text-center text-muted small"><span class="spinner-border spinner-border-sm me-2 text-accent"></span>AI đang suy nghĩ...</div>';
+
+                searchDebounceTimer = setTimeout(async () => {
+                    try {
+                        const res = await api.post('/books/ai-search', { query });
+                        const results = res.data || [];
+                        
+                        if (results.length === 0) {
+                            suggestBox.innerHTML = '<div class="p-3 text-center text-muted fw-bold" style="font-size: 0.85rem;">Không tìm thấy sách phù hợp.</div>';
+                            return;
+                        }
+
+                        // Render top 5 gợi ý
+                        const html = results.slice(0, 5).map(b => `
+                            <a href="javascript:void(0)" onclick="layout.render('Books','Details','${b.isbn}'); bootstrap.Collapse.getInstance(document.getElementById('searchBox'))?.hide();" 
+                               class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-2 border-0 border-bottom">
+                                <img src="${b.coverImage ? 'assets/images/'+b.coverImage : 'assets/images/product-item1.jpg'}" 
+                                     style="width:35px; height:50px; object-fit:contain; border-radius:4px; flex-shrink:0;">
+                                <div class="overflow-hidden">
+                                    <h6 class="mb-0 fw-bold text-truncate" style="font-size:0.85rem;">${b.title}</h6>
+                                    <span class="text-accent fw-bold" style="font-size:0.8rem;">${api.formatCurrency(b.price)}</span>
+                                </div>
+                            </a>
+                        `).join('');
+                        
+                        suggestBox.innerHTML = html + `<a href="javascript:void(0)" onclick="$('#ai-search-form').submit()" class="list-group-item list-group-item-action text-center small text-primary fw-bold py-2 bg-light">Xem thêm chi tiết (${results.length} kết quả) →</a>`;
+                    } catch (e) {
+                        suggestBox.innerHTML = '<div class="p-3 text-center text-danger small">Lỗi kết nối bộ não AI.</div>';
+                    }
+                }, 500); // Đợi 0.5s sau khi gõ xong
+            });
+            
+            // Ẩn gợi ý khi click ra ngoài input/box
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !suggestBox.contains(e.target)) {
+                    suggestBox.style.display = 'none';
+                }
+            });
+            
+            // Mở lại gợi ý nếu nhấn vào input đang có chữ
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.trim() && suggestBox.innerHTML.trim() !== '') {
+                    suggestBox.style.display = 'block';
+                }
+            });
+        }
+
+        /* ── Khởi chạy toàn cục ── */
         applyScrollState();
         hideTimer = setTimeout(hideWrap, HIDE_DELAY);
     })();
