@@ -24,6 +24,108 @@ const books = {
         }
     },
 
+    // 1d. Public Load all books & categories for Index page
+    _allBooksCache: [],
+
+    loadAll: async () => {
+        const grid = $("#books-grid");
+        const catList = $("#categories-filter-list");
+
+        try {
+            // Load Categories for sidebar
+            const catRes = await api.get('/categories');
+            const categoriesData = catRes.data || [];
+            books.renderCategories(categoriesData);
+
+            // Load Books
+            grid.html(`
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-accent mb-3"></div>
+                    <div class="text-muted">Đang tải danh sách sách...</div>
+                </div>
+            `);
+
+            const res = await api.get('/books');
+            books._allBooksCache = res.data || [];
+            books.renderGrid("#books-grid", books._allBooksCache);
+
+        } catch (error) {
+            console.error("Failed to load books index", error);
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu. Vui lòng thử lại.</div>');
+        }
+    },
+
+    renderCategories: (data) => {
+        const container = $("#categories-filter-list");
+        if (!container.length) return;
+        container.empty();
+
+        container.append(`
+            <li>
+                <a href="javascript:void(0)" onclick="books.loadAll()" class="text-decoration-none text-dark d-flex justify-content-between align-items-center py-1 category-link active">
+                    <span class="small fw-bold">Tất cả</span>
+                    <i class="icon icon-chevron-right extra-small"></i>
+                </a>
+            </li>
+        `);
+
+        data.forEach(cat => {
+            container.append(`
+                <li>
+                    <a href="javascript:void(0)" onclick="books.filterByCategory(${cat.categoryId}, '${cat.categoryName}')" class="text-decoration-none text-muted d-flex justify-content-between align-items-center py-1 category-link">
+                        <span class="small">${cat.categoryName}</span>
+                        <i class="icon icon-chevron-right extra-small" style="font-size:0.6rem;"></i>
+                    </a>
+                </li>
+            `);
+        });
+    },
+
+    filterByCategory: async (categoryId, categoryName) => {
+        $("#category-title").text(categoryName || "Danh mục");
+        $(".category-link").removeClass("active fw-bold text-dark").addClass("text-muted");
+        $(event.currentTarget).addClass("active fw-bold text-dark").removeClass("text-muted");
+
+        const grid = $("#books-grid");
+        grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
+
+        try {
+            const res = await api.get(`/books?categoryName=${encodeURIComponent(categoryName)}`);
+            books.renderGrid("#books-grid", res.data || []);
+        } catch (e) {
+            grid.html('<div class="col-12 text-center py-5 text-danger">Không thể lọc theo danh mục này.</div>');
+        }
+    },
+
+    loadByPriceRange: async (min, max) => {
+        const grid = $("#books-grid");
+        grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
+        try {
+            const res = await api.get(`/books?minPrice=${min}&maxPrice=${max}`);
+            books.renderGrid("#books-grid", res.data || []);
+        } catch (e) {
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi lọc theo giá.</div>');
+        }
+    },
+
+    handleSort: (criteria) => {
+        let sorted = [...books._allBooksCache];
+        if (criteria === 'price-asc') {
+            sorted.sort((a, b) => a.price - b.price);
+        } else if (criteria === 'price-desc') {
+            sorted.sort((a, b) => b.price - a.price);
+        } else if (criteria === 'newest') {
+            sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        }
+        books.renderGrid("#books-grid", sorted);
+    },
+
+    loadDetail: async (isbn) => {
+        // Implementation for details page initialization if needed via layout-manager
+        // (Details are often handled by a separate call but good to have a placeholder)
+    },
+
+
     // 1b. Render best seller section
     renderBestSeller: (book) => {
         if (!book) return;
@@ -77,7 +179,7 @@ const books = {
                 <p class="text-muted">AI đang tìm kiếm: <strong>"${$('<div>').text(query).html()}"</strong></p>
             </div>
         `);
-        
+
         try {
             const res = await api.post('/books/ai-search', { query });
             const results = res.data || [];
@@ -97,10 +199,10 @@ const books = {
             tbody.empty();
 
             data.forEach(book => {
-                const typeBadge = book.bookType === 'EBOOK' 
-                    ? '<span class="badge bg-info text-dark rounded-pill px-2">EBOOK</span>' 
+                const typeBadge = book.bookType === 'EBOOK'
+                    ? '<span class="badge bg-info text-dark rounded-pill px-2">EBOOK</span>'
                     : '<span class="badge bg-secondary rounded-pill px-2">PHYSICAL</span>';
-                
+
                 tbody.append(`
                     <tr>
                         <td class="ps-4 py-4">
@@ -180,7 +282,7 @@ const books = {
     },
 
     update: async (isbn) => {
-        const form = $("#edit-book-form") || $("#create-book-form"); 
+        const form = $("#edit-book-form") || $("#create-book-form");
         if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
 
         const raw = {};
@@ -269,7 +371,7 @@ const books = {
                 // Update hidden inputs (system fileName)
                 $('#anhBia').val(fileName).trigger('input');
                 $('#edit-anhBia').val(fileName).trigger('input');
-                
+
                 api.showToast("Tải ảnh lên thành công!", "success");
             } else {
                 api.showToast("Lỗi: " + result.message, "error");
@@ -292,7 +394,7 @@ const books = {
             const sel = $('#maDanhMuc') || $('#categoryId');
             if (!sel.length) return;
             sel.empty().append('<option value="">-- Chọn danh mục --</option>');
-            
+
             const options = [];
             const walk = (nodes, depth = 0) => {
                 (Array.isArray(nodes) ? nodes : []).forEach(n => {
@@ -338,9 +440,9 @@ const books = {
     adminSearch: (query) => {
         const grid = $("#books-admin-list");
         if (!grid.length) return;
-        
+
         const rows = grid.find("tr");
-        rows.each(function() {
+        rows.each(function () {
             const row = $(this);
             const text = row.text().toLowerCase();
             if (text.includes(query.toLowerCase())) {

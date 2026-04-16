@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -139,7 +141,8 @@ public class PaymentController {
 
     @GetMapping("/vnpay-callback")
     @Operation(summary = "Xử lý kết quả VNPay", description = "Nhận và xác thực kết quả thanh toán từ VNPay")
-    public ApiResponse<String> vnpayCallback(@RequestParam Map<String, String> params) {
+    @Transactional
+    public RedirectView vnpayCallback(@RequestParam Map<String, String> params) {
         String vnp_SecureHash = params.get("vnp_SecureHash");
         params.remove("vnp_SecureHashType");
         params.remove("vnp_SecureHash");
@@ -182,9 +185,10 @@ public class PaymentController {
             paymentRepository.save(payment);
             orderRepository.save(order);
 
-            return ApiResponse.success("Payment result processed", "SUCCESS");
+            String redirectUrl = "http://localhost:8080/web/index.html#/Orders/PaymentResult/" + order.getOrderId();
+            return new RedirectView(redirectUrl);
         } else {
-            return ApiResponse.error(400, "Invalid checksum");
+            return new RedirectView("http://localhost:8080/web/index.html#/Orders/PaymentResult/error");
         }
     }
 }

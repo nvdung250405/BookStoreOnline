@@ -108,6 +108,41 @@
     </div>
 </div>
 
+<!-- VNPay QR Modal -->
+<div class="modal fade" id="vnpayQRModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="card border-0 shadow-lg rounded-5 overflow-hidden w-100">
+            <div class="modal-header bg-accent text-white border-0 py-3">
+                <h5 class="modal-title fw-bold font-serif mx-auto"><i class="icon icon-ns-credit-card me-2"></i> Thanh toán VNPay QR</h5>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="mb-4">
+                    <p class="text-muted small mb-3">Mở ứng dụng Ngân hàng hoặc ví VNPay để quét mã. <br> <strong>Mã sẽ hết hạn sau: <span id="payment-timer" class="text-danger">05:00</span></strong></p>
+                    <div id="vnpay-qrcode" class="d-inline-block p-3 border rounded-4 bg-white shadow-sm"></div>
+                </div>
+                <div class="payment-info bg-light rounded-4 p-3 mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Đơn hàng:</span>
+                        <span id="qr-order-id" class="fw-bold small">#0000</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">Tổng tiền:</span>
+                        <h4 id="qr-total-amount" class="text-accent fw-bold mb-0">0đ</h4>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                    <div class="spinner-grow text-accent spinner-grow-sm" role="status"></div>
+                    <span class="small text-muted fw-medium">Đang chờ bạn quét mã...</span>
+                </div>
+            </div>
+            <div class="modal-footer border-0 flex-column gap-2 p-4 pt-0">
+                <a id="vnpay-direct-link" href="#" class="btn btn-outline-dark rounded-pill w-100 py-2 small fw-bold">Thanh toán trên website</a>
+                <button type="button" class="btn btn-link text-muted small text-decoration-none" onclick="orders.cancelQR()">Hủy giao dịch</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .font-serif { font-family: 'Playfair Display', serif; }
     .extra-small { font-size: 0.7rem; letter-spacing: 0.05em; }

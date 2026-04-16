@@ -24,6 +24,7 @@
         rel="stylesheet">
 
     <script src="assets/lib/jquery/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="assets/js/vendor/modernizr.js"></script>
 </head>
 
@@ -93,8 +94,35 @@
 
     <script>
         $(document).ready(() => {
-            // Khởi chạy hệ thống layout, nạp trang chủ mặc định
-            layout.render('', 'Home/Index');
+            // Hệ thống điều phối (Router) dựa trên Hash (#/)
+            function handleRoute() {
+                const hash = window.location.hash;
+                console.log("Navigating to hash:", hash);
+                
+                if (!hash || hash === '#/' || hash === '#') {
+                    layout.render('', 'Home/Index');
+                    return;
+                }
+
+                // Cấu trúc mong đợi: #/Area/View/Id hoặc #/View/Id
+                const parts = hash.substring(2).split('/');
+                if (parts.length >= 2) {
+                    const area = parts[0];
+                    const view = parts[1];
+                    const id = parts[2] || null;
+                    layout.render(area, view, id);
+                } else if (parts.length === 1) {
+                    layout.render('', parts[0]);
+                } else {
+                    layout.render('', 'Home/Index');
+                }
+            }
+
+            // Lắng nghe thay đổi URL
+            window.addEventListener('hashchange', handleRoute);
+            
+            // Chạy lần đầu khi vừa load trang
+            handleRoute();
         });
     </script>
 </body>
