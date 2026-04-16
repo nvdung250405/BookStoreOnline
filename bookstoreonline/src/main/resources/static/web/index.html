@@ -256,17 +256,18 @@
             window.addEventListener('hashchange', handleRoute);
 
             // Chạy lần đầu khi vừa load trang
-            handleRoute();
-            // Restore last view or default to Home
-            const lastArea = sessionStorage.getItem('last_area');
-            const lastView = sessionStorage.getItem('last_view');
-            const lastId = sessionStorage.getItem('last_id');
-
-            if (lastView) {
-                console.log(`Restoring View: ${lastArea}/${lastView}`);
-                layout.render(lastArea, lastView, lastId);
+            if (window.location.hash && window.location.hash !== '#/') {
+                handleRoute();
             } else {
-                layout.render('', 'Home/Index');
+                // Chỉ khôi phục view cũ nếu không có hash trên URL
+                const lastView = sessionStorage.getItem('last_view');
+                if (lastView) {
+                    const lastArea = sessionStorage.getItem('last_area');
+                    const lastId = sessionStorage.getItem('last_id');
+                    layout.render(lastArea, lastView, lastId);
+                } else {
+                    layout.render('', 'Home/Index');
+                }
             }
         });
     </script>

@@ -44,18 +44,54 @@
 </div>
 
 <script>
-    (function() {
-        // Logic xử lý hiển thị kết quả dựa trên URL Params (vnp_ResponseCode từ VNPay)
+    (async function() {
+        // Chờ một chút để layout manager cập nhật current id và hash thay đổi xong
+        await new Promise(resolve => setTimeout(resolve, 150));
+
         const params = new URLSearchParams(window.location.search);
         const vnpResponse = params.get('vnp_ResponseCode');
-        const orderId = params.get('orderId') || params.get('vnp_TxnRef');
+        
+        // Lấy Order ID từ hash (chính xác nhất cho SPA)
+        let orderId = null;
+        const hashParts = window.location.hash.split('/');
+        if (hashParts.length >= 4 || (hashParts.length >= 3 && hashParts[1] === 'Orders')) {
+            orderId = hashParts[hashParts.length - 1].split('?')[0];
+        }
 
-        if (vnpResponse === '00' || !vnpResponse) {
-            // Thành công (hoặc là COD không có vnpResponse)
-            $("#result-success").fadeIn();
-            $("#order-id-success").text("#" + (orderId || '---'));
+        // Nếu hash không có, thử lấy từ query params (vnp_TxnRef của VNPay có dạng ID_Timestamp)
+        if (!orderId || orderId === 'error' || orderId === 'PaymentResult') {
+            orderId = params.get('orderId');
+            if (!orderId && params.get('vnp_TxnRef')) {
+                orderId = params.get('vnp_TxnRef').split('_')[0];
+            }
+        }
+
+        console.log("Checking payment result for Order ID:", orderId);
+
+        if (orderId && orderId !== 'error' && orderId !== 'PaymentResult') {
+            try {
+                const response = await api.get('/orders/' + orderId);
+                const order = api.parseResponse(response);
+                
+                $(".result-content").hide();
+                if (order && order.status !== 'CANCELLED') {
+                    $("#result-success").fadeIn();
+                    $("#order-id-success").text("#" + orderId);
+                } else {
+                    $("#result-failed").fadeIn();
+                }
+            } catch (e) {
+                console.error("Failed to fetch order status:", e);
+                $(".result-content").hide();
+                if (vnpResponse === '00') {
+                    $("#result-success").fadeIn();
+                    $("#order-id-success").text("#" + (orderId || '---'));
+                } else {
+                    $("#result-failed").fadeIn();
+                }
+            }
         } else {
-            // Thất bại
+            $(".result-content").hide();
             $("#result-failed").fadeIn();
         }
     })();

@@ -57,6 +57,10 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    private CategoryDTO convertToDTO(Category entity) {
+        return convertToDTO(entity, new java.util.HashSet<>());
+    }
+
     private CategoryDTO convertToDTO(Category entity, java.util.Set<Integer> visited) {
         if (entity == null || visited.contains(entity.getCategoryId())) return null;
         visited.add(entity.getCategoryId());
@@ -126,12 +130,10 @@ public class CategoryService {
         Category entity = categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: " + id));
         try {
-        if (entity != null) {
             String catName = entity.getCategoryName();
             categoryRepository.delete(entity);
             categoryRepository.flush();
             saveAuditLog(AuditAction.DELETE_CATEGORY, "Deleted category: " + catName + " (ID: " + id + ")");
-        }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Cannot delete this category because it is still referenced by books or has data constraints.");
         }
