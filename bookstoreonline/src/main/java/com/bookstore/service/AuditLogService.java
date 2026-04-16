@@ -6,6 +6,7 @@ import com.bookstore.entity.Account;
 import com.bookstore.entity.AuditLog;
 import com.bookstore.repository.AuditLogRepository;
 import com.bookstore.repository.AccountRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +95,7 @@ public class AuditLogService {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth == null || auth.getName() == null) return null;
             String username = auth.getName();
-            return accountRepository.findById(username).orElse(null);
+            return accountRepository.findById(java.util.Objects.requireNonNull(username)).orElse(null);
         } catch (Exception e) {
             return null;
         }
