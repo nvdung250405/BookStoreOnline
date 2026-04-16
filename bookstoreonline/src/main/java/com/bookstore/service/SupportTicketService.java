@@ -11,4 +11,12 @@ public interface SupportTicketService {
     void updateStatus(Long id, String status);
     void respondToTicket(Long id, String reply, String internalNote, String statusCode);
     SupportTicketDTO getTicketById(Long id);
+    List<SupportMessageDTO> getMessages(Long ticketId);
+    void addMessage(Long ticketId, String senderName, boolean isStaff, String content);
+    List<SupportMessageDTO> getRecentCustomerMessages(java.time.LocalDateTime since);
+    List<SupportMessageDTO> getRecentStaffMessagesForUser(java.time.LocalDateTime since, String username);
+    List<SupportTicketDTO> getActiveSessions();
+    long getUnreadCountForUser(String username);
+    long getTotalUnreadCountForStaff();
+    void markMessagesAsRead(Long ticketId, boolean forStaff);
 }

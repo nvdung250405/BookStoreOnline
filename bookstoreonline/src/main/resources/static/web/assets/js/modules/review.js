@@ -23,15 +23,15 @@ const review = {
         }
 
         data.forEach(r => {
-            const stars = '★'.repeat(r.diemDg || r.rating || 0) + '☆'.repeat(5 - (r.diemDg || r.rating || 0));
+            const stars = '★'.repeat(r.rating || 0) + '☆'.repeat(5 - (r.rating || 0));
             container.append(`
                 <div class="review-item mb-4 pb-4 border-bottom">
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="fw-bold text-dark">${r.tenKhachHang || r.username || 'Khách hàng'}</span>
+                        <span class="fw-bold text-dark">${r.customerName || 'Khách hàng'}</span>
                         <span class="text-warning">${stars}</span>
                     </div>
-                    <p class="text-muted mb-1">${r.nhanXet || r.comment}</p>
-                    <small class="text-muted-50">${Array.isArray(r.ngayDg) ? new Date(r.ngayDg[0], r.ngayDg[1]-1, r.ngayDg[2]).toLocaleDateString('vi-VN') : new Date(r.ngayDg || r.createdAt).toLocaleDateString('vi-VN')}</small>
+                    <p class="text-muted mb-1">${r.comment || '---'}</p>
+                    <small class="text-muted-50">${api.formatDate(r.createdAt, true)}</small>
                 </div>
             `);
         });
@@ -54,7 +54,7 @@ const review = {
         }
 
         try {
-            const res = await api.post(`/reviews/submit?username=${user.username}&isbn=${isbn}&diem=${diem}&nhanXet=${encodeURIComponent(noidung)}`);
+            const res = await api.post(`/reviews/submit?username=${user.username}&isbn=${isbn}&rating=${diem}&comment=${encodeURIComponent(noidung)}`);
 
             if (res.status === 200) {
                 api.showToast("Cảm ơn đánh giá của bạn!");
@@ -85,14 +85,14 @@ const review = {
             tbody.append(`
                 <tr>
                     <td class="ps-4">
-                        <div class="fw-bold">${r.tenKhachHang || r.username || 'Khách hàng'}</div>
+                        <div class="fw-bold">${r.customerName || 'Khách hàng'}</div>
                         <div class="small text-muted">ISBN: ${r.isbn || '---'}</div>
                     </td>
-                    <td><span class="text-warning">${'★'.repeat(r.diemDg || r.rating || 0)}</span></td>
-                    <td style="max-width: 300px;" class="text-truncate">${r.nhanXet || r.comment}</td>
-                    <td>${Array.isArray(r.ngayDg) ? new Date(r.ngayDg[0], r.ngayDg[1]-1, r.ngayDg[2]).toLocaleDateString('vi-VN') : new Date(r.ngayDg || r.createdAt).toLocaleDateString('vi-VN')}</td>
+                    <td><span class="text-warning">${'★'.repeat(r.rating || 0)}</span></td>
+                    <td style="max-width: 300px;" class="text-truncate">${r.comment || '---'}</td>
+                    <td>${api.formatDate(r.createdAt)}</td>
                     <td class="text-end pe-4">
-                        <button onclick="review.delete(${r.maDg || r.id})" class="btn btn-sm btn-outline-danger border-0">Xóa</button>
+                        <button onclick="review.delete(${r.reviewId})" class="btn btn-sm btn-outline-danger border-0">Xóa</button>
                     </td>
                 </tr>
             `);

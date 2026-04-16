@@ -11,7 +11,7 @@ public class CustomerProfileRequest {
     private String fullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")
-    @Size(max = 10, message = "Số điện thoại không quá 10 ký tự")
+    @Size(max = 15, message = "Số điện thoại không quá 15 ký tự")
     @Schema(example = "0901234567")
     private String phone;
 

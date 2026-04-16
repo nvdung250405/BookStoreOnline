@@ -54,20 +54,20 @@ const payments = {
             const res = await api.get(`/payments/${paymentId}`);
             const payment = res.data;
 
-            $("#payment-order-id").text("#" + (payment.maDonHang || payment.orderId));
-            $("#payment-transaction-id").text(payment.maGiaoDich || payment.transactionId);
-            $("#payment-customer").text(payment.tenKhachHang || payment.customerName);
-            $("#payment-customer-email").text(payment.email);
-            $("#payment-amount").text(formatCurrency(payment.soTien || payment.amount));
-            $("#payment-method").text(payment.phuongThucThanhToan || payment.paymentMethod);
-            $("#payment-date").text(new Date(payment.thoiGianThanhToan || payment.paymentDate).toLocaleString('vi-VN'));
-            $("#payment-status-badge").text(payment.trangThai || payment.statusCode).className = 
-                `badge badge-${payments.getStatusClass(payment.trangThai || payment.statusCode)} rounded-pill px-3 py-2`;
+            $("#payment-order-id").text("#" + (payment.order ? payment.order.orderId : 'N/A'));
+            $("#payment-transaction-id").text(payment.transactionReference || "---");
+            $("#payment-customer").text(payment.order && payment.order.customer ? payment.order.customer.fullName : "---");
+            $("#payment-customer-email").text(payment.order && payment.order.customer ? payment.order.customer.email : "---");
+            $("#payment-amount").text(api.formatCurrency(payment.order ? payment.order.totalPayment : 0));
+            $("#payment-method").text(payment.paymentMethod || "---");
+            $("#payment-date").text(api.formatDate(payment.paymentDate, true));
+            $("#payment-status-badge").text(payment.statusCode).attr('class', 
+                `badge bg-${payments.getStatusClass(payment.statusCode)} rounded-pill px-3 py-2`);
             
             // Set payment details
-            $("#payment-bank-code").text((payment.maNganHang || payment.bankCode) || "---");
-            $("#payment-ip").text((payment.diaChiIP || payment.ipAddress) || "---");
-            $("#payment-description").text((payment.moTa || payment.description) || "---");
+            $("#payment-bank-code").text("VNPay");
+            $("#payment-ip").text("127.0.0.1"); // Backend doesn't store this yet
+            $("#payment-description").text("Payment for order " + (payment.order ? payment.order.orderId : 'N/A'));
 
             // Load ordered items
             if (payment.chiTiet && payment.chiTiet.length > 0) {
@@ -109,8 +109,7 @@ const payments = {
             const note = $("#payment-note").val();
 
             const res = await api.put(`/payments/${paymentId}`, {
-                trangThai: status,
-                ghiChu: note
+                statusCode: status
             });
 
             api.showToast("Cập nhật trạng thái thanh toán thành công!", "success");

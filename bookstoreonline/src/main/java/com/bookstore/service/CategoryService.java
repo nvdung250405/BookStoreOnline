@@ -49,13 +49,18 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public List<CategoryDTO> getAllCategories() {
+        java.util.Set<Integer> visited = new java.util.HashSet<>();
         return categoryRepository.findByParentIsNull()
                 .stream()
-                .map(this::convertToDTO)
+                .map(entity -> convertToDTO(entity, visited))
+                .filter(java.util.Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private CategoryDTO convertToDTO(Category entity) {
+    private CategoryDTO convertToDTO(Category entity, java.util.Set<Integer> visited) {
+        if (entity == null || visited.contains(entity.getCategoryId())) return null;
+        visited.add(entity.getCategoryId());
+
         CategoryDTO dto = new CategoryDTO();
         dto.setCategoryId(entity.getCategoryId());
         dto.setCategoryName(entity.getCategoryName());
@@ -64,7 +69,8 @@ public class CategoryService {
         if (entity.getChildren() != null) {
             dto.setSubCategories(entity.getChildren()
                     .stream()
-                    .map(this::convertToDTO)
+                    .map(child -> convertToDTO(child, visited))
+                    .filter(java.util.Objects::nonNull)
                     .collect(Collectors.toList()));
         }
         return dto;

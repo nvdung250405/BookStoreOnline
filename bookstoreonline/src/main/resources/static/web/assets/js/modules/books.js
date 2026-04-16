@@ -32,12 +32,17 @@ const books = {
         const catList = $("#categories-filter-list");
 
         try {
-            // Load Categories for sidebar
-            const catRes = await api.get('/categories');
-            const categoriesData = catRes.data || [];
-            books.renderCategories(categoriesData);
+            // 1. Load Categories for sidebar with individual error handling
+            try {
+                const catRes = await api.get('/categories');
+                const categoriesData = catRes.data || [];
+                books.renderCategories(categoriesData);
+            } catch (catErr) {
+                console.error("Failed to load categories", catErr);
+                catList.html('<li class="small text-muted text-center py-3">Không thể tải danh mục</li>');
+            }
 
-            // Load Books
+            // 2. Load Books
             grid.html(`
                 <div class="col-12 text-center py-5">
                     <div class="spinner-border text-accent mb-3"></div>
@@ -51,7 +56,7 @@ const books = {
 
         } catch (error) {
             console.error("Failed to load books index", error);
-            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu. Vui lòng thử lại.</div>');
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu sách. Vui lòng thử lại.</div>');
         }
     },
 
@@ -60,25 +65,50 @@ const books = {
         if (!container.length) return;
         container.empty();
 
+        // 1. Add "All" option
         container.append(`
-            <li>
-                <a href="javascript:void(0)" onclick="books.loadAll()" class="text-decoration-none text-dark d-flex justify-content-between align-items-center py-1 category-link active">
-                    <span class="small fw-bold">Tất cả</span>
-                    <i class="icon icon-chevron-right extra-small"></i>
+            <li class="mb-1">
+                <a href="javascript:void(0)" onclick="books.loadAll()" class="text-decoration-none text-dark d-flex justify-content-between align-items-center py-2 px-3 rounded-3 category-link active bg-light shadow-sm" style="transition: all 0.2s ease;">
+                    <span class="small fw-bold"><i class="icon icon-grid me-2"></i>Tất cả sản phẩm</span>
                 </a>
             </li>
         `);
 
-        data.forEach(cat => {
-            container.append(`
-                <li>
-                    <a href="javascript:void(0)" onclick="books.filterByCategory(${cat.categoryId}, '${cat.categoryName}')" class="text-decoration-none text-muted d-flex justify-content-between align-items-center py-1 category-link">
-                        <span class="small">${cat.categoryName}</span>
-                        <i class="icon icon-chevron-right extra-small" style="font-size:0.6rem;"></i>
-                    </a>
-                </li>
-            `);
-        });
+        // 2. Render nested tree
+        const renderLevel = (items, parentElement, depth = 0) => {
+            if (!items || !Array.isArray(items) || items.length === 0) return;
+            
+            items.forEach(cat => {
+                const hasChildren = cat.subCategories && cat.subCategories.length > 0;
+                const paddingStart = depth * 15 + 16;
+                const subListId = `sub-cat-list-${cat.categoryId}`;
+                
+                const itemHtml = `
+                    <li class="category-item-wrapper" style="margin-bottom: 2px;">
+                        <a href="javascript:void(0)" 
+                           onclick="books.filterByCategory(${cat.categoryId}, '${cat.categoryName.replace(/'/g, "\\'")}')" 
+                           class="text-decoration-none text-muted d-flex justify-content-between align-items-center py-2 px-3 rounded-2 category-link"
+                           style="padding-left: ${paddingStart}px !important; transition: all 0.2s ease; border-left: ${depth > 0 ? '1px solid #eee' : 'none'};">
+                            <span class="small ${depth === 0 ? 'fw-bold text-dark' : ''}">
+                                ${depth > 0 ? '<span class="text-light-emphasis me-1 opacity-50">└</span>' : ''}
+                                ${cat.categoryName}
+                            </span>
+                            ${hasChildren ? '<i class="icon icon-chevron-down extra-small opacity-50" style="font-size:0.5rem;"></i>' : ''}
+                        </a>
+                        <ul class="list-unstyled sub-category-list" id="${subListId}"></ul>
+                    </li>
+                `;
+                
+                const $item = $(itemHtml);
+                parentElement.append($item);
+                
+                if (hasChildren) {
+                    renderLevel(cat.subCategories, $item.find(`#${subListId}`), depth + 1);
+                }
+            });
+        };
+
+        renderLevel(data, container);
     },
 
     filterByCategory: async (categoryId, categoryName) => {
@@ -367,14 +397,14 @@ const books = {
 
         const payload = {
             isbn: raw.isbn,
-            title: raw.tenSach || raw.title,
-            price: parseFloat(raw.giaNiemYet || raw.price) || 0,
-            categoryId: raw.maDanhMuc ? parseInt(raw.maDanhMuc) : (raw.categoryId ? parseInt(raw.categoryId) : null),
-            publisherId: raw.maNxb ? parseInt(raw.maNxb) : (raw.publisherId ? parseInt(raw.publisherId) : null),
-            description: raw.moTa || raw.description || '',
-            coverImage: ($('#anhBia').val() || $('#edit-anhBia').val() || raw.anhBia || ''),
-            coverAlt: ($('#coverAlt').val() || $('#edit-coverAlt').val() || raw.coverAlt || ''),
-            authorIds: raw.maTacGia ? [parseInt(raw.maTacGia)] : (raw.authorId ? [parseInt(raw.authorId)] : []),
+            title: raw.title,
+            price: parseFloat(raw.price) || 0,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
+            description: raw.description || '',
+            coverImage: raw.coverImage || '',
+            coverAlt: raw.coverAlt || '',
+            authorIds: raw.authorId ? [parseInt(raw.authorId)] : [],
             bookType: raw.bookType,
             weight: raw.weight ? parseFloat(raw.weight) : null,
             fileSize: raw.fileSize ? parseFloat(raw.fileSize) : null,
@@ -398,14 +428,14 @@ const books = {
         form.serializeArray().forEach(item => { raw[item.name] = item.value; });
 
         const payload = {
-            title: raw.tenSach || raw.title,
-            price: parseFloat(raw.giaNiemYet || raw.price) || 0,
-            categoryId: raw.maDanhMuc ? parseInt(raw.maDanhMuc) : (raw.categoryId ? parseInt(raw.categoryId) : null),
-            publisherId: raw.maNxb ? parseInt(raw.maNxb) : (raw.publisherId ? parseInt(raw.publisherId) : null),
-            description: raw.moTa || raw.description || '',
-            coverImage: raw.anhBia || raw.coverImage || '',
+            title: raw.title,
+            price: parseFloat(raw.price) || 0,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
+            description: raw.description || '',
+            coverImage: raw.coverImage || '',
             coverAlt: raw.coverAlt || '',
-            authorIds: raw.maTacGia ? [parseInt(raw.maTacGia)] : (raw.authorId ? [parseInt(raw.authorId)] : []),
+            authorIds: raw.authorId ? [parseInt(raw.authorId)] : [],
             bookType: raw.bookType,
             weight: raw.weight ? parseFloat(raw.weight) : null,
             fileSize: raw.fileSize ? parseFloat(raw.fileSize) : null,
@@ -507,7 +537,7 @@ const books = {
             const options = [];
             const walk = (nodes, depth = 0) => {
                 (Array.isArray(nodes) ? nodes : []).forEach(n => {
-                    options.push({ id: n.id || n.categoryId, name: n.name || n.categoryName, depth: depth });
+                    options.push({ id: n.categoryId, name: n.categoryName, depth: depth });
                     if (n.subCategories) walk(n.subCategories, depth + 1);
                 });
             };

@@ -479,7 +479,8 @@ const users = {
         const data = {
             fullName:    $("#profile-fullName").val().trim(),
             phone:       $("#profile-phone").val().trim(),
-            address:     isCustomer ? $("#profile-address").val().trim() : undefined,
+            shippingAddress: isCustomer ? $("#profile-address").val().trim() : undefined,
+            department:  !isCustomer ? $("#profile-dept").val() : undefined
         };
 
         try {
@@ -488,6 +489,12 @@ const users = {
             const current = api.getUser();
             if (current) {
                 current.fullName = data.fullName;
+                current.phone = data.phone;
+                if (isCustomer) {
+                    current.shippingAddress = data.shippingAddress;
+                } else {
+                    current.department = data.department;
+                }
                 localStorage.setItem('user', JSON.stringify(current));
                 layout.updateUserHeader();
             }

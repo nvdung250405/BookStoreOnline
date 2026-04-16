@@ -43,10 +43,35 @@ public class BookService {
     @Transactional(readOnly = true)
     public List<BookDTO> searchAndFilterBooks(String keyword, String categoryName, String publisherName,
             BigDecimal minPrice, BigDecimal maxPrice) {
-        return bookRepository.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice)
+        
+        java.util.List<String> categoryNames = null;
+        if (categoryName != null && !categoryName.trim().isEmpty()) {
+            categoryNames = new java.util.ArrayList<>();
+            Category root = categoryRepository.findByCategoryName(categoryName).stream().findFirst().orElse(null);
+            if (root != null) {
+                collectCategoryNamesRecursive(root, categoryNames, new java.util.HashSet<>());
+            } else {
+                categoryNames.add(categoryName);
+            }
+        }
+
+        return bookRepository.searchAndFilterBooks(keyword, categoryNames, publisherName, minPrice, maxPrice)
                 .stream()
                 .map(BookDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    private void collectCategoryNamesRecursive(Category category, java.util.List<String> names, java.util.Set<Integer> visited) {
+        if (category == null || visited.contains(category.getCategoryId())) return;
+        
+        visited.add(category.getCategoryId());
+        names.add(category.getCategoryName());
+        
+        if (category.getChildren() != null) {
+            for (Category child : category.getChildren()) {
+                collectCategoryNamesRecursive(child, names, visited);
+            }
+        }
     }
 
     @Transactional(readOnly = true)

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -137,6 +138,27 @@ public class PaymentController {
         paymentRepository.save(payment);
 
         return ApiResponse.success("Simulated Momo payment initialized", mockMomoUrl);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Xem chi tiết giao dịch", description = "Lấy thông tin chi tiết của một giao dịch thanh toán")
+    public ApiResponse<Payment> getPaymentDetail(@PathVariable String id) {
+        return ApiResponse.success(paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found")));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Cập nhật trạng thái thanh toán (ADMIN)")
+    public ApiResponse<Payment> updatePaymentStatus(@PathVariable String id, @RequestBody Map<String, String> body) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+        
+        if (body.containsKey("statusCode")) {
+            payment.setStatusCode(body.get("statusCode"));
+        }
+        
+        return ApiResponse.success("Updated payment status successfully", paymentRepository.save(payment));
     }
 
     @GetMapping("/vnpay-callback")

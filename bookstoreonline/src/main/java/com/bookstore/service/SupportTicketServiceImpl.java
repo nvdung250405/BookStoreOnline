@@ -21,13 +21,16 @@ import java.util.stream.Collectors;
 public class SupportTicketServiceImpl implements SupportTicketService {
 
     private final SupportTicketRepository supportTicketRepository;
+    private final SupportMessageRepository supportMessageRepository;
     private final CustomerRepository customerRepository;
     private final AuditLogService auditLogService;
 
     public SupportTicketServiceImpl(SupportTicketRepository supportTicketRepository, 
+                                   SupportMessageRepository supportMessageRepository,
                                    CustomerRepository customerRepository,
                                    AuditLogService auditLogService) {
         this.supportTicketRepository = supportTicketRepository;
+        this.supportMessageRepository = supportMessageRepository;
         this.customerRepository = customerRepository;
         this.auditLogService = auditLogService;
     }
