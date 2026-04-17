@@ -738,7 +738,9 @@ const support = {
         });
 
         support.adminLastMsgCount = messages.length;
-        chatBox.scrollTop(chatBox[0].scrollHeight);
+        if (chatBox.length > 0 && chatBox[0]) {
+            chatBox.scrollTop(chatBox[0].scrollHeight);
+        }
     },
 
 

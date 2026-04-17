@@ -524,5 +524,9 @@ const inventory = {
             btnScan.innerHTML = 'Tra cứu';
             btnScan.disabled = false;
         }
+    },
+
+    initScannerEvent: () => {
+        console.log("Scanner events initialized. (Placeholder)");
     }
 };

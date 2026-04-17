@@ -24,8 +24,27 @@ public class CartController {
     @GetMapping("/admin/all")
     @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Lấy tất cả giỏ hàng (ADMIN)", description = "Admin theo dõi danh sách tất cả các giỏ hàng đang hoạt động trong hệ thống.")
-    public ApiResponse<java.util.List<com.bookstore.entity.Cart>> getAllCarts() {
-        return ApiResponse.success(cartService.getAllActiveCarts());
+    public ApiResponse<List<CartDTO>> getAllCarts() {
+        List<Cart> entities = cartService.getAllActiveCarts();
+        List<CartDTO> dtos = entities.stream()
+                .filter(e -> e.getBook() != null)
+                .map(e -> {
+                    CartDTO d = new CartDTO();
+                    d.setIsbn(e.getBook().getIsbn());
+                    d.setTitle(e.getBook().getTitle());
+                    d.setCoverImage(e.getBook().getCoverImage());
+                    d.setPrice(e.getBook().getPrice());
+                    d.setQuantity(e.getQuantity());
+                    if (e.getBook().getPrice() != null && e.getQuantity() != null) {
+                        d.setTotalPrice(e.getBook().getPrice().multiply(new java.math.BigDecimal(e.getQuantity())));
+                    }
+                    if (e.getCustomer() != null && e.getCustomer().getAccount() != null) {
+                        d.setUsername(e.getCustomer().getAccount().getUsername());
+                    }
+                    return d;
+                })
+                .collect(Collectors.toList());
+        return ApiResponse.success("Lấy danh sách giỏ hàng thành công", dtos);
     }
 
     @GetMapping("/{username}")

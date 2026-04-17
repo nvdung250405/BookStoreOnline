@@ -54,7 +54,11 @@ public class AdminDashboardService {
         
         // Low Stock Count (stock_quantity <= alert_threshold)
         long lowStock = inventoryRepository.findAll().stream()
-                .filter(inv -> inv.getStockQuantity() <= inv.getAlertThreshold())
+                .filter(inv -> {
+                    Integer qty = inv.getStockQuantity();
+                    Integer threshold = inv.getAlertThreshold();
+                    return qty != null && threshold != null && qty <= threshold;
+                })
                 .count();
         stats.put("lowStockCount", lowStock);
         

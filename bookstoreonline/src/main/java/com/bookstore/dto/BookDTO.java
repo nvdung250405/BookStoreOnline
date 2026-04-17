@@ -14,9 +14,10 @@ public class BookDTO {
     private Integer publisherId;
     private String publisherName;
     private String coverImage;
-    private String coverAlt;
     private Set<String> authorNames;
     private String description;
+    private Integer stockQuantity;
+    private Set<Integer> authorIds;
 
     public BookDTO() {}
 
@@ -35,14 +36,27 @@ public class BookDTO {
             dto.setPublisherName(book.getPublisher().getPublisherName());
         }
         dto.setCoverImage(book.getCoverImage());
-        dto.setCoverAlt(book.getCoverAlt());
         if (book.getAuthors() != null) {
             dto.setAuthorNames(book.getAuthors().stream()
                 .map(author -> author.getAuthorName())
                 .collect(Collectors.toSet()));
+            dto.setAuthorIds(book.getAuthors().stream()
+                .map(author -> author.getAuthorId())
+                .collect(Collectors.toSet()));
+        }
+        if (book.getInventory() != null) {
+            dto.setStockQuantity(book.getInventory().getStockQuantity());
+        } else {
+            dto.setStockQuantity(0);
         }
         return dto;
     }
+
+    public Set<Integer> getAuthorIds() { return authorIds; }
+    public void setAuthorIds(Set<Integer> authorIds) { this.authorIds = authorIds; }
+
+    public Integer getStockQuantity() { return stockQuantity; }
+    public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
 
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
@@ -60,8 +74,6 @@ public class BookDTO {
     public void setPublisherName(String publisherName) { this.publisherName = publisherName; }
     public String getCoverImage() { return coverImage; }
     public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
-    public String getCoverAlt() { return coverAlt; }
-    public void setCoverAlt(String coverAlt) { this.coverAlt = coverAlt; }
     public Set<String> getAuthorNames() { return authorNames; }
     public void setAuthorNames(Set<String> authorNames) { this.authorNames = authorNames; }
     public String getDescription() { return description; }

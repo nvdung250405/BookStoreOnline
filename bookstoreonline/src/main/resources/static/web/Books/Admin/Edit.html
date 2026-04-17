@@ -25,49 +25,78 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label small fw-bold">Tên sách <span class="text-danger">*</span></label>
-                            <input type="text" name="tenSach" id="edit-tenSach" class="form-control rounded-pill px-3" required>
+                            <input type="text" name="title" id="edit-title" class="form-control rounded-pill px-3" placeholder="Nhập tên sách..." required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Mã ISBN (không thể đổi)</label>
                             <input type="text" id="edit-isbn-display" class="form-control rounded-pill px-3 bg-light" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Danh mục</label>
-                            <select name="maDanhMuc" id="maDanhMuc" class="form-select rounded-pill px-3">
-                                <option value="">-- Đang tải... --</option>
+                            <label class="form-label small fw-bold">Danh mục <span class="text-danger">*</span></label>
+                            <select name="categoryId" id="maDanhMuc" class="form-select rounded-pill px-3" required>
+                                <option value="">-- Đang tải danh mục... --</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Nhà xuất bản</label>
-                            <select name="maNxb" id="maNxb" class="form-select rounded-pill px-3">
-                                <option value="">-- Đang tải... --</option>
+                            <select name="publisherId" id="maNxb" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải NXB... --</option>
                             </select>
                         </div>
-                        <!-- soTrang field removed to match Database Schema -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tác giả</label>
+                            <select name="authorId" id="maTacGia" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải tác giả... --</option>
+                            </select>
+                        </div>
                         <div class="col-12">
                             <label class="form-label small fw-bold">Mô tả sản phẩm</label>
-                            <textarea name="moTa" id="edit-moTa" class="form-control rounded-4 px-3" rows="5"></textarea>
+                            <textarea name="description" id="edit-description" class="form-control rounded-4 px-3" rows="5" placeholder="Nhập mô tả chi tiết sách..."></textarea>
                         </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số kỹ thuật</h5>
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Phân loại sách</h5>
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Trọng lượng (g)</label>
-                            <input type="number" name="trongLuong" id="edit-trongLuong" class="form-control rounded-pill">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Loại sách <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bookType" id="type-physical" value="PHYSICAL" onchange="books.toggleTypeFields()">
+                                    <label class="form-check-label" for="type-physical">Sách vật lý</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bookType" id="type-ebook" value="EBOOK" onchange="books.toggleTypeFields()">
+                                    <label class="form-check-label" for="type-ebook">Ebook (Sách điện tử)</label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Năm xuất bản</label>
-                            <input type="number" name="namXuatBan" id="edit-namXuatBan" class="form-control rounded-pill">
+                    </div>
+                </div>
+
+                <!-- Physical Fields -->
+                <div id="physical-fields-section" class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số vật lý</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Trọng lượng (g) <span class="text-danger text-req">*</span></label>
+                            <input type="number" name="weight" id="edit-weight" class="form-control rounded-pill" placeholder="VD: 350">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label small fw-bold">Ngôn ngữ</label>
-                            <select name="ngonNgu" id="edit-ngonNgu" class="form-select rounded-pill">
-                                <option value="Tiếng Việt">Tiếng Việt</option>
-                                <option value="Tiếng Anh">Tiếng Anh</option>
-                            </select>
+                    </div>
+                </div>
+
+                <!-- Ebook Fields -->
+                <div id="ebook-fields-section" class="card border-0 shadow-sm rounded-4 p-4 mb-4 d-none">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Chi tiết Ebook</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Dung lượng file (MB) <span class="text-danger text-req">*</span></label>
+                            <input type="number" name="fileSize" id="edit-fileSize" class="form-control rounded-pill" placeholder="VD: 5.2" step="0.1">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Link tải trực tiếp <span class="text-danger text-req">*</span></label>
+                            <input type="url" name="downloadUrl" id="edit-downloadUrl" class="form-control rounded-pill" placeholder="https://...">
                         </div>
                     </div>
                 </div>
@@ -76,11 +105,11 @@
             <!-- Right: Pricing & Image -->
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                    <h5 class="fw-bold mb-4 border-bottom pb-2">Giá niêm yết</h5>
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Giá & Kho hàng</h5>
                     <div class="mb-3">
-                        <label class="form-label small fw-bold">Giá (VNĐ) <span class="text-danger">*</span></label>
-                        <input type="number" name="giaNiemYet" id="edit-giaNiemYet"
-                            class="form-control rounded-pill fw-bold" required min="1000"
+                        <label class="form-label small fw-bold">Giá niêm yết (VNĐ) <span class="text-danger">*</span></label>
+                        <input type="number" name="price" id="edit-price"
+                            class="form-control rounded-pill border-accent fw-bold" required min="1000"
                             oninput="document.getElementById('edit-price-display').innerText = api.formatCurrency(this.value || 0)">
                     </div>
                     <div>
@@ -93,7 +122,11 @@
                     <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh bìa</h5>
                     <div class="text-center mb-3">
                         <div id="clickable-preview" class="rounded-4 bg-light d-flex align-items-center justify-content-center border-dashed position-relative overflow-hidden" style="height:280px; cursor:pointer;" onclick="document.getElementById('image-upload-input').click()">
-                            <img id="book-preview-img" src="assets/images/product-item1.jpg" class="img-fluid rounded-4" style="max-height:260px;object-fit:contain; z-index:1;">
+                            <div id="preview-placeholder" class="text-center d-none">
+                                <i class="icon icon-plus fs-1 text-muted"></i>
+                                <p class="small text-muted mb-0">Chọn ảnh</p>
+                            </div>
+                            <img id="book-preview-img" src="" class="img-fluid rounded-4" style="max-height:260px;object-fit:contain; z-index:1;">
                             <div id="upload-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center rounded-4" style="background:rgba(255,255,255,0.8); z-index:10;">
                                 <div class="spinner-border text-accent mb-2"></div>
                                 <small class="fw-bold">Đang tải lên...</small>
@@ -103,18 +136,13 @@
                     <input type="file" id="image-upload-input" class="d-none" accept="image/*" onchange="books.handleImageUpload(this)">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="icon icon-image"></i></span>
-                        <input type="text" name="anhBia" id="edit-anhBia" class="form-control rounded-end-pill small bg-light" 
+                        <input type="text" name="coverImage" id="edit-anhBia" class="form-control rounded-end-pill small bg-light" 
                                placeholder="Tên file hệ thống..." readonly required>
-                    </div>
-                    <div class="mt-3">
-                        <label class="form-label small fw-bold">Mô tả ảnh (Alt-text)</label>
-                        <input type="text" name="coverAlt" id="edit-coverAlt" class="form-control rounded-pill small px-3" 
-                               placeholder="VD: Mô tả nội dung ảnh bìa...">
                     </div>
                     <div id="file-info" class="mt-2 text-center d-none">
                         <small class="text-muted">Tên gốc: <span id="original-filename-info" class="fw-bold"></span></small>
                     </div>
-                    <small class="text-muted mt-2 d-block text-center">Nhấp vào ảnh để thay đổi từ thiết bị</small>
+                    <small class="text-muted mt-2 d-block text-center">Nhấp vào ảnh để thay đổi</small>
                 </div>
             </div>
         </div>
@@ -122,62 +150,72 @@
 </div>
 
 <script>
-(function() {
-    // Self-contained edit loader — does NOT override books.loadDetail
-    async function loadBookForEdit(isbn) {
-        try {
-            // Updated to English endpoint
-            const res = await api.get(`/books/${isbn}`);
-            const b = res.data || res;
+async function loadBookForEdit(isbn) {
+    try {
+        // Load dropdowns first
+        await Promise.all([
+            books.loadCategoriesIntoForm(),
+            books.loadAuthors(),
+            books.loadPublishers()
+        ]);
 
-            // Store ISBN on button
-            const btn = document.getElementById('btn-update-book');
-            if (btn) btn.dataset.isbn = b.isbn;
-            
-            // Map English fields to form elements
-            if (document.getElementById('edit-isbn-display')) document.getElementById('edit-isbn-display').value = b.isbn || isbn;
-            if (document.getElementById('edit-tenSach')) document.getElementById('edit-tenSach').value = b.title || '';
-            if (document.getElementById('edit-moTa')) document.getElementById('edit-moTa').value = b.description || '';
-            if (document.getElementById('edit-trongLuong')) document.getElementById('edit-trongLuong').value = b.weight || '';
-            if (document.getElementById('edit-namXuatBan')) document.getElementById('edit-namXuatBan').value = b.publishYear || '';
-            if (document.getElementById('edit-giaNiemYet')) document.getElementById('edit-giaNiemYet').value = b.price || '';
-            
-            const priceDisplay = document.getElementById('edit-price-display');
-            if (priceDisplay) priceDisplay.innerText = api.formatCurrency(b.price || 0);
-            
-            if (document.getElementById('edit-anhBia')) document.getElementById('edit-anhBia').value = b.coverImage || '';
-            if (document.getElementById('edit-coverAlt')) document.getElementById('edit-coverAlt').value = b.coverAlt || '';
-            
-            const preview = document.getElementById('book-preview-img');
-            if (preview && b.coverImage) preview.src = 'assets/images/' + b.coverImage;
-            
-            if (document.getElementById('edit-ngonNgu')) document.getElementById('edit-ngonNgu').value = b.language || 'Tiếng Việt';
+        const res = await api.get(`/books/${isbn}`);
+        const b = res.data || res;
 
-            // After dropdowns are populated, select correct values using English structure
-            setTimeout(() => {
-                const catSel = document.getElementById('maDanhMuc');
-                if (catSel && b.category) catSel.value = b.category.id || b.category.categoryId || '';
-                
-                const pubSel = document.getElementById('maNxb');
-                if (pubSel && b.publisher) pubSel.value = b.publisher.id || b.publisher.publisherId || '';
-                
-                const authSel = document.getElementById('maTacGia');
-                if (authSel && b.authors && b.authors.length > 0) authSel.value = b.authors[0].id || '';
-            }, 800);
-        } catch (e) {
-            api.showToast('Không thể tải dữ liệu sách: ' + e.message, 'error');
+        // Store ISBN on button
+        const btn = document.getElementById('btn-update-book');
+        if (btn) btn.dataset.isbn = b.isbn || isbn;
+        
+        // Map fields to form elements
+        if (document.getElementById('edit-isbn-display')) document.getElementById('edit-isbn-display').value = b.isbn || isbn;
+        if (document.getElementById('edit-title')) document.getElementById('edit-title').value = b.title || '';
+        if (document.getElementById('edit-description')) document.getElementById('edit-description').value = b.description || '';
+        if (document.getElementById('edit-price')) document.getElementById('edit-price').value = b.price || '';
+        
+        const priceDisplay = document.getElementById('edit-price-display');
+        if (priceDisplay) priceDisplay.innerText = api.formatCurrency(b.price || 0);
+        
+        if (document.getElementById('edit-anhBia')) document.getElementById('edit-anhBia').value = b.coverImage || '';
+        
+        const preview = document.getElementById('book-preview-img');
+        const placeholder = document.getElementById('preview-placeholder');
+        if (preview && b.coverImage) {
+            preview.src = 'assets/images/' + b.coverImage;
+            preview.classList.remove('d-none');
+            if (placeholder) placeholder.classList.add('d-none');
+        } else if (placeholder) {
+            placeholder.classList.remove('d-none');
+            if (preview) preview.classList.add('d-none');
         }
-    }
 
-    // Read ISBN from layout.current.id
-    const isbn = (window.layout && window.layout.current) ? window.layout.current.id : null;
-    if (isbn) {
-        loadBookForEdit(isbn);
+        // Subtype specific fields
+        if (b.downloadUrl || b.fileSize) {
+            document.getElementById('type-ebook').checked = true;
+            if (document.getElementById('edit-fileSize')) document.getElementById('edit-fileSize').value = b.fileSize || '';
+            if (document.getElementById('edit-downloadUrl')) document.getElementById('edit-downloadUrl').value = b.downloadUrl || '';
+        } else {
+            document.getElementById('type-physical').checked = true;
+            if (document.getElementById('edit-weight')) document.getElementById('edit-weight').value = b.weight || '';
+        }
+        books.toggleTypeFields();
+
+        // Set dropdown values
+        if (document.getElementById('maDanhMuc')) document.getElementById('maDanhMuc').value = b.categoryId || '';
+        if (document.getElementById('maNxb')) document.getElementById('maNxb').value = b.publisherId || '';
+        if (document.getElementById('maTacGia') && b.authorIds && b.authorIds.length > 0) {
+            document.getElementById('maTacGia').value = b.authorIds[0];
+        }
+
+    } catch (e) {
+        console.error(e);
+        api.showToast('Không thể tải dữ liệu sách: ' + e.message, 'error');
     }
-})();
+}
+window.loadBookForEdit = loadBookForEdit;
 </script>
 
 <style>
+    .border-dashed { border: 2px dashed #dee2e6; }
     .btn-accent { background-color: #C5A992; color: white; border: none; }
     .btn-accent:hover { background-color: #2F2F2F; }
 </style>

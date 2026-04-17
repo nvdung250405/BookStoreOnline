@@ -1,0 +1,1826 @@
+================================================================================
+                    COMBINED SOURCE CODE CONTENT                                
+================================================================================
+
+Created: 17/04/2026 06:53:39
+Total files: 16
+
+
+################################################################################
+# FILE [1 / 16]: Book.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\entity\Book.java
+################################################################################
+
+package com.bookstore.entity;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Set;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+@Entity
+@Table(name = "books")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Book {
+    @Id
+    @Column(length = 13)
+    private String isbn;
+
+    @Column(name = "title", nullable = false, length = 255)
+    private String title;
+
+    @Column(name = "price", precision = 10, scale = 2, nullable = false)
+    private BigDecimal price;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id")
+    private Publisher publisher;
+
+    @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+    private String description;
+
+    @Column(name = "cover_image", length = 255)
+    private String coverImage;
+
+    @Column(name = "cover_alt", length = 255)
+    private String coverAlt;
+
+    @Column(name = "publish_year")
+    private Integer publishYear;
+
+    @Column(name = "language", length = 50)
+    private String language;
+
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Inventory inventory;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "book_authors",
+            joinColumns = @JoinColumn(name = "isbn"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private Set<Author> authors;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    public Book() {}
+
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
+    public Publisher getPublisher() { return publisher; }
+    public void setPublisher(Publisher publisher) { this.publisher = publisher; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getCoverImage() { return coverImage; }
+    public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
+    public Set<Author> getAuthors() { return authors; }
+    public void setAuthors(Set<Author> authors) { this.authors = authors; }
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+    public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
+    public String getCoverAlt() {
+        return coverAlt;
+    }
+    public void setCoverAlt(String coverAlt) {
+        this.coverAlt = coverAlt;
+    }
+
+    public Integer getPublishYear() { return publishYear; }
+    public void setPublishYear(Integer publishYear) { this.publishYear = publishYear; }
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+    public Inventory getInventory() { return inventory; }
+    public void setInventory(Inventory inventory) { this.inventory = inventory; }
+}
+
+
+################################################################################
+# FILE [2 / 16]: EBook.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\entity\EBook.java
+################################################################################
+
+package com.bookstore.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "ebooks")
+public class EBook {
+    @Id
+    @Column(length = 13)
+    private String isbn;
+
+    @Column(name = "file_size", precision = 10, scale = 2)
+    private java.math.BigDecimal fileSize;
+
+    @Column(name = "download_url", length = 255)
+    private String downloadUrl;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "isbn")
+    private Book book;
+
+    public EBook() {}
+
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public java.math.BigDecimal getFileSize() { return fileSize; }
+    public void setFileSize(java.math.BigDecimal fileSize) { this.fileSize = fileSize; }
+    public String getDownloadUrl() { return downloadUrl; }
+    public void setDownloadUrl(String downloadUrl) { this.downloadUrl = downloadUrl; }
+    public Book getBook() { return book; }
+    public void setBook(Book book) { this.book = book; }
+}
+
+
+################################################################################
+# FILE [3 / 16]: PhysicalBook.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\entity\PhysicalBook.java
+################################################################################
+
+package com.bookstore.entity;
+
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+
+@Entity
+@Table(name = "physical_books")
+@PrimaryKeyJoinColumn(name = "isbn")
+public class PhysicalBook extends Book {
+    @Column(name = "weight", precision = 5, scale = 2)
+    private BigDecimal weight;
+
+    public PhysicalBook() {}
+
+    public BigDecimal getWeight() { return weight; }
+    public void setWeight(BigDecimal weight) { this.weight = weight; }
+}
+
+
+################################################################################
+# FILE [4 / 16]: BookRepository.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\repository\BookRepository.java
+################################################################################
+
+package com.bookstore.repository;
+
+import com.bookstore.entity.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Repository
+public interface BookRepository extends JpaRepository<Book, String> {
+
+    @Query("SELECT DISTINCT b FROM Book b " +
+           "LEFT JOIN b.category c " +
+           "LEFT JOIN b.publisher p " +
+           "LEFT JOIN b.authors a " +
+           "WHERE (b.isDeleted = false OR b.isDeleted IS NULL) AND " +
+           "(:keyword IS NULL OR :keyword = '' OR LOWER(b.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(b.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+           "(:categoryNames IS NULL OR c.categoryName IN :categoryNames) AND " +
+           "(:publisherName IS NULL OR :publisherName = '' OR p.publisherName = :publisherName) AND " +
+           "(:minPrice IS NULL OR b.price >= :minPrice) AND " +
+           "(:maxPrice IS NULL OR b.price <= :maxPrice)")
+    List<Book> searchAndFilterBooks(@Param("keyword") String keyword,
+                                    @Param("categoryNames") java.util.List<String> categoryNames,
+                                    @Param("publisherName") String publisherName,
+                                    @Param("minPrice") BigDecimal minPrice,
+                                    @Param("maxPrice") BigDecimal maxPrice);
+
+    List<Book> findTop5ByIsDeletedFalseOrderByCreatedAtDesc();
+}
+
+
+################################################################################
+# FILE [5 / 16]: EBookRepository.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\repository\EBookRepository.java
+################################################################################
+
+package com.bookstore.repository;
+
+import com.bookstore.entity.EBook;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface EBookRepository extends JpaRepository<EBook, String> {
+}
+
+
+################################################################################
+# FILE [6 / 16]: PhysicalBookRepository.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\repository\PhysicalBookRepository.java
+################################################################################
+
+package com.bookstore.repository;
+
+import com.bookstore.entity.PhysicalBook;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface PhysicalBookRepository extends JpaRepository<PhysicalBook, String> {
+}
+
+
+################################################################################
+# FILE [7 / 16]: BookService.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\service\BookService.java
+################################################################################
+
+package com.bookstore.service;
+
+import com.bookstore.dto.BookDTO;
+import com.bookstore.repository.*;
+import com.bookstore.dto.BookCreateRequest;
+import com.bookstore.dto.BookUpdateRequest;
+import com.bookstore.entity.*;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Service
+public class BookService {
+
+    private final BookRepository bookRepository;
+    private final CategoryRepository categoryRepository;
+    private final PublisherRepository publisherRepository;
+    private final AuthorRepository authorRepository;
+    private final PhysicalBookRepository physicalBookRepository;
+    private final EBookRepository eBookRepository;
+    private final AuditLogService auditLogService;
+    private final OrderDetailRepository orderDetailRepository;
+
+    public BookService(BookRepository bookRepository,
+            CategoryRepository categoryRepository,
+            PublisherRepository publisherRepository,
+            AuthorRepository authorRepository,
+            PhysicalBookRepository physicalBookRepository,
+            EBookRepository eBookRepository,
+            AuditLogService auditLogService,
+            OrderDetailRepository orderDetailRepository) {
+        this.bookRepository = bookRepository;
+        this.categoryRepository = categoryRepository;
+        this.publisherRepository = publisherRepository;
+        this.authorRepository = authorRepository;
+        this.physicalBookRepository = physicalBookRepository;
+        this.eBookRepository = eBookRepository;
+        this.auditLogService = auditLogService;
+        this.orderDetailRepository = orderDetailRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookDTO> searchAndFilterBooks(String keyword, String categoryName, String publisherName,
+            BigDecimal minPrice, BigDecimal maxPrice) {
+        
+        java.util.List<String> categoryNames = null;
+        if (categoryName != null && !categoryName.trim().isEmpty()) {
+            categoryNames = new java.util.ArrayList<>();
+            Category root = categoryRepository.findByCategoryName(categoryName).stream().findFirst().orElse(null);
+            if (root != null) {
+                collectCategoryNamesRecursive(root, categoryNames, new java.util.HashSet<>());
+            } else {
+                categoryNames.add(categoryName);
+            }
+        }
+
+        return bookRepository.searchAndFilterBooks(keyword, categoryNames, publisherName, minPrice, maxPrice)
+                .stream()
+                .map(BookDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookDTO> getLatestBooks() {
+        return bookRepository.findTop5ByIsDeletedFalseOrderByCreatedAtDesc()
+                .stream()
+                .map(BookDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookDTO> getBestSellers() {
+        return orderDetailRepository.findTopSellingProjected().stream()
+                .limit(5)
+                .map(row -> {
+                    String isbn = (String) row[0];
+                    return bookRepository.findById(isbn)
+                            .filter(b -> !Boolean.TRUE.equals(b.getIsDeleted()))
+                            .map(BookDTO::fromEntity)
+                            .orElse(null);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    private void collectCategoryNamesRecursive(Category category, java.util.List<String> names, java.util.Set<Integer> visited) {
+        if (category == null || visited.contains(category.getCategoryId())) return;
+        
+        visited.add(category.getCategoryId());
+        names.add(category.getCategoryName());
+        
+        if (category.getChildren() != null) {
+            for (Category child : category.getChildren()) {
+                collectCategoryNamesRecursive(child, names, visited);
+            }
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public BookDTO getBookByIsbn(String isbn) {
+        Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
+        
+        if (Boolean.TRUE.equals(book.getIsDeleted())) {
+             throw new IllegalArgumentException("This book has been deleted from the system");
+        }
+        return BookDTO.fromEntity(book);
+    }
+
+    @Transactional
+    public BookDTO createBook(BookCreateRequest request) {
+        if (bookRepository.existsById(java.util.Objects.requireNonNull(request.getIsbn()))) {
+            throw new IllegalArgumentException("Book with this ISBN already exists: " + request.getIsbn());
+        }
+
+        Book book = new Book();
+        book.setIsbn(request.getIsbn());
+        book.setTitle(request.getTitle());
+        book.setPrice(request.getPrice());
+        book.setDescription(request.getDescription());
+        book.setCoverImage(request.getCoverImage());
+        book.setCoverAlt(request.getCoverAlt());
+
+        Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Category not found with ID: " + request.getCategoryId()));
+        book.setCategory(category);
+        book.setPublishYear(request.getPublishYear());
+        book.setLanguage(request.getLanguage());
+
+        Publisher publisher = publisherRepository.findById(java.util.Objects.requireNonNull(request.getPublisherId()))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Publisher not found with ID: " + request.getPublisherId()));
+        book.setPublisher(publisher);
+
+        if (request.getAuthorIds() != null && !request.getAuthorIds().isEmpty()) {
+            List<Author> authors = authorRepository.findAllById(java.util.Objects.requireNonNull(request.getAuthorIds()));
+            if (authors.size() != request.getAuthorIds().size()) {
+                throw new IllegalArgumentException("One or more author IDs are invalid");
+            }
+            book.setAuthors(new java.util.HashSet<>(authors));
+        }
+
+        Book savedBook = bookRepository.saveAndFlush(book);
+
+        // Core Book + Subtype composition
+        if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
+            PhysicalBook physical = new PhysicalBook();
+            physical.setWeight(request.getWeight());
+            physical.setBook(savedBook);
+            physicalBookRepository.save(physical);
+        } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
+            EBook ebook = new EBook();
+            ebook.setFileSize(request.getFileSize());
+            ebook.setDownloadUrl(request.getDownloadUrl());
+            ebook.setBook(savedBook);
+            eBookRepository.save(ebook);
+        }
+
+        auditLogService.log("CREATE_BOOK", "Thêm sách mới: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
+        return BookDTO.fromEntity(savedBook);
+    }
+
+    @Transactional
+    public BookDTO updateBook(String isbn, BookUpdateRequest request) {
+        Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
+
+        if (Boolean.TRUE.equals(book.getIsDeleted())) {
+            throw new IllegalArgumentException("This book has been deleted and cannot be modified");
+        }
+
+        book.setTitle(request.getTitle());
+        book.setPrice(request.getPrice());
+        book.setDescription(request.getDescription());
+        book.setCoverImage(request.getCoverImage());
+        book.setCoverAlt(request.getCoverAlt());
+
+        Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Category not found with ID: " + request.getCategoryId()));
+        book.setCategory(category);
+
+        Publisher publisher = publisherRepository.findById(java.util.Objects.requireNonNull(request.getPublisherId()))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Publisher not found with ID: " + request.getPublisherId()));
+        book.setPublisher(publisher);
+
+        if (request.getAuthorIds() != null && !request.getAuthorIds().isEmpty()) {
+            List<Author> authors = authorRepository.findAllById(java.util.Objects.requireNonNull(request.getAuthorIds()));
+            if (authors.size() != request.getAuthorIds().size()) {
+                throw new IllegalArgumentException("One or more author IDs are invalid");
+            }
+            book.setAuthors(new java.util.HashSet<>(authors));
+        } else {
+            book.setAuthors(new java.util.HashSet<>());
+        }
+
+        Book savedBook = bookRepository.saveAndFlush(book);
+
+        // TYPE SWITCHING / UPDATE LOGIC
+        // 1. Remove old subtypes
+        physicalBookRepository.deleteById(java.util.Objects.requireNonNull(isbn));
+        eBookRepository.deleteById(java.util.Objects.requireNonNull(isbn));
+
+        // 2. Add new subtype
+        if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
+            PhysicalBook physical = new PhysicalBook();
+            physical.setWeight(request.getWeight());
+            physical.setBook(savedBook);
+            physicalBookRepository.save(physical);
+        } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
+            EBook ebook = new EBook();
+            ebook.setFileSize(request.getFileSize());
+            ebook.setDownloadUrl(request.getDownloadUrl());
+            ebook.setBook(savedBook);
+            eBookRepository.save(ebook);
+        }
+
+        auditLogService.log("UPDATE_BOOK", "Cập nhật sách: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
+        return BookDTO.fromEntity(savedBook);
+    }
+
+    @Transactional
+    public void softDeleteBook(String isbn) {
+        Book book = bookRepository.findById(java.util.Objects.requireNonNull(isbn))
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with ISBN: " + isbn));
+        
+        if (Boolean.TRUE.equals(book.getIsDeleted())) {
+             throw new IllegalArgumentException("This book was already deleted");
+        }
+        
+        book.setIsDeleted(true);
+        book.setDeletedAt(java.time.LocalDateTime.now());
+        bookRepository.save(book);
+        auditLogService.log("DELETE_BOOK", "Xóa sách: " + book.getTitle() + " (ISBN: " + book.getIsbn() + ")");
+    }
+}
+
+
+################################################################################
+# FILE [8 / 16]: BookController.java
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\java\com\bookstore\controller\BookController.java
+################################################################################
+
+package com.bookstore.controller;
+
+import com.bookstore.dto.ApiResponse;
+import com.bookstore.dto.BookDTO;
+import com.bookstore.service.BookService;
+import com.bookstore.service.AiSearchService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.bookstore.dto.BookCreateRequest;
+import com.bookstore.dto.BookUpdateRequest;
+import com.bookstore.dto.AiSearchRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+@Tag(name = "Books", description = "Quản lý thông tin sách")
+public class BookController {
+
+    private final BookService bookService;
+    private final AiSearchService aiSearchService;
+
+    public BookController(BookService bookService, AiSearchService aiSearchService) {
+        this.bookService = bookService;
+        this.aiSearchService = aiSearchService;
+    }
+
+    @GetMapping("/books")
+    @Operation(summary = "Lấy danh sách và tìm kiếm sách", description = "Lấy danh sách tất cả sách công khai hoặc tìm kiếm, lọc theo tên, mô tả, khoảng giá, danh mục, NXB.")
+    public ResponseEntity<ApiResponse<List<BookDTO>>> getAllBooks(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String categoryName,
+            @RequestParam(required = false) String publisherName,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice) {
+        List<BookDTO> books = bookService.searchAndFilterBooks(keyword, categoryName, publisherName, minPrice, maxPrice);
+        return ResponseEntity.ok(ApiResponse.success("Lấy danh sách sách thành công", books));
+    }
+
+    @PostMapping("/books/ai-search")
+    @Operation(summary = "Tìm kiếm sách bằng AI (NLP)", description = "Phân tích câu nói tự nhiên (Ví dụ: 'find economics books under 50k') để tự bóc tách mức giá và danh mục.")
+    public ResponseEntity<ApiResponse<List<BookDTO>>> aiSearchBooks(
+            @Valid @RequestBody AiSearchRequest request) {
+        List<BookDTO> books = aiSearchService.searchByNaturalLanguage(request.getQuery());
+        return ResponseEntity.ok(ApiResponse.success("Tìm kiếm AI thành công", books));
+    }
+
+    @GetMapping("/books/{isbn}")
+    @Operation(summary = "Xem chi tiết sách", description = "Lấy thông tin chi tiết của một cuốn sách bao gồm các thông tin tác giả, NXB cấu thành dựa trên mã ISBN.")
+    public ResponseEntity<ApiResponse<BookDTO>> getBookDetail(
+            @PathVariable String isbn) {
+        BookDTO book = bookService.getBookByIsbn(isbn);
+        return ResponseEntity.ok(ApiResponse.success("Lấy thông tin chi tiết sách thành công", book));
+    }
+
+    @PostMapping("/admin/books")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Thêm sách mới (ADMIN)", description = "Admin thêm sách mới kèm theo danh mục, nhà xuất bản và danh sách tác giả.")
+    public ResponseEntity<ApiResponse<BookDTO>> createBook(
+            @Valid @RequestBody BookCreateRequest request) {
+        BookDTO created = bookService.createBook(request);
+        return ResponseEntity.status(201).body(ApiResponse.created(created));
+    }
+
+    @PutMapping("/admin/books/{isbn}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Sửa thông tin sách (ADMIN)", description = "Cập nhật thông tin chi tiết của sách (tên, giá, mô tả, NXB, danh mục, tác giả) dựa trên mã ISBN.")
+    public ResponseEntity<ApiResponse<BookDTO>> updateBook(
+            @PathVariable String isbn,
+            @Valid @RequestBody BookUpdateRequest request) {
+        BookDTO updated = bookService.updateBook(isbn, request);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật thông tin sách thành công", updated));
+    }
+
+    @DeleteMapping("/admin/books/{isbn}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Xóa mềm sách (ADMIN)", description = "Đánh dấu sách là đã xóa (xóa mềm) trên hệ thống mà không làm mất dữ liệu lịch sử.")
+    public ResponseEntity<ApiResponse<String>> deleteBook(
+            @PathVariable String isbn) {
+        bookService.softDeleteBook(isbn);
+        return ResponseEntity.ok(ApiResponse.success("Xoa sách thành công", null));
+    }
+}
+
+
+################################################################################
+# FILE [9 / 16]: Index.html
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\Books\Index.html
+################################################################################
+
+<!-- Books Area - Index View (Shop) -->
+<section class="bg-light py-5">
+    <div class="container-xl py-5">
+        <!-- Header & Filter Bar -->
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6" data-aos="fade-right">
+                <h1 id="category-title" class="display-5 fw-bold font-serif m-0">Tất cả sản phẩm</h1>
+                <p class="text-muted mt-2">Tìm thấy <span id="product-count" class="fw-bold text-accent">--</span> cuốn sách phù hợp</p>
+            </div>
+            <div class="col-md-6" data-aos="fade-left">
+                <div class="d-flex justify-content-md-end gap-3 flex-wrap">
+                    <select class="form-select border-0 shadow-sm rounded-pill px-4 py-2" id="books-sort-filter" style="width: 200px" onchange="books.handleSort(this.value)">
+                        <option value="newest">Mới nhất</option>
+                        <option value="price-asc">Giá tăng dần</option>
+                        <option value="price-desc">Giá giảm dần</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            <!-- Left Sidebar (Categories) -->
+            <div class="col-lg-3" data-aos="fade-up">
+                <div class="sidebar sticky-top" style="top: 100px; z-index: 10">
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4 font-serif border-bottom pb-2">Danh mục</h5>
+                            <ul class="list-unstyled d-grid gap-3" id="categories-filter-list">
+                                <!-- Categories load dynamically via categories.js or books.js -->
+                                 <li class="small text-muted text-center py-3"><div class="spinner-border spinner-border-sm"></div></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Price Filter (Optional extension) -->
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3 font-serif border-bottom pb-2">Khoảng giá</h5>
+                            <div class="filter-price">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="price-range" id="price1" onclick="books.loadByPriceRange(0, 100000)">
+                                    <label class="form-check-label small" for="price1">Dưới 100,000đ</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="price-range" id="price2" onclick="books.loadByPriceRange(100000, 300000)">
+                                    <label class="form-check-label small" for="price2">100,000đ - 300,000đ</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="price-range" id="price3" onclick="books.loadByPriceRange(300000, 10000000)">
+                                    <label class="form-check-label small" for="price3">Trên 300,000đ</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content (Product Grid) -->
+            <div class="col-lg-9" data-aos="fade-up" data-aos-delay="100">
+                <div class="row g-4" id="books-grid">
+                    <!-- Loaded via books.js -->
+                    <div class="col-12 text-center py-5">
+                        <div class="spinner-border text-accent"></div>
+                        <div class="mt-3 text-muted">Đang tải danh sách sách...</div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="mt-5 pt-4">
+                    <ul class="pagination justify-content-center border-0 gap-2" id="books-pagination">
+                        <!-- Populated by JS -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .category-link.active {
+        background: linear-gradient(90deg, #e8f0fe, transparent);
+        color: #0066cc !important;
+        font-weight: 500;
+        border-right: 3px solid #0066cc;
+    }
+</style>
+
+<script>
+    if (typeof AOS !== 'undefined') AOS.refresh();
+</script>
+
+
+################################################################################
+# FILE [10 / 16]: Details.html
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\Books\Details.html
+################################################################################
+
+<!-- Book Details View -->
+<section class="bg-sand py-5">
+    <div class="container-xl py-5">
+        <div class="row g-5 align-items-start">
+            <!-- Left: Product Image -->
+            <div class="col-lg-5" data-aos="fade-right">
+            <div class="product-image-container p-4 bg-white rounded-5 shadow-lg border border-5 border-white text-center">
+                    <div style="height: 380px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 12px; background: #F3F2EC;">
+                        <img id="book-image" src="assets/images/main-banner2.jpg"
+                             class="img-fluid rounded-3"
+                             alt="Sách"
+                             style="max-height: 380px; width: 100%; object-fit: contain; transition: transform 0.4s ease;">
+                    </div>
+                    <div class="mt-4 d-flex justify-content-center gap-2">
+                        <button class="btn btn-light rounded-circle shadow-sm p-3"><i class="icon icon-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Product Info -->
+            <div class="col-lg-7 ps-lg-5" data-aos="fade-left">
+                <div class="product-detail">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-4 py-2 px-3 bg-white rounded-pill shadow-sm d-inline-flex border">
+                            <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('', 'Home/Index')" class="text-decoration-none text-muted">Trang chủ</a></li>
+                            <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-decoration-none text-muted">Cửa hàng</a></li>
+                            <li class="breadcrumb-item small active text-accent fw-bold" id="breadcrumb-category">Chi tiết</li>
+                        </ol>
+                    </nav>
+
+                    <h1 class="display-4 fw-bold mb-4 font-serif text-dark" id="book-title">---</h1>
+                    
+                    <div class="meta-row d-flex flex-wrap gap-4 mb-5 pb-4 border-bottom">
+                        <div class="meta-item">
+                            <span class="text-muted d-block small text-uppercase fw-bold tracking-widest">Tác giả</span>
+                            <span class="fw-bold text-dark fs-5" id="book-author">---</span>
+                        </div>
+                        <div class="meta-item border-start ps-4">
+                            <span class="text-muted d-block small text-uppercase fw-bold tracking-widest">Đánh giá</span>
+                            <div class="text-warning small pt-1">
+                                <i class="icon icon-star"></i><i class="icon icon-star"></i><i class="icon icon-star"></i><i class="icon icon-star"></i><i class="icon icon-star-half"></i>
+                                <span class="ms-1 text-dark fw-bold">(4.8)</span>
+                            </div>
+                        </div>
+                        <div class="meta-item border-start ps-4">
+                            <span class="text-muted d-block small text-uppercase fw-bold tracking-widest">ISBN</span>
+                            <span class="text-dark small" id="book-isbn">---</span>
+                        </div>
+                    </div>
+
+                    <div class="price-box mb-5 d-flex align-items-baseline gap-3">
+                        <span class="display-5 fw-bold text-accent" id="book-price">---</span>
+                        <span class="text-muted text-decoration-line-through h4 mb-0 opacity-50" id="book-price-old">---</span>
+                    </div>
+
+                    <div class="description-box mb-5">
+                        <h6 class="text-uppercase fw-bold tracking-widest small mb-4 text-accent border-start border-accent border-4 ps-3">Mô tả sản phẩm</h6>
+                        <p id="book-description" class="text-muted lh-lg fs-5">
+                            Đang tải mô tả sản phẩm...
+                        </p>
+                    </div>
+
+                    <div class="purchase-box bg-white p-4 rounded-4 shadow-sm border border-opacity-10 border-dark mt-4">
+                        <label class="form-label fw-bold text-muted mb-3 text-uppercase tracking-widest d-block" style="font-size: 0.75rem; letter-spacing: 1px;">Số lượng</label>
+                        <div class="d-flex flex-wrap align-items-center gap-3 w-100">
+                            <!-- Nút 1: Chỉnh số lượng (Giao diện Premium mới) -->
+                            <div style="width: 120px; flex-shrink: 0;">
+                                <div class="d-flex justify-content-between align-items-center bg-light rounded-pill border shadow-sm" style="height: 48px; padding: 0 6px;" id="qty-wrapper">
+                                    <button type="button" class="btn btn-white rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center p-0" 
+                                            style="width: 38px; height: 38px; background: white; transition: all 0.2s;"
+                                            onclick="let i=document.getElementById('quantity'); i.stepDown(); document.getElementById('qty-display').textContent=i.value;"
+                                            onmouseover="this.style.transform='scale(1.1)'; this.style.background='#f8f9fa'"
+                                            onmouseout="this.style.transform='scale(1)'; this.style.background='white'">
+                                        <span style="font-size: 1.5rem; line-height: 1; margin-top: -4px; font-weight: 300;">-</span>
+                                    </button>
+                                    
+                                    <span id="qty-display" class="fw-bolder" style="flex: 1; text-align: center; font-size: 1.1rem; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; height: 100%; color: #111;">1</span>
+                                    <input type="number" id="quantity" value="1" min="1" style="display: none;">
+
+                                    <button type="button" class="btn btn-white rounded-circle shadow-sm border-0 d-flex align-items-center justify-content-center p-0" 
+                                            style="width: 38px; height: 38px; background: white; transition: all 0.2s;"
+                                            onclick="let i=document.getElementById('quantity'); i.stepUp(); document.getElementById('qty-display').textContent=i.value;"
+                                            onmouseover="this.style.transform='scale(1.1)'; this.style.background='#f8f9fa'"
+                                            onmouseout="this.style.transform='scale(1)'; this.style.background='white'">
+                                        <span style="font-size: 1.4rem; line-height: 1; font-weight: 300;">+</span>
+                                    </button>
+                                </div>
+                                <style>
+                                    #qty-wrapper input[type=number]::-webkit-inner-spin-button, 
+                                    #qty-wrapper input[type=number]::-webkit-outer-spin-button { 
+                                        -webkit-appearance: none; margin: 0; display: none;
+                                    }
+                                </style>
+                            </div>
+                            <!-- Nút 2: Thêm giỏ hàng -->
+                            <div class="flex-grow-1" style="min-width: 200px;">
+                                <button type="button" id="btn-add-to-cart" class="btn btn-accent w-100 fw-bold shadow-sm rounded-pill transition-all" style="height: 48px; font-size: 16px; text-transform: uppercase;" onclick="cart.handleAdd()">
+                                    Thêm vào giỏ <i class="icon icon-clipboard ms-1"></i>
+                                </button>
+                            </div>
+                            <!-- Nút 3: Quay lại -->
+                            <div style="flex-shrink: 0; min-width: 115px;">
+                                <button class="btn btn-outline-dark w-100 px-3 fw-bold rounded-pill shadow-none hvr-accent" style="height: 48px; font-size: 14px;"
+                                        onclick="layout.render('Home', 'Index', null, 'featured-books')"
+                                        title="Quay lại trang chính">
+                                    <i class="icon icon-ns-arrow-left me-1"></i> Quay lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products Section -->
+<section id="related-products" class="py-5 bg-white border-top">
+    <div class="container-xl py-5">
+        <div class="section-header mb-5 d-flex justify-content-between align-items-end">
+            <div>
+                <span class="text-uppercase tracking-widest text-accent fw-bold small">Có thể bạn thích</span>
+                <h2 class="display-6 fw-bold font-serif m-0">Sách cùng thể loại</h2>
+            </div>
+            <a href="javascript:void(0)" onclick="layout.render('Books', 'Index')" class="text-accent fw-bold text-decoration-none">Xem toàn bộ <i class="icon icon-ns-arrow-right"></i></a>
+        </div>
+        <div class="row g-4" id="related-books-grid">
+            <!-- Will be populated by books.js -->
+            <div class="col-12 text-center py-4 text-muted small italic">Đang tìm sách liên quan...</div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Section -->
+<section id="reviews-area" class="py-5 bg-sand">
+    <div class="container-xl py-5">
+        <div class="row">
+            <div class="col-lg-8">
+                <h3 class="fw-bold font-serif mb-5 pb-3 border-bottom">Đánh giá từ khách hàng</h3>
+                <div id="reviews-container">
+                    <!-- Reviews populated by reviews.js -->
+                    <div class="text-center py-4 text-muted small italic">Chưa có đánh giá nào.</div>
+                </div>
+
+                <div class="review-form-container mt-5 p-5 bg-white shadow-lg rounded-5 border border-accent border-opacity-10">
+                    <h5 class="fw-bold font-serif mb-4">Gửi nhận xét của bạn</h5>
+                    <div id="review-form" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="small fw-bold text-muted mb-2">Điểm đánh giá</label>
+                            <select id="review-rating" class="form-select rounded-pill border-light bg-light">
+                                <option value="5">5 ★★★★★ (Tuyệt vời)</option>
+                                <option value="4">4 ★★★★☆ (Hài lòng)</option>
+                                <option value="3">3 ★★★☆☆ (Bình thường)</option>
+                                <option value="2">2 ★★☆☆☆ (Kém)</option>
+                                <option value="1">1 ★☆☆☆☆ (Rất kém)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="small fw-bold text-muted mb-2">Nhận xét chi tiết</label>
+                            <textarea id="review-comment" class="form-control rounded-4 border-light bg-light" rows="4" placeholder="Chia sẻ cảm nhận của bạn về cuốn sách này..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4 text-end">
+                            <button type="button" id="btn-submit-review" class="btn btn-accent px-5 py-3 rounded-pill fw-bold shadow-sm">
+                                Gửi đánh giá ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Sidebar components -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    if (typeof AOS !== 'undefined') AOS.refresh();
+</script>
+
+
+################################################################################
+# FILE [11 / 16]: Create.html
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\Books\Admin\Create.html
+################################################################################
+
+<!-- Admin Books - Create New Product -->
+<div class="p-4 p-md-5 w-100 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Books', 'Admin/Index')" class="text-decoration-none text-muted">Quản lý sách</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">Thêm mới</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0 text-dark">Thêm sách vào hệ thống</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="layout.render('Books', 'Admin/Index')" class="btn btn-outline-dark rounded-pill px-4">Hủy</button>
+            <button id="btn-save-book" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">Lưu sản phẩm</button>
+        </div>
+    </div>
+
+    <form id="create-book-form">
+        <div class="row g-4">
+            <!-- Left: Main Info -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông tin cơ bản</h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Tên sách <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control rounded-pill px-3" placeholder="Nhập tên sách..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Mã ISBN <span class="text-danger">*</span></label>
+                            <input type="text" name="isbn" class="form-control rounded-pill px-3" placeholder="978-..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Danh mục <span class="text-danger">*</span></label>
+                            <select name="categoryId" id="maDanhMuc" class="form-select rounded-pill px-3" required>
+                                <option value="">-- Đang tải danh mục... --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Nhà xuất bản</label>
+                            <select name="publisherId" id="maNxb" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải NXB... --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tác giả</label>
+                            <select name="authorId" id="maTacGia" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải tác giả... --</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Mô tả sản phẩm</label>
+                            <textarea name="description" class="form-control rounded-4 px-3" rows="5" placeholder="Nhập mô tả chi tiết sách..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Phân loại sách</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Loại sách <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bookType" id="type-physical" value="PHYSICAL" checked onchange="books.toggleTypeFields()">
+                                    <label class="form-check-label" for="type-physical">Sách vật lý</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="bookType" id="type-ebook" value="EBOOK" onchange="books.toggleTypeFields()">
+                                    <label class="form-check-label" for="type-ebook">Ebook (Sách điện tử)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Physical Fields -->
+                <div id="physical-fields-section" class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số vật lý</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Trọng lượng (g) <span class="text-danger text-req">*</span></label>
+                            <input type="number" name="weight" class="form-control rounded-pill" placeholder="VD: 350" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ebook Fields -->
+                <div id="ebook-fields-section" class="card border-0 shadow-sm rounded-4 p-4 mb-4 d-none">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Chi tiết Ebook</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Dung lượng file (MB) <span class="text-danger text-req">*</span></label>
+                            <input type="number" name="fileSize" class="form-control rounded-pill" placeholder="VD: 5.2" step="0.1">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Link tải trực tiếp <span class="text-danger text-req">*</span></label>
+                            <input type="url" name="downloadUrl" class="form-control rounded-pill" placeholder="https://...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Pricing & Image -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Giá & Kho hàng</h5>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Giá niêm yết (VNĐ) <span class="text-danger">*</span></label>
+                        <input type="number" name="price" id="giaNiemYet"
+                            class="form-control rounded-pill border-accent fw-bold" required min="1000"
+                            oninput="document.getElementById('final-price-display').innerText = api.formatCurrency(this.value || 0)">
+                    </div>
+                    <div>
+                        <label class="form-label small fw-bold">Giá hiển thị</label>
+                        <div id="final-price-display" class="fs-4 fw-bold text-accent">0đ</div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh bìa</h5>
+                    <div class="text-center mb-3">
+                        <div id="clickable-preview" class="rounded-4 bg-light d-flex align-items-center justify-content-center border-dashed position-relative overflow-hidden" style="height:280px; cursor:pointer;" onclick="document.getElementById('image-upload-input').click()">
+                            <div id="preview-placeholder" class="text-center">
+                                <i class="icon icon-plus fs-1 text-muted"></i>
+                                <p class="small text-muted mb-0">Chọn ảnh</p>
+                            </div>
+                            <img id="book-preview-img" src="" class="img-fluid rounded-4 d-none" style="max-height:260px;object-fit:contain; z-index:1;">
+                            <div id="upload-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center rounded-4" style="background:rgba(255,255,255,0.8); z-index:10;">
+                                <div class="spinner-border text-accent mb-2"></div>
+                                <small class="fw-bold">Đang tải lên...</small>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" id="image-upload-input" class="d-none" accept="image/*" onchange="books.handleImageUpload(this)">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="icon icon-image"></i></span>
+                        <input type="text" name="anhBia" id="anhBia" class="form-control rounded-end-pill small bg-light" 
+                               placeholder="Tên file hệ thống..." readonly required>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label small fw-bold">Mô tả ảnh (Alt-text)</label>
+                        <input type="text" name="coverAlt" id="coverAlt" class="form-control rounded-pill small px-3" 
+                               placeholder="VD: Mô tả nội dung ảnh bìa...">
+                    </div>
+                    <div id="file-info" class="mt-2 text-center d-none">
+                        <small class="text-muted">Tên gốc: <span id="original-filename-info" class="fw-bold"></span></small>
+                    </div>
+                    <small class="text-muted mt-2 d-block text-center">Nhấp vào khung trên để tải ảnh từ thiết bị</small>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .border-dashed { border: 2px dashed #dee2e6; }
+    .btn-accent { background-color: #C5A992; color: white; border: none; }
+    .btn-accent:hover { background-color: #2F2F2F; }
+</style>
+
+
+################################################################################
+# FILE [12 / 16]: Delete.html
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\Books\Admin\Delete.html
+################################################################################
+
+
+################################################################################
+# FILE [13 / 16]: Details.html
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\Books\Admin\Details.html
+################################################################################
+
+
+################################################################################
+# FILE [14 / 16]: Edit.html
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\Books\Admin\Edit.html
+################################################################################
+
+<!-- Admin Books - Edit Product -->
+<div class="p-4 p-md-5 w-100 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Books', 'Admin/Index')" class="text-decoration-none text-muted">Quản lý sách</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">Chỉnh sửa</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0 text-dark">Chỉnh sửa thông tin sách</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="layout.render('Books', 'Admin/Index')" class="btn btn-outline-dark rounded-pill px-4">Hủy</button>
+            <button id="btn-update-book" class="btn btn-accent rounded-pill px-4 fw-bold shadow-sm">Cập nhật</button>
+        </div>
+    </div>
+
+    <form id="edit-book-form">
+        <div class="row g-4">
+            <!-- Left: Main Info -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông tin cơ bản</h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Tên sách <span class="text-danger">*</span></label>
+                            <input type="text" name="title" id="edit-tenSach" class="form-control rounded-pill px-3" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Mã ISBN (không thể đổi)</label>
+                            <input type="text" id="edit-isbn-display" class="form-control rounded-pill px-3 bg-light" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Danh mục</label>
+                            <select name="categoryId" id="maDanhMuc" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải... --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Nhà xuất bản</label>
+                            <select name="publisherId" id="maNxb" class="form-select rounded-pill px-3">
+                                <option value="">-- Đang tải... --</option>
+                            </select>
+                        </div>
+                        <!-- soTrang field removed to match Database Schema -->
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Mô tả sản phẩm</label>
+                            <textarea name="description" id="edit-moTa" class="form-control rounded-4 px-3" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Thông số kỹ thuật</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Trọng lượng (g)</label>
+                            <input type="number" name="weight" id="edit-trongLuong" class="form-control rounded-pill">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Năm xuất bản</label>
+                            <input type="number" name="publishYear" id="edit-namXuatBan" class="form-control rounded-pill">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Ngôn ngữ</label>
+                            <select name="language" id="edit-ngonNgu" class="form-select rounded-pill">
+                                <option value="Tiếng Việt">Tiếng Việt</option>
+                                <option value="Tiếng Anh">Tiếng Anh</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Pricing & Image -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Giá niêm yết</h5>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Giá (VNĐ) <span class="text-danger">*</span></label>
+                        <input type="number" name="price" id="edit-giaNiemYet"
+                            class="form-control rounded-pill fw-bold" required min="1000"
+                            oninput="document.getElementById('edit-price-display').innerText = api.formatCurrency(this.value || 0)">
+                    </div>
+                    <div>
+                        <label class="form-label small fw-bold">Giá hiển thị</label>
+                        <div id="edit-price-display" class="fs-4 fw-bold text-accent">---</div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh bìa</h5>
+                    <div class="text-center mb-3">
+                        <div id="clickable-preview" class="rounded-4 bg-light d-flex align-items-center justify-content-center border-dashed position-relative overflow-hidden" style="height:280px; cursor:pointer;" onclick="document.getElementById('image-upload-input').click()">
+                            <img id="book-preview-img" src="assets/images/product-item1.jpg" class="img-fluid rounded-4" style="max-height:260px;object-fit:contain; z-index:1;">
+                            <div id="upload-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center rounded-4" style="background:rgba(255,255,255,0.8); z-index:10;">
+                                <div class="spinner-border text-accent mb-2"></div>
+                                <small class="fw-bold">Đang tải lên...</small>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="file" id="image-upload-input" class="d-none" accept="image/*" onchange="books.handleImageUpload(this)">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="icon icon-image"></i></span>
+                        <input type="text" name="anhBia" id="edit-anhBia" class="form-control rounded-end-pill small bg-light" 
+                               placeholder="Tên file hệ thống..." readonly required>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label small fw-bold">Mô tả ảnh (Alt-text)</label>
+                        <input type="text" name="coverAlt" id="edit-coverAlt" class="form-control rounded-pill small px-3" 
+                               placeholder="VD: Mô tả nội dung ảnh bìa...">
+                    </div>
+                    <div id="file-info" class="mt-2 text-center d-none">
+                        <small class="text-muted">Tên gốc: <span id="original-filename-info" class="fw-bold"></span></small>
+                    </div>
+                    <small class="text-muted mt-2 d-block text-center">Nhấp vào ảnh để thay đổi từ thiết bị</small>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+(function() {
+    // Self-contained edit loader — does NOT override books.loadDetail
+    async function loadBookForEdit(isbn) {
+        try {
+            // Updated to English endpoint
+            const res = await api.get(`/books/${isbn}`);
+            const b = res.data || res;
+
+            // Store ISBN on button
+            const btn = document.getElementById('btn-update-book');
+            if (btn) btn.dataset.isbn = b.isbn;
+            
+            // Map English fields to form elements
+            if (document.getElementById('edit-isbn-display')) document.getElementById('edit-isbn-display').value = b.isbn || isbn;
+            if (document.getElementById('edit-tenSach')) document.getElementById('edit-tenSach').value = b.title || '';
+            if (document.getElementById('edit-moTa')) document.getElementById('edit-moTa').value = b.description || '';
+            if (document.getElementById('edit-trongLuong')) document.getElementById('edit-trongLuong').value = b.weight || '';
+            if (document.getElementById('edit-namXuatBan')) document.getElementById('edit-namXuatBan').value = b.publishYear || '';
+            if (document.getElementById('edit-giaNiemYet')) document.getElementById('edit-giaNiemYet').value = b.price || '';
+            
+            const priceDisplay = document.getElementById('edit-price-display');
+            if (priceDisplay) priceDisplay.innerText = api.formatCurrency(b.price || 0);
+            
+            if (document.getElementById('edit-anhBia')) document.getElementById('edit-anhBia').value = b.coverImage || '';
+            if (document.getElementById('edit-coverAlt')) document.getElementById('edit-coverAlt').value = b.coverAlt || '';
+            
+            const preview = document.getElementById('book-preview-img');
+            if (preview && b.coverImage) preview.src = 'assets/images/' + b.coverImage;
+            
+            if (document.getElementById('edit-ngonNgu')) document.getElementById('edit-ngonNgu').value = b.language || 'Tiếng Việt';
+
+            // After dropdowns are populated, select correct values using English structure
+            setTimeout(() => {
+                const catSel = document.getElementById('maDanhMuc');
+                if (catSel && b.category) catSel.value = b.category.id || b.category.categoryId || '';
+                
+                const pubSel = document.getElementById('maNxb');
+                if (pubSel && b.publisher) pubSel.value = b.publisher.id || b.publisher.publisherId || '';
+                
+                const authSel = document.getElementById('maTacGia');
+                if (authSel && b.authors && b.authors.length > 0) authSel.value = b.authors[0].id || '';
+            }, 800);
+        } catch (e) {
+            api.showToast('Không thể tải dữ liệu sách: ' + e.message, 'error');
+        }
+    }
+
+    // Read ISBN from layout.current.id
+    const isbn = (window.layout && window.layout.current) ? window.layout.current.id : null;
+    if (isbn) {
+        loadBookForEdit(isbn);
+    }
+})();
+</script>
+
+<style>
+    .btn-accent { background-color: #C5A992; color: white; border: none; }
+    .btn-accent:hover { background-color: #2F2F2F; }
+</style>
+
+
+################################################################################
+# FILE [15 / 16]: Index.html
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\Books\Admin\Index.html
+################################################################################
+
+<!-- Admin Books Area - List View -->
+<div class="p-4 p-md-5 w-100 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
+                    <li class="breadcrumb-item small active fw-bold text-accent">Danh mục Sách</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold font-serif mb-0 text-dark">Quản lý Tồn kho Sách</h2>
+        </div>
+        <button onclick="layout.render('Books', 'Admin/Create')" class="btn btn-accent px-4 py-2 rounded-pill fw-bold shadow-sm hvr-float">
+            <i class="icon icon-plus me-2"></i> Thêm Sách mới
+        </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="icon icon-search"></i></span>
+                    <input type="text" class="form-control border-start-0 shadow-none bg-transparent" placeholder="Tìm theo tiêu đề, ISBN, tác giả..." id="book-search-input"
+                           onkeyup="books.adminSearch(this.value)">
+                </div>
+            </div>
+            <div class="col-md-4 ms-auto text-end">
+                <button class="btn btn-outline-dark rounded-pill px-4" onclick="books.toggleAdvancedFilters()">Bộ lọc nâng cao</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books Table -->
+    <div class="card border-0 shadow-sm rounded-5 overflow-hidden bg-white">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="bg-light text-muted extra-small text-uppercase fw-bold border-0">
+                    <tr>
+                        <th class="ps-4 py-3">Thông tin Sách</th>
+                        <th class="py-3">Danh mục</th>
+                        <th class="py-3">Đơn giá</th>
+                        <th class="py-3">Số lượng tồn</th>
+                        <th class="text-end pe-4 py-3">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="books-admin-list">
+                    <!-- Loaded via books.js -->
+                    <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-accent"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+################################################################################
+# FILE [16 / 16]: books.js
+# Full Path: D:\WorkSpace\MPJ\BookStoreOnline\bookstoreonline\src\main\resources\static\web\assets\js\modules\books.js
+################################################################################
+
+/**
+ * books.js - Product Management & AI Search
+ */
+
+let currentBookIsbn = null;
+
+const books = {
+    // === PRIVATE STATE ===
+    _allBooksCache: [],
+    _categoriesCache: [],
+
+    // === HELPERS ===
+    _createBookCardHtml: (book, options = {}) => {
+        const imagePath = book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/product-item1.jpg';
+        const isPopular = options.isPopular || false;
+        const columnClass = options.columnClass || "col-xl-3 col-lg-4 col-sm-6 mb-4";
+        
+        // Dynamic overlay text/style
+        const overlayText = isPopular ? 'Xem nhanh' : 'Xem chi tiết';
+        
+        return `
+            <div class="${columnClass}">
+                <div class="product-item bg-white p-3 rounded-4 shadow-sm h-100 text-center transition-all hvr-float border-0">
+                    <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" 
+                       class="d-block image-holder position-relative mb-3 overflow-hidden rounded-3 bg-light p-2" style="cursor:pointer;">
+                        <img src="${imagePath}" alt="${book.title}" class="img-fluid book-cover-img" 
+                             style="height:${isPopular ? '200px' : '200px'}; object-fit:contain; transition:transform 0.35s ease;">
+                        <div class="book-img-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" 
+                             style="background:rgba(47,47,47,0); transition:background 0.3s ease; border-radius:inherit;">
+                            <span class="text-white fw-bold small" style="opacity:0; transition:opacity 0.3s ease; letter-spacing:0.05em;">${overlayText}</span>
+                        </div>
+                    </a>
+                    <h6 class="fw-bold mb-1">
+                        <a href="javascript:void(0)" onclick="layout.render('Books','Details','${book.isbn}')" class="text-decoration-none text-dark">${book.title}</a>
+                    </h6>
+                    <div class="fw-bold text-accent mb-2">${api.formatCurrency(book.price)}</div>
+                    <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="cart.add('${book.isbn}',1)">
+                        <i class="icon icon-plus me-1"></i>Thêm vào giỏ
+                    </button>
+                </div>
+            </div>
+        `;
+    },
+
+    // 1. Fetch and display featured books on homepage
+    loadFeatured: async () => {
+        try {
+            if (books._allBooksCache.length === 0) {
+                const res = await api.get('/books');
+                books._allBooksCache = res.data || [];
+            }
+            const itemList = books._allBooksCache;
+            if (Array.isArray(itemList)) {
+                books.renderGrid("#featured-books-container", itemList.slice(0, 8));
+                books.renderPopular("#popular-books-container", itemList.slice(0, 8));
+                if (itemList.length > 0) books.renderBestSeller(itemList[0]);
+            }
+        } catch (error) {
+            console.error("Failed to load featured books", error);
+        }
+    },
+    
+    // 1b. Load books by category for Homepage Tabs (Optimized to use cache)
+    loadByCategory: async (categoryName) => {
+        const container = $("#popular-books-container");
+        if (!container.length) return;
+        container.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent spinner-border-sm"></div></div>');
+        
+        try {
+            // Use cache if available for faster, more accurate switching
+            if (books._allBooksCache.length === 0) {
+                const res = await api.get('/books');
+                books._allBooksCache = res.data || [];
+            }
+
+            let filtered = [];
+            if (categoryName === 'ALL') {
+                filtered = books._allBooksCache;
+            } else {
+                filtered = books._allBooksCache.filter(b => 
+                    b.categoryName && b.categoryName.trim().toLowerCase() === categoryName.trim().toLowerCase()
+                );
+            }
+            books.renderPopular("#popular-books-container", filtered.slice(0, 8));
+        } catch (error) {
+            console.error("loadByCategory error", error);
+            container.html('<div class="col-12 text-center py-4 text-muted">Không tải được dữ liệu.</div>');
+        }
+    },
+
+    // 1d. Main store loader
+    loadAll: async () => {
+        const grid = $("#books-grid");
+        try {
+            // 1. Categories
+            const catRes = await api.get('/categories');
+            books._categoriesCache = catRes.data || [];
+            books.renderCategories(books._categoriesCache);
+
+            // 2. Books
+            grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent mb-3"></div><div class="text-muted">Đang tải danh sách sách...</div></div>');
+
+            if (layout.pendingCategory) {
+                const p = layout.pendingCategory;
+                layout.pendingCategory = null;
+                await books.filterByCategory(p.id, p.name);
+                return;
+            }
+
+            const res = await api.get('/books');
+            books._allBooksCache = res.data || [];
+            books.renderGrid("#books-grid", books._allBooksCache);
+
+        } catch (error) {
+            console.error("Failed to load books index", error);
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi khi tải dữ liệu.</div>');
+        }
+    },
+
+    renderCategories: (data) => {
+        const container = $("#categories-filter-list");
+        if (!container.length) return;
+        container.empty();
+        container.append(`
+            <li class="mb-1">
+                <a href="javascript:void(0)" onclick="books.loadAll()" class="text-decoration-none text-dark d-flex justify-content-between align-items-center py-2 px-3 rounded-3 category-link active bg-light shadow-sm">
+                    <span class="small fw-bold"><i class="icon icon-grid me-2"></i>Tất cả sản phẩm</span>
+                </a>
+            </li>
+        `);
+
+        const renderLevel = (items, parentElement, depth = 0) => {
+            (items || []).forEach(cat => {
+                const hasChildren = cat.subCategories && cat.subCategories.length > 0;
+                const subListId = `sub-cat-list-${cat.categoryId}`;
+                const itemHtml = `
+                    <li class="category-item-wrapper" style="margin-bottom: 2px;">
+                        <a href="javascript:void(0)" 
+                           onclick="layout.pendingCategory = { id: ${cat.categoryId}, name: '${cat.categoryName.replace(/'/g, "\\'")}' }; layout.render('Books','Index');" 
+                           data-id="${cat.categoryId}"
+                           class="text-decoration-none text-muted d-flex justify-content-between align-items-center py-2 px-3 rounded-2 category-link"
+                           style="padding-left: ${depth * 15 + 16}px !important; border-left: ${depth > 0 ? '1px solid #eee' : 'none'};">
+                            <span class="small ${depth === 0 ? 'fw-bold text-dark' : ''}">${depth > 0 ? '└ ' : ''}${cat.categoryName}</span>
+                            ${hasChildren ? '<i class="icon icon-chevron-down extra-small opacity-50" style="font-size:0.5rem;"></i>' : ''}
+                        </a>
+                        <ul class="list-unstyled sub-category-list" id="${subListId}"></ul>
+                    </li>
+                `;
+                const $item = $(itemHtml);
+                parentElement.append($item);
+                if (hasChildren) renderLevel(cat.subCategories, $item.find(`#${subListId}`), depth + 1);
+            });
+        };
+        renderLevel(data, container);
+    },
+
+    _getAllChildIds: (categoryId, nodes = null) => {
+        const validId = parseInt(categoryId);
+        if (isNaN(validId)) return [];
+        if (!nodes) nodes = books._categoriesCache;
+        
+        let ids = [validId];
+        const findAndCollect = (list) => {
+            for (const node of list) {
+                const nodeId = parseInt(node.categoryId || node.id); 
+                if (nodeId === validId) {
+                    const collect = (children) => {
+                        children.forEach(c => {
+                            ids.push(parseInt(c.categoryId || c.id));
+                            if (c.subCategories) collect(c.subCategories);
+                        });
+                    };
+                    if (node.subCategories) collect(node.subCategories);
+                    return true;
+                }
+                if (node.subCategories && findAndCollect(node.subCategories)) return true;
+            }
+            return false;
+        };
+        findAndCollect(nodes || []);
+        return ids;
+    },
+
+    filterByCategory: async (categoryId, categoryName, element) => {
+        const validCatId = parseInt(categoryId);
+        const isIdValid = !isNaN(validCatId);
+        $("#category-title").text(categoryName || "Danh mục");
+        $(".category-link").removeClass("active fw-bold text-dark bg-light shadow-sm").addClass("text-muted");
+        
+        let target = element || (isIdValid ? $(`.category-link[data-id="${validCatId}"]`) : null);
+        if (target) $(target).addClass("active fw-bold text-dark bg-light shadow-sm").removeClass("text-muted");
+
+        const grid = $("#books-grid");
+        grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
+
+        try {
+            if (books._allBooksCache.length === 0) {
+                const res = await api.get('/books');
+                books._allBooksCache = res.data || [];
+            }
+            const targetIds = isIdValid ? books._getAllChildIds(validCatId) : [];
+            const filtered = books._allBooksCache.filter(book => {
+                const bookCatId = parseInt(book.categoryId || book.category_id || book.id);
+                const matchById = isIdValid && !isNaN(bookCatId) && targetIds.includes(bookCatId);
+                const matchByName = categoryName && book.categoryName && (book.categoryName.trim().toLowerCase() === categoryName.trim().toLowerCase());
+                return matchById || matchByName;
+            });
+            books.renderGrid("#books-grid", filtered);
+        } catch (e) {
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi lọc danh mục.</div>');
+        }
+    },
+
+    // 2. Search & Sort
+    handleSort: (criteria) => {
+        let sorted = [...books._allBooksCache];
+        if (criteria === 'price-asc') sorted.sort((a, b) => a.price - b.price);
+        else if (criteria === 'price-desc') sorted.sort((a, b) => b.price - a.price);
+        else if (criteria === 'newest') sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        books.renderGrid("#books-grid", sorted);
+    },
+
+    loadByPriceRange: async (min, max) => {
+        const grid = $("#books-grid");
+        grid.html('<div class="col-12 text-center py-5"><div class="spinner-border text-accent"></div></div>');
+        try {
+            const res = await api.get(`/books?minPrice=${min}&maxPrice=${max}`);
+            books._allBooksCache = res.data || []; // Refresh cache with filtered results if desired, or just render
+            books.renderGrid("#books-grid", books._allBooksCache);
+            $("#category-title").text(`Sách giá từ ${api.formatCurrency(min)} đến ${api.formatCurrency(max)}`);
+        } catch (e) {
+            grid.html('<div class="col-12 text-center py-5 text-danger">Lỗi lọc giá.</div>');
+        }
+    },
+
+
+    // 1b. Render best seller section
+    renderBestSeller: (book) => {
+        if (!book) return;
+        $('#best-seller-author').text(book.authorName || book.author || 'Tác giả');
+        $('#best-seller-title').text(book.title || '---');
+        $('#best-seller-desc').text(book.description ? book.description.substring(0, 150) + '...' : 'Miêu tả chưa có.');
+        $('#best-seller-price').text(api.formatCurrency(book.price));
+        $('#best-seller-link').attr('onclick', `layout.render('Books','Details','${book.isbn}')`);
+    },
+
+    // 1c. Popular books grid
+    renderPopular: (selector, items) => {
+        const container = $(selector);
+        if (!container.length) return;
+        container.empty();
+        (items || []).forEach(book => {
+            container.append(books._createBookCardHtml(book, { isPopular: true }));
+        });
+    },
+
+    // 2. AI Search
+    searchAI: async (query) => {
+        if (!query || !query.trim()) return;
+        layout.current.isSearching = true;
+        if (layout.current.area !== 'Books' || layout.current.view !== 'Index') {
+            await layout.render('Books', 'Index');
+        }
+        const grid = $("#books-grid");
+        grid.html(`<div class="col-12 text-center py-5"><div class="spinner-border text-accent mb-3"></div><p class="text-muted">AI đang tìm: <strong>"${$('<div>').text(query).html()}"</strong></p></div>`);
+
+        try {
+            const res = await api.post('/books/ai-search', { query });
+            books.renderGrid("#books-grid", res.data || []);
+        } catch (error) { console.error("AI Search error:", error); }
+    },
+
+    // 3. Admin Views
+    loadAdminList: async () => {
+        try {
+            const res = await api.get('/books');
+            const data = res.data || res;
+            const tbody = $("#books-admin-list");
+            if (!tbody.length) return;
+            tbody.empty();
+            data.forEach(book => {
+                const typeBadge = book.bookType === 'EBOOK'
+                    ? '<span class="badge bg-info text-dark rounded-pill px-2">EBOOK</span>'
+                    : '<span class="badge bg-secondary rounded-pill px-2">PHYSICAL</span>';
+                tbody.append(`
+                    <tr>
+                        <td class="ps-4 py-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="${book.coverImage ? 'assets/images/' + book.coverImage : 'assets/images/product-item1.jpg'}" class="rounded shadow-sm" width="50">
+                                <div>
+                                    <h6 class="fw-bold mb-0">${book.title}</h6>
+                                    <div class="d-flex align-items-center gap-2 mt-1"><small class="text-muted">ISBN: ${book.isbn}</small>${typeBadge}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${book.categoryName || '---'}</td>
+                        <td class="fw-bold text-accent">${api.formatCurrency(book.price)}</td>
+                        <td>${book.stockQuantity || 0}</td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group gap-2">
+                                <button class="btn btn-sm btn-light rounded-pill shadow-sm py-1 px-3" onclick="layout.render('Books/Admin', 'Edit', '${book.isbn}')">Sửa</button>
+                                <button class="btn btn-sm btn-outline-danger rounded-pill shadow-sm" onclick="books.delete('${book.isbn}')"><i class="icon icon-close"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
+        } catch (e) { api.showToast("Lỗi tải danh mục admin", "error"); }
+    },
+
+    // 4. Detail & Related
+    loadDetail: async (isbn) => {
+        try {
+            const res = await api.get(`/books/${isbn}`);
+            const book = res.data || res;
+            if (!book) return api.showToast("Không tìm thấy sách", "error");
+
+            currentBookIsbn = book.isbn;
+            $('#book-title').text(book.title);
+            $('#book-author').text(book.authorNames ? Array.from(book.authorNames).join(', ') : 'Chưa cập nhật');
+            $('#book-isbn').text(book.isbn);
+            $('#book-price').text(api.formatCurrency(book.price));
+            $('#book-price-old').text(api.formatCurrency(book.price * 1.2));
+            $('#book-description').text(book.description || 'Không có mô tả.');
+            $('#breadcrumb-category').text(book.categoryName || 'Sách');
+            $('#book-image').attr('src', book.coverImage ? `assets/images/${book.coverImage}` : 'assets/images/main-banner2.jpg');
+
+            if (book.categoryName) books.loadRelated(book.categoryName, book.isbn);
+        } catch (error) { api.showToast("Lỗi tải chi tiết", "error"); }
+    },
+
+    loadRelated: async (categoryName, excludeIsbn) => {
+        try {
+            const res = await api.get(`/books?categoryName=${encodeURIComponent(categoryName)}`);
+            const data = (res.data || res).filter(b => b.isbn !== excludeIsbn).slice(0, 4);
+            const container = $("#related-books-grid");
+            if (!container.length) return;
+            container.empty();
+            if (data.length === 0) return container.html('<div class="col-12 text-center py-4 text-muted">Không có sản phẩm liên quan.</div>');
+            data.forEach(book => {
+                container.append(books._createBookCardHtml(book, { columnClass: "col-md-3" }));
+            });
+        } catch (e) { console.error("loadRelated failed", e); }
+    },
+
+    // 5. Form Helpers
+    toggleTypeFields: () => {
+        const type = $('input[name="bookType"]:checked').val();
+        $('#physical-fields-section, #ebook-fields-section').addClass('d-none').find('input').removeAttr('required');
+        if (type === 'PHYSICAL') {
+            $('#physical-fields-section').removeClass('d-none').find('input').attr('required', true);
+        } else {
+            $('#ebook-fields-section').removeClass('d-none').find('input').attr('required', true);
+        }
+    },
+
+    create: async () => {
+        const form = $("#create-book-form");
+        if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+        const raw = {};
+        form.serializeArray().forEach(item => { raw[item.name] = item.value; });
+        const payload = {
+            isbn: raw.isbn, title: raw.title || raw.tenSach, price: parseFloat(raw.price || raw.giaNiemYet) || 0,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : (raw.maDanhMuc ? parseInt(raw.maDanhMuc) : null),
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : (raw.maNxb ? parseInt(raw.maNxb) : null),
+            description: raw.description || raw.moTa || '', coverImage: raw.coverImage || raw.anhBia || '',
+            authorIds: raw.authorId ? [parseInt(raw.authorId)] : (raw.maTacGia ? [parseInt(raw.maTacGia)] : []),
+            bookType: raw.bookType, weight: parseFloat(raw.weight) || null,
+            fileSize: parseFloat(raw.fileSize) || null, downloadUrl: raw.downloadUrl || null,
+            publishYear: raw.publishYear ? parseInt(raw.publishYear) : null,
+            language: raw.language || ''
+        };
+        try {
+            await api.post('/admin/books', payload);
+            api.showToast("Đã thêm sách!");
+            layout.render('Books', 'Admin/Index');
+        } catch (e) { api.showToast("Lỗi: " + e.message, "error"); }
+    },
+
+    update: async (isbn) => {
+        const form = $("#edit-book-form") || $("#create-book-form");
+        if (!form[0].checkValidity()) { form[0].reportValidity(); return; }
+        const raw = {};
+        form.serializeArray().forEach(item => { raw[item.name] = item.value; });
+        const payload = {
+            title: raw.title || raw.tenSach, price: parseFloat(raw.price || raw.giaNiemYet) || 0,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : (raw.maDanhMuc ? parseInt(raw.maDanhMuc) : null),
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : (raw.maNxb ? parseInt(raw.maNxb) : null),
+            description: raw.description || raw.moTa || '', coverImage: raw.coverImage || raw.anhBia || '',
+            authorIds: raw.authorId ? [parseInt(raw.authorId)] : (raw.maTacGia ? [parseInt(raw.maTacGia)] : []),
+            bookType: raw.bookType, weight: parseFloat(raw.weight) || null,
+            fileSize: parseFloat(raw.fileSize) || null, downloadUrl: raw.downloadUrl || null,
+            publishYear: raw.publishYear ? parseInt(raw.publishYear) : null,
+            language: raw.language || ''
+        };
+        try {
+            await api.put(`/admin/books/${isbn}`, payload);
+            api.showToast("Đã cập nhật!");
+            layout.render('Books', 'Admin/Index');
+        } catch (e) { api.showToast("Lỗi: " + e.message, "error"); }
+    },
+
+    delete: async (isbn) => {
+        if (!confirm("Xóa cuốn sách này?")) return;
+        try {
+            await api.delete(`/admin/books/${isbn}`);
+            api.showToast("Đã xóa");
+            books.loadAdminList();
+        } catch (e) { api.showToast("Xóa thất bại", "error"); }
+    },
+
+    handleImageUpload: async (input) => {
+        const file = input.files[0];
+        if (!file) return;
+        const objectUrl = URL.createObjectURL(file);
+        $('#book-preview-img').attr('src', objectUrl).show();
+        $('#upload-overlay').removeClass('d-none').addClass('d-flex');
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const res = await fetch('/api/admin/upload-image', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + api.getToken() },
+                body: formData
+            });
+            const result = await res.json();
+            if (result.status === 200 || result.status === 201) {
+                $('#anhBia, #edit-anhBia').val(result.data.fileName);
+                api.showToast("Tải ảnh thành công!");
+            }
+        } catch (e) { api.showToast("Lỗi upload", "error"); }
+        finally { $('#upload-overlay').addClass('d-none'); }
+    },
+
+    loadCategoriesIntoForm: async () => {
+        try {
+            const res = await api.get('/categories');
+            const data = res.data || res;
+            const sel = $('#maDanhMuc, #categoryId');
+            sel.empty().append('<option value="">-- Chọn danh mục --</option>');
+            const walk = (nodes, depth = 0) => {
+                nodes.forEach(n => {
+                    sel.append(`<option value="${n.categoryId}">${"&nbsp;".repeat(depth*4)}${n.categoryName}</option>`);
+                    if (n.subCategories) walk(n.subCategories, depth + 1);
+                });
+            };
+            walk(data);
+        } catch (e) {}
+    },
+
+    loadAuthors: async () => {
+        try {
+            const res = await api.get('/authors');
+            const sel = $('#maTacGia, #authorId');
+            sel.empty().append('<option value="">-- Chọn tác giả --</option>');
+            (res.data || res).forEach(a => sel.append(`<option value="${a.authorId}">${a.authorName}</option>`));
+        } catch (e) {}
+    },
+
+    loadPublishers: async () => {
+        try {
+            const res = await api.get('/publishers');
+            const sel = $('#maNxb, #publisherId');
+            sel.empty().append('<option value="">-- Chọn NXB --</option>');
+            (res.data || res).forEach(p => sel.append(`<option value="${p.publisherId}">${p.publisherName}</option>`));
+        } catch (e) {}
+    },
+
+    adminSearch: (query) => {
+        $("#books-admin-list tr").each(function () {
+            $(this).toggle($(this).text().toLowerCase().includes(query.toLowerCase()));
+        });
+    },
+
+    renderGrid: (selector, itemList) => {
+        const container = $(selector);
+        if (!container.length) return;
+        container.empty();
+        $("#product-count").text(itemList ? itemList.length : 0);
+        if (!itemList || itemList.length === 0) {
+            return container.html('<div class="col-12 text-center py-5"><p class="text-muted">Không tìm thấy sản phẩm nào.</p></div>');
+        }
+        itemList.forEach(book => container.append(books._createBookCardHtml(book)));
+    },
+
+    toggleAdvancedFilters: () => {
+        const pane = $('#advanced-filters-pane');
+        if (pane.length) {
+            pane.toggleClass('d-none');
+        } else {
+            console.log("Advanced filters pane not found.");
+        }
+    }
+};
+
+$(document).on('click', '#btn-save-book', () => books.create());
+$(document).on('click', '#btn-update-book', function () {
+    const isbn = $(this).data('isbn');
+    books.update(isbn);
+});
+

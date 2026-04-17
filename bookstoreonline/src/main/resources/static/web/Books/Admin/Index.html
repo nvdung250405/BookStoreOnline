@@ -4,13 +4,16 @@
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-2">
-                    <li class="breadcrumb-item small"><a href="javascript:void(0)" onclick="layout.render('Dashboard/Admin', 'Index')" class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
+                    <li class="breadcrumb-item small"><a href="javascript:void(0)"
+                            onclick="layout.render('Dashboard/Admin', 'Index')"
+                            class="text-decoration-none text-muted">Hệ thống Quản trị</a></li>
                     <li class="breadcrumb-item small active fw-bold text-accent">Danh mục Sách</li>
                 </ol>
             </nav>
             <h2 class="fw-bold font-serif mb-0 text-dark">Quản lý Tồn kho Sách</h2>
         </div>
-        <button onclick="layout.render('Books', 'Admin/Create')" class="btn btn-accent px-4 py-2 rounded-pill fw-bold shadow-sm hvr-float">
+        <button onclick="layout.render('Books', 'Admin/Create')"
+            class="btn btn-accent px-4 py-2 rounded-pill fw-bold shadow-sm hvr-float">
             <i class="icon icon-plus me-2"></i> Thêm Sách mới
         </button>
     </div>
@@ -20,13 +23,16 @@
         <div class="row g-3 align-items-center">
             <div class="col-md-5">
                 <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="icon icon-search"></i></span>
-                    <input type="text" class="form-control border-start-0 shadow-none bg-transparent" placeholder="Tìm theo tiêu đề, ISBN, tác giả..." id="book-search-input"
-                           onkeyup="books.adminSearch(this.value)">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted"><i
+                            class="icon icon-search"></i></span>
+                    <input type="text" class="form-control border-start-0 shadow-none bg-transparent"
+                        placeholder="Tìm theo tiêu đề, ISBN, tác giả..." id="book-search-input"
+                        onkeyup="books.adminSearch(this.value)">
                 </div>
             </div>
             <div class="col-md-4 ms-auto text-end">
-                <button class="btn btn-outline-dark rounded-pill px-4" onclick="books.toggleAdvancedFilters()">Bộ lọc nâng cao</button>
+                <button class="btn btn-outline-dark rounded-pill px-4" onclick="books.toggleAdvancedFilters()">Bộ lọc
+                    nâng cao</button>
             </div>
         </div>
     </div>
@@ -46,7 +52,11 @@
                 </thead>
                 <tbody id="books-admin-list">
                     <!-- Loaded via books.js -->
-                    <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-accent"></div></td></tr>
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="spinner-border text-accent"></div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>

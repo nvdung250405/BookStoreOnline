@@ -25,7 +25,7 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label small fw-bold">Tên sách <span class="text-danger">*</span></label>
-                            <input type="text" name="tenSach" class="form-control rounded-pill px-3" placeholder="Nhập tên sách..." required>
+                            <input type="text" name="title" class="form-control rounded-pill px-3" placeholder="Nhập tên sách..." required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Mã ISBN <span class="text-danger">*</span></label>
@@ -33,25 +33,25 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Danh mục <span class="text-danger">*</span></label>
-                            <select name="maDanhMuc" id="maDanhMuc" class="form-select rounded-pill px-3" required>
+                            <select name="categoryId" id="maDanhMuc" class="form-select rounded-pill px-3" required>
                                 <option value="">-- Đang tải danh mục... --</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Nhà xuất bản</label>
-                            <select name="maNxb" id="maNxb" class="form-select rounded-pill px-3">
+                            <select name="publisherId" id="maNxb" class="form-select rounded-pill px-3">
                                 <option value="">-- Đang tải NXB... --</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Tác giả</label>
-                            <select name="maTacGia" id="maTacGia" class="form-select rounded-pill px-3">
+                            <select name="authorId" id="maTacGia" class="form-select rounded-pill px-3">
                                 <option value="">-- Đang tải tác giả... --</option>
                             </select>
                         </div>
                         <div class="col-12">
                             <label class="form-label small fw-bold">Mô tả sản phẩm</label>
-                            <textarea name="moTa" class="form-control rounded-4 px-3" rows="5" placeholder="Nhập mô tả chi tiết sách..."></textarea>
+                            <textarea name="description" class="form-control rounded-4 px-3" rows="5" placeholder="Nhập mô tả chi tiết sách..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
                     <h5 class="fw-bold mb-4 border-bottom pb-2">Giá & Kho hàng</h5>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Giá niêm yết (VNĐ) <span class="text-danger">*</span></label>
-                        <input type="number" name="giaNiemYet" id="giaNiemYet"
+                        <input type="number" name="price" id="giaNiemYet"
                             class="form-control rounded-pill border-accent fw-bold" required min="1000"
                             oninput="document.getElementById('final-price-display').innerText = api.formatCurrency(this.value || 0)">
                     </div>
@@ -136,13 +136,8 @@
                     <input type="file" id="image-upload-input" class="d-none" accept="image/*" onchange="books.handleImageUpload(this)">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-end-0 rounded-start-pill"><i class="icon icon-image"></i></span>
-                        <input type="text" name="anhBia" id="anhBia" class="form-control rounded-end-pill small bg-light" 
+                        <input type="text" name="coverImage" id="anhBia" class="form-control rounded-end-pill small bg-light" 
                                placeholder="Tên file hệ thống..." readonly required>
-                    </div>
-                    <div class="mt-3">
-                        <label class="form-label small fw-bold">Mô tả ảnh (Alt-text)</label>
-                        <input type="text" name="coverAlt" id="coverAlt" class="form-control rounded-pill small px-3" 
-                               placeholder="VD: Mô tả nội dung ảnh bìa...">
                     </div>
                     <div id="file-info" class="mt-2 text-center d-none">
                         <small class="text-muted">Tên gốc: <span id="original-filename-info" class="fw-bold"></span></small>
@@ -153,6 +148,15 @@
         </div>
     </form>
 </div>
+
+<script>
+(function() {
+    // Initial load for dropdowns
+    books.loadCategoriesIntoForm();
+    books.loadAuthors();
+    books.loadPublishers();
+})();
+</script>
 
 <style>
     .border-dashed { border: 2px dashed #dee2e6; }

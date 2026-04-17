@@ -344,6 +344,15 @@ const books = {
     },
 
     // 5. Form Helpers
+    loadForEdit: (isbn) => {
+        if (window.loadBookForEdit) {
+            window.loadBookForEdit(isbn);
+        } else {
+            // If window function not yet available (race condition), retry shortly
+            setTimeout(() => books.loadForEdit(isbn), 100);
+        }
+    },
+
     toggleTypeFields: () => {
         const type = $('input[name="bookType"]:checked').val();
         $('#physical-fields-section, #ebook-fields-section').addClass('d-none').find('input').removeAttr('required');
@@ -360,13 +369,18 @@ const books = {
         const raw = {};
         form.serializeArray().forEach(item => { raw[item.name] = item.value; });
         const payload = {
-            isbn: raw.isbn, title: raw.title, price: parseFloat(raw.price) || 0,
-            categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
-            publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
-            description: raw.description || '', coverImage: raw.coverImage || '',
-            authorIds: raw.authorId ? [parseInt(raw.authorId)] : [],
-            bookType: raw.bookType, weight: parseFloat(raw.weight) || null,
-            fileSize: parseFloat(raw.fileSize) || null, downloadUrl: raw.downloadUrl || null
+            isbn: raw.isbn, 
+            title: raw.title || raw.tenSach, 
+            price: parseFloat(raw.price || raw.giaNiemYet) || 0,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : (raw.maDanhMuc ? parseInt(raw.maDanhMuc) : null),
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : (raw.maNxb ? parseInt(raw.maNxb) : null),
+            description: raw.description || raw.moTa || '', 
+            coverImage: raw.coverImage || raw.anhBia || '',
+            authorIds: raw.authorId ? [parseInt(raw.authorId)] : (raw.maTacGia ? [parseInt(raw.maTacGia)] : []),
+            bookType: raw.bookType, 
+            weight: parseFloat(raw.weight) || null,
+            fileSize: parseFloat(raw.fileSize) || null, 
+            downloadUrl: raw.downloadUrl || null
         };
         try {
             await api.post('/admin/books', payload);
@@ -381,13 +395,17 @@ const books = {
         const raw = {};
         form.serializeArray().forEach(item => { raw[item.name] = item.value; });
         const payload = {
-            title: raw.title, price: parseFloat(raw.price) || 0,
-            categoryId: raw.categoryId ? parseInt(raw.categoryId) : null,
-            publisherId: raw.publisherId ? parseInt(raw.publisherId) : null,
-            description: raw.description || '', coverImage: raw.coverImage || '',
-            authorIds: raw.authorId ? [parseInt(raw.authorId)] : [],
-            bookType: raw.bookType, weight: parseFloat(raw.weight) || null,
-            fileSize: parseFloat(raw.fileSize) || null, downloadUrl: raw.downloadUrl || null
+            title: raw.title || raw.tenSach, 
+            price: parseFloat(raw.price || raw.giaNiemYet) || 0,
+            categoryId: raw.categoryId ? parseInt(raw.categoryId) : (raw.maDanhMuc ? parseInt(raw.maDanhMuc) : null),
+            publisherId: raw.publisherId ? parseInt(raw.publisherId) : (raw.maNxb ? parseInt(raw.maNxb) : null),
+            description: raw.description || raw.moTa || '', 
+            coverImage: raw.coverImage || raw.anhBia || '',
+            authorIds: raw.authorId ? [parseInt(raw.authorId)] : (raw.maTacGia ? [parseInt(raw.maTacGia)] : []),
+            bookType: raw.bookType, 
+            weight: parseFloat(raw.weight) || null,
+            fileSize: parseFloat(raw.fileSize) || null, 
+            downloadUrl: raw.downloadUrl || null
         };
         try {
             await api.put(`/admin/books/${isbn}`, payload);
@@ -408,15 +426,18 @@ const books = {
     handleImageUpload: async (input) => {
         const file = input.files[0];
         if (!file) return;
+        
         const objectUrl = URL.createObjectURL(file);
-        $('#book-preview-img').attr('src', objectUrl).show();
+        $('#book-preview-img').attr('src', objectUrl).removeClass('d-none').show();
+        $('#preview-placeholder').addClass('d-none');
+        
         $('#upload-overlay').removeClass('d-none').addClass('d-flex');
         const formData = new FormData();
         formData.append('file', file);
         try {
             const res = await fetch('/api/admin/upload-image', {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Authorization': 'Bearer ' + api.getToken() },
                 body: formData
             });
             const result = await res.json();
@@ -477,6 +498,15 @@ const books = {
             return container.html('<div class="col-12 text-center py-5"><p class="text-muted">Không tìm thấy sản phẩm nào.</p></div>');
         }
         itemList.forEach(book => container.append(books._createBookCardHtml(book)));
+    },
+
+    toggleAdvancedFilters: () => {
+        const pane = $('#advanced-filters-pane');
+        if (pane.length) {
+            pane.toggleClass('d-none');
+        } else {
+            console.log("Advanced filters pane not found.");
+        }
     }
 };
 

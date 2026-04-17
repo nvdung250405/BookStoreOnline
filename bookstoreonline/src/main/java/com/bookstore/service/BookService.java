@@ -118,13 +118,23 @@ public class BookService {
             throw new IllegalArgumentException("Book with this ISBN already exists: " + request.getIsbn());
         }
 
-        Book book = new Book();
+        Book book;
+        if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
+            EBook ebook = new EBook();
+            ebook.setFileSize(request.getFileSize());
+            ebook.setDownloadUrl(request.getDownloadUrl());
+            book = ebook;
+        } else {
+            PhysicalBook physical = new PhysicalBook();
+            physical.setWeight(request.getWeight());
+            book = physical;
+        }
+
         book.setIsbn(request.getIsbn());
         book.setTitle(request.getTitle());
         book.setPrice(request.getPrice());
         book.setDescription(request.getDescription());
         book.setCoverImage(request.getCoverImage());
-        book.setCoverAlt(request.getCoverAlt());
 
         Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -144,22 +154,7 @@ public class BookService {
             book.setAuthors(new java.util.HashSet<>(authors));
         }
 
-        Book savedBook = bookRepository.saveAndFlush(book);
-
-        // Core Book + Subtype composition
-        if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
-            PhysicalBook physical = new PhysicalBook();
-            physical.setWeight(request.getWeight());
-            physical.setBook(savedBook);
-            physicalBookRepository.save(physical);
-        } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
-            EBook ebook = new EBook();
-            ebook.setFileSize(request.getFileSize());
-            ebook.setDownloadUrl(request.getDownloadUrl());
-            ebook.setBook(savedBook);
-            eBookRepository.save(ebook);
-        }
-
+        Book savedBook = bookRepository.save(book);
         auditLogService.log("CREATE_BOOK", "Thêm sách mới: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
         return BookDTO.fromEntity(savedBook);
     }
@@ -173,11 +168,24 @@ public class BookService {
             throw new IllegalArgumentException("This book has been deleted and cannot be modified");
         }
 
+        // Type specialized field updates
+        if (book instanceof EBook) {
+            EBook ebook = (EBook) book;
+            ebook.setFileSize(request.getFileSize());
+            ebook.setDownloadUrl(request.getDownloadUrl());
+        } else if (book instanceof PhysicalBook) {
+            PhysicalBook physical = (PhysicalBook) book;
+            physical.setWeight(request.getWeight());
+        }
+
+        // If type switching is really needed, it would require deleting and re-creating 
+        // because Hibernate does not support changing the class of an existing entity.
+        // For now, we update common and specialized fields.
+
         book.setTitle(request.getTitle());
         book.setPrice(request.getPrice());
         book.setDescription(request.getDescription());
         book.setCoverImage(request.getCoverImage());
-        book.setCoverAlt(request.getCoverAlt());
 
         Category category = categoryRepository.findById(java.util.Objects.requireNonNull(request.getCategoryId()))
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -199,27 +207,7 @@ public class BookService {
             book.setAuthors(new java.util.HashSet<>());
         }
 
-        Book savedBook = bookRepository.saveAndFlush(book);
-
-        // TYPE SWITCHING / UPDATE LOGIC
-        // 1. Remove old subtypes
-        physicalBookRepository.deleteById(java.util.Objects.requireNonNull(isbn));
-        eBookRepository.deleteById(java.util.Objects.requireNonNull(isbn));
-
-        // 2. Add new subtype
-        if ("PHYSICAL".equalsIgnoreCase(request.getBookType())) {
-            PhysicalBook physical = new PhysicalBook();
-            physical.setWeight(request.getWeight());
-            physical.setBook(savedBook);
-            physicalBookRepository.save(physical);
-        } else if ("EBOOK".equalsIgnoreCase(request.getBookType())) {
-            EBook ebook = new EBook();
-            ebook.setFileSize(request.getFileSize());
-            ebook.setDownloadUrl(request.getDownloadUrl());
-            ebook.setBook(savedBook);
-            eBookRepository.save(ebook);
-        }
-
+        Book savedBook = bookRepository.save(book);
         auditLogService.log("UPDATE_BOOK", "Cập nhật sách: " + savedBook.getTitle() + " (ISBN: " + savedBook.getIsbn() + ")");
         return BookDTO.fromEntity(savedBook);
     }

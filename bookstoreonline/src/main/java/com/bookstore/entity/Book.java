@@ -35,8 +35,8 @@ public class Book {
     @Column(name = "cover_image", length = 255)
     private String coverImage;
 
-    @Column(name = "cover_alt", length = 255)
-    private String coverAlt;
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Inventory inventory;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -86,13 +86,7 @@ public class Book {
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
     public LocalDateTime getDeletedAt() { return deletedAt; }
     public void setDeletedAt(LocalDateTime deletedAt) { this.deletedAt = deletedAt; }
-    public String getCoverAlt() {
-        return coverAlt;
-    }
-    public void setCoverAlt(String coverAlt) {
-        this.coverAlt = coverAlt;
-    }
 
-    public void setBook(Book savedBook) {
-    }
+    public Inventory getInventory() { return inventory; }
+    public void setInventory(Inventory inventory) { this.inventory = inventory; }
 }

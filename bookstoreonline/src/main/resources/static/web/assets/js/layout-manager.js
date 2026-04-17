@@ -327,11 +327,15 @@ const layout = {
                 books.loadPublishers && books.loadPublishers();
                 break;
             case 'Books/Admin/Edit':
-                // Edit.html uses its own IIFE to load book data (avoids overriding books.loadDetail)
-                // Dropdowns still need to be populated
-                books.loadCategoriesIntoForm && books.loadCategoriesIntoForm();
-                books.loadAuthors && books.loadAuthors();
-                books.loadPublishers && books.loadPublishers();
+                // Use a dedicated method to load edit data
+                if (id) {
+                    if (typeof books !== 'undefined' && books.loadForEdit) {
+                        books.loadForEdit(id);
+                    } else {
+                        // Fallback: the page might define its own loader helper
+                        if (window.loadBookForEdit) window.loadBookForEdit(id);
+                    }
+                }
                 break;
             case 'Inventory/Admin/Index':
                 inventory.loadList();

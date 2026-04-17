@@ -82,7 +82,11 @@ public class InventoryService {
         List<Inventory> all = inventoryRepository.findAll();
 
         return all.stream()
-                .filter(inv -> inv.getStockQuantity() <= inv.getAlertThreshold())
+                .filter(inv -> {
+                    Integer qty = inv.getStockQuantity();
+                    Integer threshold = inv.getAlertThreshold();
+                    return qty != null && threshold != null && qty <= threshold;
+                })
                 .map(inventory -> new LowStockAlertDTO(
                         inventory.getBook().getIsbn(),
                         inventory.getBook().getTitle(),
